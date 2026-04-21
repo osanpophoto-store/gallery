@@ -690,6 +690,188 @@ body::before {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ===== HELP BAR ===== */
+.help-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 150;
+  background: rgba(44,31,23,0.92);
+  backdrop-filter: blur(8px);
+  color: rgba(255,255,255,0.7);
+  font-size: 11px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+.help-bar::-webkit-scrollbar { display: none; }
+.help-bar span { flex-shrink: 0; }
+.help-bar a { color: rgba(255,255,255,0.55); text-decoration: underline; }
+
+/* カートパネルがあるときはhelp-barを上に押し上げる */
+.cart-panel.visible ~ .help-bar,
+body.cart-open .help-bar { bottom: 80px; }
+
+/* ===== CONFIRM MODAL (購入確認) ===== */
+.confirm-section {
+  background: var(--cream);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+.confirm-section h4 {
+  font-size: 11px;
+  color: var(--bark);
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.confirm-photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.confirm-photo-tag {
+  background: var(--warm-white);
+  border: 1px solid var(--sand);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--deep);
+}
+.confirm-delivery {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--forest);
+  font-weight: 500;
+}
+.confirm-email-display {
+  color: var(--deep);
+  word-break: break-all;
+}
+
+/* 同意チェックボックス */
+.consent-area {
+  margin-bottom: 20px;
+}
+.consent-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--sand);
+  cursor: pointer;
+}
+.consent-item:last-child { border-bottom: none; }
+.consent-item input[type=checkbox] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--forest);
+  margin-top: 1px;
+  cursor: pointer;
+}
+.consent-item label {
+  font-size: 12px;
+  color: var(--bark);
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+/* ===== PAID SCREEN ===== */
+#screen-paid {
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+#screen-paid.active { display: flex; }
+
+.paid-wrap {
+  max-width: 480px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+}
+.paid-icon {
+  width: 80px;
+  height: 80px;
+  background: #EDF3ED;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 24px;
+}
+.paid-wrap h2 {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 12px;
+  color: var(--deep);
+}
+.paid-wrap > p {
+  font-size: 14px;
+  color: var(--bark);
+  line-height: 1.9;
+  margin-bottom: 28px;
+}
+.paid-info-box {
+  background: var(--warm-white);
+  border: 1.5px solid var(--sand);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+.paid-info-box h4 {
+  font-size: 11px;
+  color: var(--bark);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+.paid-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--deep);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--sand);
+  line-height: 1.6;
+}
+.paid-info-row:last-child { border-bottom: none; }
+.paid-info-row .icon { flex-shrink: 0; font-size: 15px; }
+.paid-note {
+  font-size: 12px;
+  color: var(--bark);
+  background: #FFF8F0;
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  text-align: left;
+  margin-bottom: 24px;
+  line-height: 1.7;
+}
+.btn-back-top {
+  padding: 14px 32px;
+  background: none;
+  border: 1.5px solid var(--sand);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--sans);
+  color: var(--bark);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-back-top:hover { background: var(--sand); }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
   .site-header { padding: 16px 20px; }
@@ -803,15 +985,63 @@ body::before {
   </div>
 </div>
 
+<!-- ========== 購入完了画面 ========== -->
+<main class="screen" id="screen-paid">
+  <div class="paid-wrap">
+    <div class="paid-icon">✅</div>
+    <h2>ご購入ありがとうございます</h2>
+    <p>
+      ご登録のメールアドレスに写真をお送りします。<br>
+      通常<strong>1分以内</strong>に届きます。
+    </p>
+
+    <div class="paid-info-box">
+      <h4>ご確認ください</h4>
+      <div class="paid-info-row">
+        <span class="icon">📬</span>
+        <span>メールが届かない場合は<strong>迷惑メールフォルダ</strong>もご確認ください</span>
+      </div>
+      <div class="paid-info-row">
+        <span class="icon">⏳</span>
+        <span>ダウンロードリンクの有効期限は<strong>送信から7日間</strong>です。お早めにダウンロードしてください</span>
+      </div>
+      <div class="paid-info-row">
+        <span class="icon">🚫</span>
+        <span>写真のSNS転載・第三者への配布はご遠慮ください</span>
+      </div>
+      <div class="paid-info-row">
+        <span class="icon">📞</span>
+        <span>届かない・開けない場合: <a href="mailto:order@osanpophoto-store.com" style="color:var(--forest)">order@osanpophoto-store.com</a></span>
+      </div>
+    </div>
+
+    <p class="paid-note">
+      ※ メールの送信には最大1分程度かかる場合があります。<br>
+      しばらく経っても届かない場合はお問い合わせください。
+    </p>
+
+    <button class="btn-back-top" onclick="goBackFromPaid()">トップに戻る</button>
+  </div>
+</main>
+
 <!-- ========== トースト通知 ========== -->
 <div class="toast" id="toast"></div>
+
+<!-- ========== ヘルプ常設バー ========== -->
+<div class="help-bar" id="help-bar">
+  <span>📥 写真は必ずダウンロード保存してください</span>
+  <span>⏳ ダウンロードリンク有効期限: 7日間</span>
+  <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
+  <span>🚫 SNS転載・第三者配布禁止</span>
+  <span>📞 <a href="mailto:order@osanpophoto-store.com">お問い合わせ</a></span>
+</div>
 
 <script>
 // ========================================
 // CONFIG - GASのWebアプリURLを設定
 // ========================================
 const CONFIG = {
-  GAS_URL: 'https://script.google.com/macros/s/AKfycbwv49myiQNYGlFFJbMHLJVpybwXqu6Mz05gi9XrwWBA2hM_WZVU1xhUgJz06DRKkuxW/exec',
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbwoJZELm35ismGwV1BOBV58OdETXQ-JbPjH5KsaStNx7FLgsafJ9M4Fsht71XMFYjit/exec',
   WATERMARK_TEXT: 'おさんぽフォト サンプル',
   WATERMARK_OPACITY: 0.35,
 };
@@ -826,12 +1056,24 @@ const state = {
   photos: [],
   selected: new Set(),
   downloadAll: false,
+  buyerEmail: null,
+  lastQty: 0,
+  lastIsAll: false,
 };
 
 // ========================================
 // 初期化
 // ========================================
 window.addEventListener('DOMContentLoaded', async () => {
+  // ?paid=1 の場合は完了画面を表示
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('paid') === '1') {
+    showPaidScreen();
+    // URLをきれいにする
+    history.replaceState({}, '', window.location.pathname);
+    return;
+  }
+
   // セッション復元
   const saved = sessionStorage.getItem('osanpo_session');
   if (saved) {
@@ -848,6 +1090,14 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   await loadEvents();
+
+  // カートパネルとヘルプバーの位置連動
+  const cartPanel = document.getElementById('cart-panel');
+  const helpBar = document.getElementById('help-bar');
+  const observer = new MutationObserver(() => {
+    helpBar.style.bottom = cartPanel.classList.contains('visible') ? '72px' : '0';
+  });
+  observer.observe(cartPanel, { attributes: true, attributeFilter: ['class'] });
 });
 
 // ========================================
@@ -1129,47 +1379,141 @@ function formatPriceDetail(price) {
 }
 
 // ========================================
-// モーダル（動的Stripe PaymentLink生成）
+// モーダル（購入確認 + 同意チェック + Stripe）
 // ========================================
 function openPaymentModal(isAll) {
   state.downloadAll = isAll;
   const count = isAll ? state.session?.event?.count : state.selected.size;
   const price = isAll ? { total: 2000, pack10: 0, pack5: 0, single: 0 } : calcPrice(count);
 
+  // 納品方法の判定
+  const deliveryLabel = isAll
+    ? '📂 フォルダリンク（全データ）'
+    : count <= 7
+      ? '📎 メール添付'
+      : '🔗 ダウンロードリンク';
+
   document.getElementById('modal-title').textContent =
     isAll ? '丸ごとダウンロード' : `${count}枚を購入`;
 
   document.getElementById('modal-desc').textContent =
     isAll
-      ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。決済完了後、自動でメールをお送りします。`
-      : `選択した${count}枚の高画質データをダウンロードできます。決済完了後、自動でダウンロードリンクをメールでお送りします。`;
+      ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。`
+      : `選択した${count}枚の高画質データをダウンロードできます。`;
 
-  let breakdown = '';
-  if (price.pack10) breakdown += `<div class="price-row"><span>10枚セット × ${price.pack10}</span><span>¥${(price.pack10 * 900).toLocaleString()}</span></div>`;
-  if (price.pack5)  breakdown += `<div class="price-row"><span>5枚セット × ${price.pack5}</span><span>¥${(price.pack5 * 500).toLocaleString()}</span></div>`;
-  if (price.single) breakdown += `<div class="price-row"><span>単品 × ${price.single}枚</span><span>¥${(price.single * 140).toLocaleString()}</span></div>`;
-  if (isAll)        breakdown += `<div class="price-row"><span>全データ一括</span><span>¥2,000</span></div>`;
-  breakdown += `<div class="price-row total"><span>合計</span><span>¥${price.total.toLocaleString()}</span></div>`;
-  breakdown += `<div style="margin-top:12px"><label style="font-size:12px;color:var(--bark)">メールアドレス（ダウンロードリンク送付先）<br>
-    <input type="email" id="buyer-email" placeholder="example@gmail.com"
-      style="width:100%;margin-top:6px;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:var(--sans);background:var(--cream);color:var(--deep);outline:none">
-  </label></div>`;
+  // 選択写真番号一覧
+  const selectedNums = isAll ? [] : Array.from(state.selected).sort((a,b) => Number(a)-Number(b));
+  const photoListHtml = isAll
+    ? `<div class="confirm-delivery">📦 全写真（${count}枚）</div>`
+    : `<div class="confirm-photos">${selectedNums.map(n => `<span class="confirm-photo-tag">No.${n}</span>`).join('')}</div>`;
 
-  document.getElementById('price-breakdown').innerHTML = breakdown;
+  // 価格内訳
+  let priceRows = '';
+  if (price.pack10) priceRows += `<div class="price-row"><span>10枚セット × ${price.pack10}</span><span>¥${(price.pack10*900).toLocaleString()}</span></div>`;
+  if (price.pack5)  priceRows += `<div class="price-row"><span>5枚セット × ${price.pack5}</span><span>¥${(price.pack5*500).toLocaleString()}</span></div>`;
+  if (price.single) priceRows += `<div class="price-row"><span>単品 × ${price.single}枚</span><span>¥${(price.single*140).toLocaleString()}</span></div>`;
+  if (isAll)        priceRows += `<div class="price-row"><span>全データ一括</span><span>¥2,000</span></div>`;
+  priceRows += `<div class="price-row total"><span>合計</span><span>¥${price.total.toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
+
+  const html = `
+    <!-- 選択写真 -->
+    <div class="confirm-section">
+      <h4>選択した写真</h4>
+      ${photoListHtml}
+    </div>
+
+    <!-- 金額内訳 -->
+    <div class="price-breakdown" style="margin-bottom:12px">
+      ${priceRows}
+    </div>
+
+    <!-- 納品方法 -->
+    <div class="confirm-section">
+      <h4>納品方法</h4>
+      <div class="confirm-delivery">${deliveryLabel}</div>
+      <div style="font-size:11px;color:var(--bark);margin-top:6px">
+        ${count <= 7 && !isAll ? 'メールに写真を添付してお送りします' : 'ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
+      </div>
+    </div>
+
+    <!-- メールアドレス -->
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:12px;color:var(--bark);margin-bottom:6px">
+        送付先メールアドレス
+      </label>
+      <input type="email" id="buyer-email" placeholder="example@gmail.com"
+        style="width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:var(--sans);background:var(--cream);color:var(--deep);outline:none;transition:border-color 0.2s"
+        oninput="updatePayBtn()"
+        onfocus="this.style.borderColor='var(--forest)'"
+        onblur="this.style.borderColor='var(--sand)'">
+      <p id="email-error" style="font-size:11px;color:var(--danger);margin-top:4px;display:none"></p>
+    </div>
+
+    <!-- 利用規約同意 -->
+    <div class="consent-area">
+      <div class="consent-item" onclick="toggleConsent('c1')">
+        <input type="checkbox" id="c1" onchange="updatePayBtn()">
+        <label for="c1">SNSや外部サイトへの転載・第三者への配布はしません</label>
+      </div>
+      <div class="consent-item" onclick="toggleConsent('c2')">
+        <input type="checkbox" id="c2" onchange="updatePayBtn()">
+        <label for="c2">ダウンロードリンクの有効期限（7日間）を確認しました</label>
+      </div>
+      <div class="consent-item" onclick="toggleConsent('c3')">
+        <input type="checkbox" id="c3" onchange="updatePayBtn()">
+        <label for="c3">購入後のデータ保存は自己責任で行います</label>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('price-breakdown').innerHTML = html;
 
   const btnStripe = document.getElementById('btn-stripe');
   btnStripe.href = '#';
-  btnStripe.style.opacity = '1';
-  btnStripe.style.pointerEvents = 'auto';
+  btnStripe.style.opacity = '0.5';
+  btnStripe.style.pointerEvents = 'none';
   btnStripe.onclick = (e) => { e.preventDefault(); doCreatePayment(isAll); };
 
   document.getElementById('modal-overlay').classList.add('visible');
 }
 
+// チェックボックスのクリックバブリングを防ぐ
+function toggleConsent(id) {
+  const el = document.getElementById(id);
+  if (el) { el.checked = !el.checked; updatePayBtn(); }
+}
+
+// 同意チェック＋メール入力で支払いボタンを有効化
+function updatePayBtn() {
+  const email = (document.getElementById('buyer-email')?.value || '').trim();
+  const c1 = document.getElementById('c1')?.checked;
+  const c2 = document.getElementById('c2')?.checked;
+  const c3 = document.getElementById('c3')?.checked;
+  const valid = email.includes('@') && email.includes('.') && c1 && c2 && c3;
+  const btn = document.getElementById('btn-stripe');
+  if (!btn) return;
+  btn.style.opacity = valid ? '1' : '0.5';
+  btn.style.pointerEvents = valid ? 'auto' : 'none';
+}
+
 async function doCreatePayment(isAll) {
-  const email = document.getElementById('buyer-email')?.value?.trim();
-  if (!email || !email.includes('@')) {
-    showToast('メールアドレスを入力してください', 'error');
+  const emailEl = document.getElementById('buyer-email');
+  const email = emailEl?.value?.trim();
+  const errEl = document.getElementById('email-error');
+
+  // メールバリデーション
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    if (errEl) { errEl.textContent = 'メールアドレスを正しく入力してください'; errEl.style.display = 'block'; }
+    emailEl?.focus();
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+
+  // 同意チェック
+  if (!document.getElementById('c1')?.checked ||
+      !document.getElementById('c2')?.checked ||
+      !document.getElementById('c3')?.checked) {
+    showToast('すべての項目に同意してください', 'error');
     return;
   }
 
@@ -1190,12 +1534,15 @@ async function doCreatePayment(isAll) {
       email: email
     });
 
+    // メールアドレスをstateに保存（完了画面で表示）
+    state.buyerEmail = email;
+    state.lastQty = qty;
+    state.lastIsAll = isAll;
+
     closeModal();
-    window.open(data.paymentUrl, '_blank');
-    showToast('Stripeの決済ページに移動します。決済後、メールをご確認ください。', 'success');
+    window.location.href = data.paymentUrl;
   } catch(e) {
     showToast('エラー: ' + e.message, 'error');
-  } finally {
     btnStripe.textContent = '💳 カードで支払う';
     btnStripe.style.opacity = '1';
     btnStripe.style.pointerEvents = 'auto';
@@ -1214,6 +1561,24 @@ function onStripeClick() {
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
+
+// ========================================
+// 購入完了画面
+// ========================================
+function showPaidScreen() {
+  showScreen('paid');
+  document.getElementById('btn-logout').classList.remove('visible');
+  document.getElementById('cart-panel').classList.remove('visible');
+  document.getElementById('help-bar').style.bottom = '0';
+}
+
+function goBackFromPaid() {
+  state.selected.clear();
+  state.buyerEmail = null;
+  showScreen('login');
+  loadEvents();
+  document.getElementById('btn-logout').classList.remove('visible');
+}
 
 // ========================================
 // ログアウト
