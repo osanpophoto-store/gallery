@@ -811,7 +811,7 @@ body::before {
 // CONFIG - GASのWebアプリURLを設定
 // ========================================
 const CONFIG = {
-  GAS_URL: 'https://script.google.com/macros/s/AKfycbwv49myiQNYGlFFJbMHLJVpybwXqu6Mz05gi9XrwWBA2hM_WZVU1xhUgJz06DRKkuxW/exec',
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbwoJZELm35ismGwV1BOBV58OdETXQ-JbPjH5KsaStNx7FLgsafJ9M4Fsht71XMFYjit/exec',
   WATERMARK_TEXT: 'おさんぽフォト サンプル',
   WATERMARK_OPACITY: 0.35,
 };
@@ -1129,43 +1129,20 @@ function formatPriceDetail(price) {
 }
 
 // ========================================
-// Stripeリンクマップ
-// ========================================
-const STRIPE_LINKS = {
-  140:  'https://buy.stripe.com/00w6oH9Z5eFNeUq9Cu5J605',
-  280:  'https://buy.stripe.com/aFadR99Z50OX5jQ3e65J606',
-  420:  'https://buy.stripe.com/8x214nb391T113Ag0S5J607',
-  500:  'https://buy.stripe.com/eVq9ATefldBJfYuaGy5J600',
-  640:  'https://buy.stripe.com/4gM00jefl2X513AbKC5J602',
-  780:  'https://buy.stripe.com/8x2dR9efl9lt27E6qi5J603',
-  900:  'https://buy.stripe.com/8x2bJ10ov8hp9A6aGy5J601',
-  1040: 'https://buy.stripe.com/cNi7sLgnt69h8w29Cu5J609',
-  1180: 'https://buy.stripe.com/7sYeVdgnt0OXaEa8yq5J60a',
-  1320: 'https://buy.stripe.com/6oU7sL0ovfJReUq7um5J60b',
-  1400: 'https://buy.stripe.com/3cI9ATb398hpaEaaGy5J60d',
-  1540: 'https://buy.stripe.com/14A00jc7d9lt9A601U5J60f',
-  1680: 'https://buy.stripe.com/00w4gz8V17dl5jQ3e65J60g',
-  1820: 'https://buy.stripe.com/fZu3cvb39gNV7rY5me5J60h',
-  1960: 'https://buy.stripe.com/14A28r7QX9ltcMieWO5J60i',
-  2000: 'https://buy.stripe.com/3cI6oHc7d2X5aEa7um5J604'
-};
-
-// ========================================
-// モーダル
+// モーダル（動的Stripe PaymentLink生成）
 // ========================================
 function openPaymentModal(isAll) {
   state.downloadAll = isAll;
   const count = isAll ? state.session?.event?.count : state.selected.size;
   const price = isAll ? { total: 2000, pack10: 0, pack5: 0, single: 0 } : calcPrice(count);
-  const stripeUrl = STRIPE_LINKS[price.total];
 
   document.getElementById('modal-title').textContent =
     isAll ? '丸ごとダウンロード' : `${count}枚を購入`;
 
   document.getElementById('modal-desc').textContent =
     isAll
-      ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。お支払い後にダウンロードリンクをお伝えします。`
-      : `選択した${count}枚の高画質データをダウンロードできます。お支払いはStripeの安全な決済ページで行います。`;
+      ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。決済完了後、自動でメールをお送りします。`
+      : `選択した${count}枚の高画質データをダウンロードできます。決済完了後、自動でダウンロードリンクをメールでお送りします。`;
 
   let breakdown = '';
   if (price.pack10) breakdown += `<div class="price-row"><span>10枚セット × ${price.pack10}</span><span>¥${(price.pack10 * 900).toLocaleString()}</span></div>`;
@@ -1173,22 +1150,56 @@ function openPaymentModal(isAll) {
   if (price.single) breakdown += `<div class="price-row"><span>単品 × ${price.single}枚</span><span>¥${(price.single * 140).toLocaleString()}</span></div>`;
   if (isAll)        breakdown += `<div class="price-row"><span>全データ一括</span><span>¥2,000</span></div>`;
   breakdown += `<div class="price-row total"><span>合計</span><span>¥${price.total.toLocaleString()}</span></div>`;
+  breakdown += `<div style="margin-top:12px"><label style="font-size:12px;color:var(--bark)">メールアドレス（ダウンロードリンク送付先）<br>
+    <input type="email" id="buyer-email" placeholder="example@gmail.com"
+      style="width:100%;margin-top:6px;padding:10px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:var(--sans);background:var(--cream);color:var(--deep);outline:none">
+  </label></div>`;
 
   document.getElementById('price-breakdown').innerHTML = breakdown;
 
   const btnStripe = document.getElementById('btn-stripe');
-  if (stripeUrl) {
-    btnStripe.href = stripeUrl;
-    btnStripe.style.opacity = '1';
-    btnStripe.style.pointerEvents = 'auto';
-  } else {
-    btnStripe.href = '#';
-    btnStripe.style.opacity = '0.5';
-    btnStripe.style.pointerEvents = 'none';
-    showToast('この金額のStripeリンクが未設定です', 'error');
-  }
+  btnStripe.href = '#';
+  btnStripe.style.opacity = '1';
+  btnStripe.style.pointerEvents = 'auto';
+  btnStripe.onclick = (e) => { e.preventDefault(); doCreatePayment(isAll); };
 
   document.getElementById('modal-overlay').classList.add('visible');
+}
+
+async function doCreatePayment(isAll) {
+  const email = document.getElementById('buyer-email')?.value?.trim();
+  if (!email || !email.includes('@')) {
+    showToast('メールアドレスを入力してください', 'error');
+    return;
+  }
+
+  const btnStripe = document.getElementById('btn-stripe');
+  btnStripe.textContent = '決済ページを準備中...';
+  btnStripe.style.opacity = '0.7';
+  btnStripe.style.pointerEvents = 'none';
+
+  try {
+    const photoNumbers = isAll ? [] : Array.from(state.selected);
+    const qty = isAll ? state.session?.event?.count : state.selected.size;
+
+    const data = await api('createPayment', {
+      eventId: state.selectedEventId,
+      token: state.session.token,
+      photoNumbers: photoNumbers.join(','),
+      qty: String(qty),
+      email: email
+    });
+
+    closeModal();
+    window.open(data.paymentUrl, '_blank');
+    showToast('Stripeの決済ページに移動します。決済後、メールをご確認ください。', 'success');
+  } catch(e) {
+    showToast('エラー: ' + e.message, 'error');
+  } finally {
+    btnStripe.textContent = '💳 カードで支払う';
+    btnStripe.style.opacity = '1';
+    btnStripe.style.pointerEvents = 'auto';
+  }
 }
 
 function closeModal() {
@@ -1196,8 +1207,7 @@ function closeModal() {
 }
 
 function onStripeClick() {
-  closeModal();
-  showToast('Stripeの決済ページに移動します。お支払い後、写真のリンクをメールでお送りします。', 'success');
+  // doCreatePaymentに統合済み
 }
 
 // モーダル外クリックで閉じる
@@ -1229,16 +1239,15 @@ function showScreen(name) {
 }
 
 // ========================================
-// GAS API呼び出し
+// GAS API呼び出し（GETリクエスト）
 // ========================================
 async function api(action, params = {}) {
-  const url = CONFIG.GAS_URL;
-  const body = { action, ...params };
+  const url = new URL(CONFIG.GAS_URL);
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' }, // GASのdoPostはapplication/jsonを受け付けないケースあり
-    body: JSON.stringify(body),
+  const res = await fetch(url.toString(), {
+    method: 'GET',
     redirect: 'follow'
   });
 
