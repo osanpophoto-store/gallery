@@ -1235,28 +1235,39 @@ function renderGrid() {
     return;
   }
 
-  grid.innerHTML = state.photos.map((p, i) => `
+  grid.innerHTML = state.photos.map((p) => `
     <div class="photo-item" id="item-${p.number}" onclick="toggleSelect('${p.number}')">
       <div class="photo-skeleton" id="skel-${p.number}"></div>
-      <canvas id="canvas-${p.number}" width="300" height="400" style="display:none;width:100%;height:100%"></canvas>
+      <img
+        id="img-${p.number}"
+        style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0"
+        loading="lazy"
+        crossorigin="anonymous"
+      >
+      <canvas id="canvas-${p.number}" width="300" height="400" style="display:none;width:100%;height:100%;position:absolute;inset:0"></canvas>
       <div class="photo-check"></div>
       <span class="photo-num">IMG-${p.number}</span>
     </div>
   `).join('');
 
-  // 順番に遅延ロード（サーバー負荷軽減）
   state.photos.forEach((p, i) => {
-    setTimeout(() => loadPhotoWithWatermark(p), i * 80);
+    setTimeout(() => loadPhotoFromDrive(p), i * 30);
   });
 }
 
 // ========================================
-// 透かし画像生成（Canvas API）
+// Drive直接URLで写真を読み込み → Canvas透かし合成
 // ========================================
-async function loadPhotoWithWatermark(photo) {
-  const canvas = document.getElementById('canvas-' + photo.number);
+async function loadPhotoFromDrive(photo) {
   const skel = document.getElementById('skel-' + photo.number);
-  if (!canvas) return;
+  const canvas = document.getElementById('canvas-' + photo.number);
+  if (!canvas || !photo.fileId) {
+    if (skel) { skel.style.background = 'var(--sand)'; skel.style.animation = 'none'; }
+    return;
+  }
+
+  // DriveのサムネイルURL（公開設定済みのthumbsフォルダ）
+  const thumbUrl = 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w400';
 
   try {
     const img = new Image();
@@ -1265,48 +1276,46 @@ async function loadPhotoWithWatermark(photo) {
     await new Promise((resolve, reject) => {
       img.onload = resolve;
       img.onerror = reject;
-      img.src = photo.url;
+      img.src = thumbUrl;
     });
 
     const ctx = canvas.getContext('2d');
-    canvas.width = img.naturalWidth || 300;
-    canvas.height = img.naturalHeight || 400;
+    canvas.width = img.naturalWidth || 400;
+    canvas.height = img.naturalHeight || 533;
 
-    // 元画像を描画
     ctx.drawImage(img, 0, 0);
 
-    // 透かしテキストを斜めに繰り返し
+    // 透かし
     ctx.save();
     ctx.globalAlpha = CONFIG.WATERMARK_OPACITY;
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
     ctx.font = `bold ${Math.round(canvas.width * 0.055)}px sans-serif`;
     ctx.rotate(-Math.PI / 6);
-
     const step = canvas.width * 0.55;
     for (let y = -canvas.height; y < canvas.height * 2; y += step * 0.7) {
       for (let x = -canvas.width; x < canvas.width * 2; x += step) {
         ctx.fillText(CONFIG.WATERMARK_TEXT, x, y);
       }
     }
-
-    // 枠線で写真番号
     ctx.restore();
+
+    // 番号バー
     ctx.globalAlpha = 0.7;
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(0, canvas.height - 28, canvas.width, 28);
-    ctx.fillStyle = 'white';
-    ctx.font = `${Math.round(canvas.width * 0.045)}px sans-serif`;
     ctx.globalAlpha = 1;
 
-    skel.style.display = 'none';
+    if (skel) skel.style.display = 'none';
     canvas.style.display = 'block';
 
   } catch(e) {
-    // ロード失敗時はプレースホルダー
-    skel.style.background = 'var(--sand)';
-    skel.style.animation = 'none';
-    const num = document.querySelector('#item-' + photo.number + ' .photo-num');
-    if (num) num.style.color = 'var(--bark)';
+    // Canvas失敗時はimgタグで透かしなしで表示
+    const imgEl = document.getElementById('img-' + photo.number);
+    if (imgEl) {
+      imgEl.src = thumbUrl;
+      imgEl.style.display = 'block';
+      if (skel) skel.style.display = 'none';
+    }
   }
 }
 
