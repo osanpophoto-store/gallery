@@ -253,7 +253,7 @@ body::before {
   border: none;
   cursor: pointer;
   color: var(--bark);
-  font-size: 18px;
+  font-size: 12px;
   padding: 4px;
 }
 
@@ -1027,7 +1027,7 @@ body.cart-open .help-bar { bottom: 80px; }
           autocomplete="current-password"
           onkeydown="if(event.key==='Enter') doLogin()"
         >
-        <button class="pw-toggle" onclick="togglePwVisibility()" type="button">👁</button>
+        <button class="pw-toggle" id="pw-toggle-btn" onclick="togglePwVisibility()" type="button">表示</button>
       </div>
       <p class="error-msg" id="error-msg"></p>
     </div>
@@ -1302,7 +1302,14 @@ function clearError() {
 
 function togglePwVisibility() {
   const inp = document.getElementById('pw-input');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
+  const btn = document.getElementById('pw-toggle-btn');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '非表示';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '表示';
+  }
 }
 
 // ========================================
