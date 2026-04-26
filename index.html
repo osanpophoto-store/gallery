@@ -1445,10 +1445,8 @@ function openPaymentModal(isAll) {
 
   // 納品方法の判定
   const deliveryLabel = isAll
-    ? '📂 フォルダリンク（全データ）'
-    : count <= 7
-      ? '📎 メール添付'
-      : '🔗 ダウンロードリンク';
+  ? '📂 フォルダリンク（全データ）'
+  : '📎 メール添付';
 
   document.getElementById('modal-title').textContent =
     isAll ? '丸ごとダウンロード' : `${count}枚を購入`;
@@ -1498,7 +1496,7 @@ function openPaymentModal(isAll) {
       <h4>納品方法</h4>
       <div class="confirm-delivery">${deliveryLabel}</div>
       <div style="font-size:11px;color:var(--bark);margin-top:6px">
-        ${count <= 7 && !isAll ? 'メールに写真を添付してお送りします' : 'ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
+        ${isAll ? 'フォルダリンクをメールでお送りします（有効期限: 7日間）' : 'メールに写真を添付してお送りします'}
       </div>
     </div>
 
