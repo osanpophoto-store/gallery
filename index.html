@@ -372,7 +372,7 @@ body::before {
   margin: 0 auto;
   padding: 0 40px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
 }
 
@@ -382,7 +382,7 @@ body::before {
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--sand);
-  aspect-ratio: 3/4;
+  aspect-ratio: 4/3;
   box-shadow: 0 2px 12px rgba(44,31,23,0.08);
   transition: all 0.25s;
 }
@@ -977,7 +977,7 @@ body.cart-open .help-bar { bottom: 80px; }
 @media (max-width: 640px) {
   .site-header { padding: 16px 20px; }
   .gallery-header { padding: 0 20px; }
-  .photo-grid { padding: 0 20px; gap: 10px; grid-template-columns: repeat(2, 1fr); }
+  .photo-grid { padding: 0 20px; gap: 10px; grid-template-columns: repeat(3, 1fr); }
   .cart-panel { padding: 16px 20px; gap: 12px; }
   .cart-count { font-size: 18px; }
   .modal-box { padding: 28px 20px; }
