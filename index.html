@@ -854,6 +854,23 @@ body::before {
 .cart-panel.visible ~ .help-bar,
 body.cart-open .help-bar { bottom: 80px; }
 
+.btn-cart-clear {
+  padding: 10px 16px;
+  background: none;
+  color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-cart-clear:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
 .cart-note {
   font-size: 10px;
   color: rgba(255,255,255,0.4);
@@ -1187,6 +1204,7 @@ body.cart-open .help-bar { bottom: 80px; }
     </div>
   </div>
   <button class="btn-pay" id="btn-pay-main" onclick="onPayClick()">購入へ →</button>
+  <button class="btn-cart-clear" onclick="clearSelection()">✕ クリア</button>
   <div class="cart-note">※ 異なるサイズは別々にご決済ください</div>
 </div>
 
@@ -1498,6 +1516,15 @@ function renderGrid() {
       <span class="photo-num">IMG-${p.number}</span>
     </div>
   `).join('');
+}
+
+function clearSelection() {
+  state.selected.forEach(num => {
+    document.getElementById('item-' + num)?.classList.remove('selected');
+  });
+  state.selected.clear();
+  updateCart();
+  showToast('選択をクリアしました', 'success');
 }
 
 // ========================================
