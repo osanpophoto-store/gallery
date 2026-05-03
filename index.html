@@ -5,34 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>おさんぽフォト | 写真ギャラリー</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --cream: #F7F3EE;
-  --warm-white: #FDFAF7;
-  --sand: #E8DDD0;
-  --bark: #8B6F5C;
-  --deep: #2C1F17;
-  --forest: #3D5A47;
-  --moss: #6B8F6B;
+  --cream: #FFFFFF;
+  --warm-white: #F8FAF8;
+  --sand: #E8E8E8;
+  --bark: #7A7A7A;
+  --deep: #2C2C2C;
+  --forest: #4A7A5A;
+  --moss: #7AAD8A;
   --dusk: #7A6A8A;
-  --accent: #C4956A;
+  --accent: #D4723A;
+  --cart-bg: #5C7A67;
   --danger: #C0392B;
-  --serif: 'Shippori Mincho', serif;
-  --sans: 'Zen Kaku Gothic New', sans-serif;
+  --serif: 'Zen Maru Gothic', sans-serif;
+  --sans: 'Zen Maru Gothic', sans-serif;
   --radius: 12px;
-  --shadow: 0 4px 24px rgba(44,31,23,0.10);
-  --shadow-lg: 0 12px 48px rgba(44,31,23,0.18);
+  --shadow: 0 4px 24px rgba(44,44,44,0.08);
+  --shadow-lg: 0 12px 48px rgba(44,44,44,0.14);
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: var(--sans);
-  background: var(--cream);
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: #FFFFFF;
   color: var(--deep);
   min-height: 100vh;
   overflow-x: hidden;
@@ -60,9 +61,9 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(247,243,238,0.88);
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(139,111,92,0.12);
+  border-bottom: 1px solid rgba(74,122,90,0.15);
 }
 
 .logo {
@@ -372,7 +373,7 @@ body::before {
   margin: 0 auto;
   padding: 0 40px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
 }
 
@@ -382,7 +383,7 @@ body::before {
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--sand);
-  aspect-ratio: 4/3;
+  aspect-ratio: 3/4;
   box-shadow: 0 2px 12px rgba(44,31,23,0.08);
   transition: all 0.25s;
 }
@@ -534,7 +535,7 @@ body::before {
   left: 0;
   right: 0;
   z-index: 200;
-  background: var(--deep);
+  background: var(--cart-bg);
   color: white;
   padding: 20px 40px;
   display: flex;
@@ -601,6 +602,64 @@ body::before {
   background: #B07A52;
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(196,149,106,0.4);
+}
+
+.btn-pay-print {
+  padding: 8px 14px;
+  background: none;
+  color: rgba(255,255,255,0.85);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: var(--sans);
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.btn-pay-print:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.cart-print-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cart-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cart-options {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.cart-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cart-option-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+}
+
+.cart-option-btns {
+  display: flex;
+  gap: 6px;
 }
 
 /* ===== PAYMENT MODAL ===== */
@@ -766,25 +825,42 @@ body::before {
   left: 0;
   right: 0;
   z-index: 150;
-  background: rgba(44,31,23,0.92);
+  background: rgba(74,122,90,0.95);
   backdrop-filter: blur(8px);
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.8);
   font-size: 11px;
-  padding: 8px 24px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  overflow-x: auto;
+  padding: 8px 0;
+  overflow: hidden;
   white-space: nowrap;
-  scrollbar-width: none;
 }
-.help-bar::-webkit-scrollbar { display: none; }
-.help-bar span { flex-shrink: 0; }
-.help-bar a { color: rgba(255,255,255,0.55); text-decoration: underline; }
 
-/* カートパネルがあるときはhelp-barを上に押し上げる */
+.help-bar-track {
+  display: inline-flex;
+  gap: 48px;
+  animation: marquee 30s linear infinite;
+  padding-left: 100%;
+}
+
+.help-bar-track span { flex-shrink: 0; }
+.help-bar-track a { color: rgba(255,255,255,0.55); text-decoration: underline; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.help-bar:hover .help-bar-track { animation-play-state: paused; }
+
 .cart-panel.visible ~ .help-bar,
 body.cart-open .help-bar { bottom: 80px; }
+
+.cart-note {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  width: 100%;
+  text-align: center;
+  padding-top: 4px;
+}
 
 /* サムネイルグリッド（確認モーダル内） */
 .confirm-thumb-grid {
@@ -977,7 +1053,7 @@ body.cart-open .help-bar { bottom: 80px; }
 @media (max-width: 640px) {
   .site-header { padding: 16px 20px; }
   .gallery-header { padding: 0 20px; }
-  .photo-grid { padding: 0 20px; gap: 10px; grid-template-columns: repeat(3, 1fr); }
+  .photo-grid { padding: 0 20px; gap: 10px; grid-template-columns: repeat(2, 1fr); }
   .cart-panel { padding: 16px 20px; gap: 12px; }
   .cart-count { font-size: 18px; }
   .modal-box { padding: 28px 20px; }
@@ -991,8 +1067,7 @@ body.cart-open .help-bar { bottom: 80px; }
 <!-- ヘッダー -->
 <header class="site-header">
   <div class="logo">
-    <div class="logo-icon">🌿</div>
-    おさんぽフォト
+    おさんぽフォト 写真データ販売
   </div>
   <nav class="header-nav">
     <button class="btn-logout" id="btn-logout" onclick="logout()">ログアウト</button>
@@ -1063,10 +1138,29 @@ body.cart-open .help-bar { bottom: 80px; }
 
 <!-- ========== カートパネル ========== -->
 <div class="cart-panel" id="cart-panel">
-  <div class="cart-count" id="cart-count">0<span>枚</span></div>
-  <div class="cart-price-detail" id="cart-detail"></div>
-  <div class="cart-total" id="cart-total">¥0<small> (税込)</small></div>
-  <button class="btn-pay" onclick="openPaymentModal(false)">購入へ進む →</button>
+  <div class="cart-left">
+    <div class="cart-count" id="cart-count">0<span>枚</span></div>
+    <div class="cart-price-detail" id="cart-detail"></div>
+    <div class="cart-total" id="cart-total">¥0<small> (税込)</small></div>
+  </div>
+  <div class="cart-options">
+    <div class="cart-option-group">
+      <div class="cart-option-label">📁 データで受け取る</div>
+      <div class="cart-option-btns">
+        <button class="btn-pay-print" onclick="openPrintModal('a4data')">A4データ<br><small>¥800/枚</small></button>
+        <button class="btn-pay-print" onclick="openPrintModal('a3data')">A3データ<br><small>¥1,200/枚</small></button>
+      </div>
+    </div>
+    <div class="cart-option-group">
+      <div class="cart-option-label">✨ プリントして届く</div>
+      <div class="cart-option-btns">
+        <button class="btn-pay-print" onclick="openPrintModal('a4print')">A4プリント<br><small>¥3,500/枚</small></button>
+        <button class="btn-pay-print" onclick="openPrintModal('a4panel')">A4パネル<br><small>¥12,000/枚</small></button>
+      </div>
+    </div>
+  </div>
+  <button class="btn-pay" onclick="openPaymentModal(false)">通常購入へ →</button>
+  <div class="cart-note">※ 通常購入とプリントプランは別々にご決済ください</div>
 </div>
 
 <!-- ========== 支払いモーダル ========== -->
@@ -1137,11 +1231,18 @@ body.cart-open .help-bar { bottom: 80px; }
 
 <!-- ========== ヘルプ常設バー ========== -->
 <div class="help-bar" id="help-bar">
-  <span>📥 写真は必ずダウンロード保存してください</span>
-  <span>⏳ ダウンロードリンク有効期限: 7日間</span>
-  <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
-  <span>🚫 SNS転載・第三者配布禁止</span>
-  <span>📞 <a href="mailto:order@osanpophoto-store.com">お問い合わせ</a></span>
+  <div class="help-bar-track">
+    <span>📥 写真は必ずダウンロード保存してください</span>
+    <span>⏳ ダウンロードリンク有効期限: 7日間</span>
+    <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
+    <span>🚫 SNS転載・第三者配布禁止</span>
+    <span>📞 <a href="mailto:order@osanpophoto-store.com">お問い合わせ</a></span>
+    <span>📥 写真は必ずダウンロード保存してください</span>
+    <span>⏳ ダウンロードリンク有効期限: 7日間</span>
+    <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
+    <span>🚫 SNS転載・第三者配布禁止</span>
+    <span>📞 <a href="mailto:order@osanpophoto-store.com">お問い合わせ</a></span>
+  </div>
 </div>
 
 <script>
@@ -1356,8 +1457,9 @@ function renderGrid() {
       <img
         id="img-${p.number}"
         src="${p.fileId ? 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w400' : ''}"
+        loading="lazy"
         style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0"
-        onload="this.style.display='block';this.style.position='absolute';this.style.inset='0';var s=document.getElementById('skel-${p.number}');if(s)s.style.display='none';"
+        onload="this.style.display='block';document.getElementById('skel-${p.number}').style.display='none'"
         onerror="document.getElementById('skel-${p.number}').style.background='var(--sand)';document.getElementById('skel-${p.number}').style.animation='none'"
       >
       <button class="photo-zoom" onclick="event.stopPropagation();openLightbox('${p.number}')" title="拡大">🔍</button>
@@ -1445,8 +1547,10 @@ function openPaymentModal(isAll) {
 
   // 納品方法の判定
   const deliveryLabel = isAll
-  ? '📂 フォルダリンク（全データ）'
-  : '📎 メール添付';
+    ? '📂 フォルダリンク（全データ）'
+    : count <= 7
+      ? '📎 メール添付'
+      : '🔗 ダウンロードリンク';
 
   document.getElementById('modal-title').textContent =
     isAll ? '丸ごとダウンロード' : `${count}枚を購入`;
@@ -1496,7 +1600,7 @@ function openPaymentModal(isAll) {
       <h4>納品方法</h4>
       <div class="confirm-delivery">${deliveryLabel}</div>
       <div style="font-size:11px;color:var(--bark);margin-top:6px">
-        ${isAll ? 'フォルダリンクをメールでお送りします（有効期限: 7日間）' : 'メールに写真を添付してお送りします'}
+        ${count <= 7 && !isAll ? 'メールに写真を添付してお送りします' : 'ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
       </div>
     </div>
 
@@ -1536,7 +1640,7 @@ function openPaymentModal(isAll) {
   btnStripe.href = '#';
   btnStripe.style.opacity = '0.5';
   btnStripe.style.pointerEvents = 'none';
-  btnStripe.onclick = (e) => { e.preventDefault(); doCreatePayment(isAll); };
+  btnStripe.onclick = (e) => { e.preventDefault(); doCreatePayment(isAll, 'normal'); };
 
   document.getElementById('modal-overlay').classList.add('visible');
 }
@@ -1560,7 +1664,7 @@ function updatePayBtn() {
   btn.style.pointerEvents = valid ? 'auto' : 'none';
 }
 
-async function doCreatePayment(isAll) {
+async function doCreatePayment(isAll, planType) {
   const emailEl = document.getElementById('buyer-email');
   const email = emailEl?.value?.trim();
   const errEl = document.getElementById('email-error');
@@ -1587,6 +1691,7 @@ async function doCreatePayment(isAll) {
   btnStripe.style.pointerEvents = 'none';
 
   try {
+    const plan = planType || 'normal';
     const photoNumbers = isAll ? [] : Array.from(state.selected);
     const qty = isAll ? state.session?.event?.count : state.selected.size;
 
@@ -1595,10 +1700,10 @@ async function doCreatePayment(isAll) {
       token: state.session.token,
       photoNumbers: photoNumbers.join(','),
       qty: String(qty),
-      email: email
+      email: email,
+      planType: plan
     });
 
-    // メールアドレスをstateに保存（完了画面で表示）
     state.buyerEmail = email;
     state.lastQty = qty;
     state.lastIsAll = isAll;
@@ -1619,6 +1724,98 @@ function closeModal() {
 
 function onStripeClick() {
   // doCreatePaymentに統合済み
+}
+
+// ========================================
+// A4/A3データ購入モーダル
+// ========================================
+function openPrintModal(planType) {
+  const count = state.selected.size;
+  if (count === 0) { showToast('写真を選択してください', 'error'); return; }
+
+  const planConfig = {
+    a4data:  { label: 'A4データ',    unit: 800,   delivery: 'データをメールでお届け（数日以内）',        note: '印刷に適した解像度のデータをお届けします。お好みのプリントサービスや写真屋さんでプリントいただけます。', shipping: false },
+    a3data:  { label: 'A3データ',    unit: 1200,  delivery: 'データをメールでお届け（数日以内）',        note: 'A3サイズ印刷に対応した解像度のデータをお届けします。大きく引き伸ばしても美しい仕上がりです。', shipping: false },
+    a4print: { label: 'A4プリント',  unit: 3500,  delivery: '富士フイルムのプレミアムプリントでご自宅にお届け', note: '富士フイルムのプレミアムプリントで仕上げてお届けします。最高の銀塩技術で再現された、とっておきの一枚をお気に入りの額に飾ってください。送料¥635（¥5,000以上で無料）。', shipping: true  },
+    a4panel: { label: 'A4平滑パネル', unit: 12000, delivery: '富士フイルムのプレミアムプリント＋パネル加工でご自宅にお届け', note: '富士フイルムのプレミアムプリント＋平滑パネル加工でお届けします。最高の銀塩技術で仕上げた写真が、届いたその日から壁に飾れる完成品に。額装不要で、インテリアとしても映えます。送料¥635（¥5,000以上で無料）。', shipping: true  }
+  };
+
+  const config = planConfig[planType];
+  if (!config) return;
+
+  const total = config.unit * count;
+  const shippingNote = config.shipping && total < 5000 ? '+ 送料¥635' : config.shipping ? '送料無料' : '';
+  const selectedNums = Array.from(state.selected).sort((a,b) => Number(a)-Number(b));
+
+  document.getElementById('modal-title').textContent = config.label + 'で購入';
+  document.getElementById('modal-desc').textContent =
+    `選択した${count}枚を${config.label}（¥${config.unit.toLocaleString()}/枚）でご注文します。`;
+
+  const thumbsHtml = `<div class="confirm-thumb-grid">${selectedNums.map(n => {
+    const photo = state.photos.find(p => p.number === n);
+    const thumbUrl = photo && photo.fileId
+      ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120'
+      : '';
+    return `<div class="confirm-thumb">
+      ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
+      <div class="confirm-thumb-num">No.${n}</div>
+    </div>`;
+  }).join('')}</div>`;
+
+  const html = `
+    <div class="confirm-section">
+      <h4>選択した写真（${count}枚）</h4>
+      ${thumbsHtml}
+    </div>
+
+    <div class="price-breakdown" style="margin-bottom:12px">
+      <div class="price-row"><span>${config.label} × ${count}枚</span><span>¥${total.toLocaleString()}</span></div>
+      ${config.shipping ? `<div class="price-row"><span>送料</span><span>${total >= 5000 ? '無料' : '¥635'}</span></div>` : ''}
+      <div class="price-row total"><span>合計</span><span>¥${(total + (config.shipping && total < 5000 ? 635 : 0)).toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>
+    </div>
+
+    <div class="confirm-section">
+      <h4>納品方法</h4>
+      <div class="confirm-delivery">${config.shipping ? '📦' : '📧'} ${config.delivery}</div>
+      <div style="font-size:11px;color:var(--bark);margin-top:6px">${config.note}</div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:12px;color:var(--bark);margin-bottom:6px">送付先メールアドレス</label>
+      <input type="email" id="buyer-email" placeholder="example@gmail.com"
+        style="width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:var(--sans);background:var(--cream);color:var(--deep);outline:none;transition:border-color 0.2s"
+        oninput="updatePayBtn()"
+        onfocus="this.style.borderColor='var(--forest)'"
+        onblur="this.style.borderColor='var(--sand)'">
+      <p id="email-error" style="font-size:11px;color:var(--danger);margin-top:4px;display:none"></p>
+    </div>
+
+    <div class="consent-area">
+      <div class="consent-item">
+        <input type="checkbox" id="c1" onchange="updatePayBtn()">
+        <label for="c1">購入した写真のSNS転載・第三者への配布・転売はせず、適正にご利用いただくことに同意します（購入者情報および購入写真は記録されています）</label>
+      </div>
+      <div class="consent-item">
+        <input type="checkbox" id="c2" onchange="updatePayBtn()">
+        <label for="c2">${config.shipping ? '納品まで1〜2週間かかる場合があることを確認しました' : 'データ納品まで数日かかる場合があることを確認しました'}</label>
+      </div>
+      <div class="consent-item">
+        <input type="checkbox" id="c3" onchange="updatePayBtn()">
+        <label for="c3">購入後のキャンセル・返品はできないことを確認しました</label>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('price-breakdown').innerHTML = html;
+
+  const btnStripe = document.getElementById('btn-stripe');
+  btnStripe.innerHTML = `💳 ${config.label}を注文する`;
+  btnStripe.href = '#';
+  btnStripe.style.opacity = '0.5';
+  btnStripe.style.pointerEvents = 'none';
+  btnStripe.onclick = (e) => { e.preventDefault(); doCreatePayment(false, planType); };
+
+  document.getElementById('modal-overlay').classList.add('visible');
 }
 
 // モーダル外クリックで閉じる
