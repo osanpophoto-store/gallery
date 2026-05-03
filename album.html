@@ -1,1 +1,887 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>写真の楽しみ方 | おさんぽフォト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --white: #FFFFFF;
+  --off-white: #F8FAF8;
+  --border: #E8E8E8;
+  --text: #2C2C2C;
+  --muted: #7A7A7A;
+  --forest: #4A7A5A;
+  --forest-light: #EAF3EE;
+  --forest-mid: #7AAD8A;
+  --accent: #D4723A;
+  --accent-light: #FDF0E8;
+  --gold: #F2A96A;
+  --font: 'Zen Maru Gothic', sans-serif;
+  --radius: 16px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--white);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== HEADER ===== */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(74,122,90,0.15);
+}
+.logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.btn-gallery {
+  font-size: 12px;
+  color: var(--forest);
+  background: none;
+  border: 1px solid var(--forest);
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+.btn-gallery:hover { background: var(--forest); color: white; }
+
+/* ===== HERO ===== */
+.hero {
+  padding: 120px 40px 80px;
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+.hero-tag {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--forest);
+  background: var(--forest-light);
+  padding: 5px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+.hero h1 {
+  font-size: clamp(26px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--forest);
+}
+.hero p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 2;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ===== SECTION ===== */
+.section {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.section-header h2 {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.section-header p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.divider {
+  height: 1px;
+  background: var(--border);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ===== PLAN CATEGORIES ===== */
+.plan-categories {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+.plan-category {
+  background: var(--forest-light);
+  border: 1.5px solid var(--forest);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+}
+.plan-category-print {
+  background: var(--accent-light);
+  border-color: var(--accent);
+}
+.plan-category-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.plan-category-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--forest);
+  margin-bottom: 4px;
+}
+.plan-category-print .plan-category-title {
+  color: var(--accent);
+}
+.plan-category-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(74,122,90,0.2);
+}
+.plan-category-print .plan-category-desc {
+  border-bottom-color: rgba(212,114,58,0.2);
+}
+.plan-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.plan-category-list span {
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.plan-category-list span::before {
+  content: '›';
+  font-weight: 700;
+  color: var(--forest);
+}
+.plan-category-print .plan-category-list span::before {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .plan-categories { grid-template-columns: 1fr; }
+}
+
+/* ===== PLAN CARDS ===== */
+.plans {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.plan-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  transition: box-shadow 0.3s;
+}
+.plan-card:hover {
+  box-shadow: 0 8px 32px rgba(44,44,44,0.10);
+}
+.plan-card.featured {
+  border-color: var(--forest);
+  border-width: 2px;
+}
+.plan-card.premium {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.plan-visual {
+  background: var(--off-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  position: relative;
+  overflow: hidden;
+  color: var(--forest);
+}
+.plan-card.featured .plan-visual { background: var(--forest-light); color: var(--forest); }
+.plan-card.premium .plan-visual { background: var(--accent-light); color: var(--accent); }
+
+.plan-content {
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+}
+
+.plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+.plan-badge.green { background: var(--forest-light); color: var(--forest); }
+.plan-badge.orange { background: var(--accent-light); color: var(--accent); }
+
+.plan-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+.plan-price {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--forest);
+}
+.plan-card.premium .plan-price { color: var(--accent); }
+.plan-price small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.plan-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+
+.plan-features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.plan-feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text);
+}
+.plan-feature::before {
+  content: '✓';
+  width: 18px;
+  height: 18px;
+  background: var(--forest-light);
+  color: var(--forest);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.plan-card.premium .plan-feature::before {
+  background: var(--accent-light);
+  color: var(--accent);
+}
+
+.btn-plan {
+  display: inline-block;
+  padding: 14px 28px;
+  background: var(--forest);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  text-align: center;
+  margin-top: 8px;
+}
+.btn-plan:hover {
+  background: #3a6349;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(74,122,90,0.3);
+}
+.plan-card.premium .btn-plan {
+  background: var(--accent);
+}
+.plan-card.premium .btn-plan:hover {
+  background: #b85e2e;
+  box-shadow: 0 6px 20px rgba(212,114,58,0.3);
+}
+.btn-plan-outline {
+  display: inline-block;
+  padding: 14px 28px;
+  background: none;
+  color: var(--forest);
+  border: 1.5px solid var(--forest);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  text-align: center;
+  margin-top: 8px;
+}
+.btn-plan-outline:hover {
+  background: var(--forest-light);
+}
+
+/* ===== COMPARISON TABLE ===== */
+.compare-wrap {
+  background: var(--off-white);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-top: 48px;
+}
+.compare-wrap h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.compare-table th {
+  background: var(--forest);
+  color: white;
+  padding: 10px 16px;
+  text-align: center;
+  font-weight: 700;
+}
+.compare-table th:first-child { border-radius: 8px 0 0 0; text-align: left; }
+.compare-table th:last-child { border-radius: 0 8px 0 0; }
+.compare-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  background: white;
+}
+.compare-table td:first-child { text-align: left; font-weight: 500; }
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+.compare-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+.check { color: var(--forest); font-weight: 700; }
+.dash { color: var(--border); }
+
+/* ===== ALBUM SECTION ===== */
+.album-section {
+  background: var(--forest-light);
+  padding: 60px 40px;
+}
+.album-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.album-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+.album-text h2 {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.album-text p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 2;
+  margin-bottom: 20px;
+}
+.service-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.service-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+  display: block;
+}
+.service-card:hover {
+  border-color: var(--forest);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74,122,90,0.12);
+}
+.album-photos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+.album-photo-item {
+  aspect-ratio: 4/3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--border);
+}
+.album-photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.album-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: #E8E8E8;
+  color: #BBBBBB;
+  min-height: 80px;
+}
+.service-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.service-desc { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
+.service-price {
+  font-size: 11px; color: var(--forest);
+  background: var(--forest-light);
+  padding: 2px 8px; border-radius: 20px;
+  display: inline-block; font-weight: 500;
+}
+
+/* ===== NOTE BOX ===== */
+.note-box {
+  background: #FDF0E8;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 960px;
+  margin: 0 auto 60px;
+}
+.note-box strong { color: var(--text); }
+
+/* ===== CTA FINAL ===== */
+.cta-final {
+  background: var(--forest);
+  padding: 60px 40px;
+  text-align: center;
+}
+.cta-final h2 {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  color: white;
+  margin-bottom: 12px;
+}
+.cta-final p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 32px;
+  line-height: 1.8;
+}
+.btn-cta-white {
+  display: inline-block;
+  padding: 16px 40px;
+  background: white;
+  color: var(--forest);
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: var(--font);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-cta-white:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 40px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .site-header { padding: 14px 20px; }
+  .hero { padding: 100px 20px 60px; }
+  .section { padding: 48px 20px; }
+  .plan-card { grid-template-columns: 1fr; }
+  .plan-visual { padding: 32px; font-size: 60px; }
+  .plan-content { padding: 28px 24px; }
+  .album-grid { grid-template-columns: 1fr; }
+  .album-section { padding: 48px 20px; }
+  .cta-final { padding: 48px 20px; }
+  .compare-wrap { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">おさんぽフォト 写真データ販売</div>
+  <a href="https://osanpophoto-store.github.io/gallery/" class="btn-gallery">ギャラリーに戻る</a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>写真の<em>楽しみ方</em>ガイド</h1>
+  <p>スマホで手軽に保存するもよし、部屋に飾るもよし。お気に入りの楽しみ方で、子どもの笑顔をずっと手元に。</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ALBUM SECTION -->
+<section class="album-section">
+  <div class="album-inner">
+    <div class="album-grid">
+      <div class="album-text">
+        <h2>丸ごとダウンロードで<br>アルバムを作ろう</h2>
+        <p>子どもの成長は、我が子だけで完結しません。クラスメイトとの笑顔、給食の賑やかな雰囲気、先生との何気ないひとこま——その場の「空気感」ごと残してこそ、見返したときに当時の記憶がよみがえります。</p>
+        <div class="album-photos">
+          <div class="album-photo-item"><div class="album-photo-placeholder">📷</div></div>
+          <div class="album-photo-item"><div class="album-photo-placeholder">📷</div></div>
+          <div class="album-photo-item"><div class="album-photo-placeholder">📷</div></div>
+        </div>
+        <p>丸ごとダウンロードなら、そんなすべての瞬間をまとめて手元に。フォトブックやアルバムに組み合わせることで、我が子だけのページでは伝えきれない「あの頃」が一冊に詰まります。</p>
+        <div class="album-photos">
+          <div class="album-photo-item"><div class="album-photo-placeholder">📷</div></div>
+          <div class="album-photo-item"><div class="album-photo-placeholder">📷</div></div>
+          <div class="album-photo-item"><div class="album-photo-placeholder">📷</div></div>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:8px;">印刷物でのアルバム作成・クラスへの配布はOKです。ただし、写真データそのものの共有・転送・転売はご遠慮ください。</p>
+      </div>
+      <div>
+        <p style="font-size:13px;font-weight:700;color:var(--forest);margin-bottom:12px;">おすすめフォトブックサービス</p>
+        <div class="service-cards">
+          <a href="https://pg-ja.fujifilm.com/photobook.html" target="_blank" class="service-card">
+            <div class="service-name">富士フイルム</div>
+            <div class="service-desc">銀塩プリントの最高品質。用紙・加工の種類が豊富。</div>
+          </a>
+          <a href="https://photobook.tolot.com" target="_blank" class="service-card">
+            <div class="service-name">TOLOT</div>
+            <div class="service-desc">シンプルでおしゃれな仕上がり。</div>
+          </a>
+          <a href="https://www.photojapon.jp" target="_blank" class="service-card">
+            <div class="service-name">フォトジャポン</div>
+            <div class="service-desc">高品質な印刷でプレゼントにも。</div>
+          </a>
+          <a href="https://photoback.jp" target="_blank" class="service-card">
+            <div class="service-name">photoback</div>
+            <div class="service-desc">雑誌のような本格的な仕上がり。</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PLANS -->
+<section class="section">
+  <div class="section-header">
+    <h2>購入プランを選ぶ</h2>
+    <p>用途や予算に合わせてお選びください</p>
+  </div>
+
+  <!-- 大分類 -->
+  <div class="plan-categories">
+    <div class="plan-category">
+      <div class="plan-category-icon">📱</div>
+      <div class="plan-category-title">ダウンロード</div>
+      <div class="plan-category-desc">データで受け取る</div>
+      <div class="plan-category-list">
+        <span>スマホサイズ ¥140〜</span>
+        <span>丸ごとダウンロード ¥2,000</span>
+        <span>A4データ ¥800/枚</span>
+        <span>A3データ ¥1,200/枚</span>
+      </div>
+    </div>
+    <div class="plan-category plan-category-print">
+      <div class="plan-category-icon">🖨️</div>
+      <div class="plan-category-title">プリント</div>
+      <div class="plan-category-desc">富士フイルムのプレミアムプリントでお届け</div>
+      <div class="plan-category-list">
+        <span>A4プリント ¥3,500/枚</span>
+        <span>A4平滑パネル ¥12,000/枚</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="plans">
+
+    <!-- スマホサイズ -->
+    <div class="plan-card">
+      <div class="plan-visual">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="18" y="8" width="28" height="44" rx="4" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="24" y="12" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="32" cy="44" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="plan-content">
+        <span class="plan-badge green">📱 スマホサイズ</span>
+        <div class="plan-name">デジタルで手軽に保存</div>
+        <div class="plan-price">¥140<small>〜 / 枚（税込）</small></div>
+        <p class="plan-desc">スマホやタブレットで見るのにぴったりのサイズ。LINEで家族や祖父母にシェアしたり、スマホの待受にしたり、日常使いに最適です。</p>
+        <div class="plan-features">
+          <div class="plan-feature">1〜19枚まで選んで購入</div>
+          <div class="plan-feature">決済後メールに写真を添付してお届け</div>
+          <div class="plan-feature">20枚以上は丸ごとダウンロードがお得</div>
+        </div>
+        <a href="https://osanpophoto-store.github.io/gallery/" class="btn-plan-outline">ギャラリーで選ぶ</a>
+      </div>
+    </div>
+
+    <!-- 丸ごとダウンロード -->
+    <div class="plan-card featured">
+      <div class="plan-visual">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 12 L32 36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M22 28 L32 40 L42 28" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 46 L16 52 L48 52 L48 46" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="plan-content">
+        <span class="plan-badge green">📦 丸ごとダウンロード</span>
+        <div class="plan-name">全データをまとめて</div>
+        <div class="plan-price">¥2,000<small>（税込）</small></div>
+        <p class="plan-desc">イベントの全写真を一括でダウンロード。我が子だけでなくクラスメイトと一緒の瞬間もまるごと手元に。フォトブック作りや年賀状にも大活躍。</p>
+        <div class="plan-features">
+          <div class="plan-feature">全枚数・データをメールでお届け</div>
+          <div class="plan-feature">フォトブック・アルバム作りに最適</div>
+          <div class="plan-feature">ダウンロードリンク有効期限7日間</div>
+        </div>
+        <!-- ↓ hrefにStripeの固定PaymentLinkを設定 -->
+        <a href="#" class="btn-plan">丸ごとダウンロードを購入</a>
+      </div>
+    </div>
+
+    <!-- A4データ -->
+    <div class="plan-card">
+      <div class="plan-visual">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="12" y="10" width="40" height="30" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M20 40 L20 52" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M44 40 L44 52" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M14 52 L50 52" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M24 22 L28 26 L36 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="plan-content">
+        <span class="plan-badge green">🖨️ A4データ</span>
+        <div class="plan-name">自分でプリントしたい方へ</div>
+        <div class="plan-price">¥800<small> / 枚（税込）</small></div>
+        <p class="plan-desc">印刷に適した解像度のデータをメールでお届けします。お近くのコンビニや写真屋さんでA4サイズにプリントできます。額に入れて飾るのにぴったり。</p>
+        <div class="plan-features">
+          <div class="plan-feature">A4サイズ印刷対応の解像度</div>
+          <div class="plan-feature">数日以内にデータをメールでお届け</div>
+          <div class="plan-feature">コンビニ・写真屋でプリント可能</div>
+        </div>
+        <a href="https://osanpophoto-store.github.io/gallery/" class="btn-plan-outline">ギャラリーで選ぶ</a>
+      </div>
+    </div>
+
+    <!-- A3データ -->
+    <div class="plan-card">
+      <div class="plan-visual">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="10" width="48" height="38" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M20 48 L20 54" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M44 48 L44 54" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M10 54 L54 54" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M22 26 L28 32 L38 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="plan-content">
+        <span class="plan-badge green">🖼️ A3データ</span>
+        <div class="plan-name">大きく引き伸ばして飾りたい方へ</div>
+        <div class="plan-price">¥1,200<small> / 枚（税込）</small></div>
+        <p class="plan-desc">A3サイズ印刷に対応した高解像度データをお届けします。大きく引き伸ばしても美しい仕上がりで、リビングに飾る一枚に最適です。</p>
+        <div class="plan-features">
+          <div class="plan-feature">A3サイズ印刷対応の高解像度</div>
+          <div class="plan-feature">数日以内にデータをメールでお届け</div>
+          <div class="plan-feature">大きく飾っても美しい仕上がり</div>
+        </div>
+        <a href="https://osanpophoto-store.github.io/gallery/" class="btn-plan-outline">ギャラリーで選ぶ</a>
+      </div>
+    </div>
+
+    <!-- A4プリント -->
+    <div class="plan-card premium">
+      <div class="plan-visual">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="12" y="22" width="40" height="28" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M20 22 L20 14 L44 14 L44 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="36" y="28" width="8" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M16 36 L30 36" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M16 42 L26 42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="plan-content">
+        <span class="plan-badge orange">A4プリント</span>
+        <div class="plan-name">富士フイルムで仕上げてお届け</div>
+        <div class="plan-price">¥3,500<small> / 枚（税込）</small></div>
+        <p class="plan-desc">富士フイルムのプレミアムプリントで丁寧に仕上げてご自宅にお届けします。最高の銀塩技術で再現された、とっておきの一枚をお気に入りの額に飾ってください。</p>
+        <div class="plan-features">
+          <div class="plan-feature">富士フイルム銀塩プリント仕上げ</div>
+          <div class="plan-feature">ご自宅に郵送でお届け</div>
+          <div class="plan-feature">送料¥635（¥5,000以上で無料）</div>
+        </div>
+        <a href="https://osanpophoto-store.github.io/gallery/" class="btn-plan">ギャラリーで選ぶ</a>
+        <div style="margin-top:12px;padding:12px 14px;background:var(--accent-light);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.7;">
+          💡 用紙の種類・仕上げにこだわりたい方は <a href="https://osanpophoto-store.github.io/gallery/" style="color:var(--forest);font-weight:700;">A4データ版（¥800/枚）</a> をご購入の上、<a href="https://pg-ja.fujifilm.com/" target="_blank" style="color:var(--accent);font-weight:700;">富士フイルム公式サイト</a> でお好みの仕様にカスタムしてご注文ください。
+        </div>
+      </div>
+    </div>
+
+    <!-- A4パネル -->
+    <div class="plan-card premium">
+      <div class="plan-visual">
+        <svg width="72" height="72" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="10" y="12" width="44" height="36" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="14" y="16" width="36" height="28" rx="1" stroke="currentColor" stroke-width="1"/>
+          <path d="M10 52 L10 56 L54 56 L54 52" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 30 L28 36 L38 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="plan-content">
+        <span class="plan-badge orange">🏆 A4平滑パネル</span>
+        <div class="plan-name">届いたその日から飾れる完成品</div>
+        <div class="plan-price">¥12,000<small> / 枚（税込）</small></div>
+        <p class="plan-desc">富士フイルムのプレミアムプリント＋平滑パネル加工でお届けします。最高の銀塩技術で仕上げた写真が、届いたその日から壁に飾れる完成品に。額装不要でインテリアとしても映えます。</p>
+        <div class="plan-features">
+          <div class="plan-feature">富士フイルム銀塩プリント＋パネル加工</div>
+          <div class="plan-feature">額装不要・届いてすぐ飾れる</div>
+          <div class="plan-feature">送料¥635（¥5,000以上で無料）</div>
+        </div>
+        <a href="https://osanpophoto-store.github.io/gallery/" class="btn-plan">ギャラリーで選ぶ</a>
+        <div style="margin-top:12px;padding:12px 14px;background:var(--accent-light);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.7;">
+          💡 サイズ・加工の種類にこだわりたい方は <a href="https://osanpophoto-store.github.io/gallery/" style="color:var(--forest);font-weight:700;">A4データ版（¥800/枚）</a> をご購入の上、<a href="https://pg-ja.fujifilm.com/" target="_blank" style="color:var(--accent);font-weight:700;">富士フイルム公式サイト</a> でお好みの仕様にカスタムしてご注文ください。
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 比較表 -->
+  <div class="compare-wrap">
+    <h3>プラン比較</h3>
+    <table class="compare-table">
+      <tr>
+        <th>プラン</th>
+        <th>価格</th>
+        <th>納品</th>
+        <th>印刷サイズ</th>
+        <th>送料</th>
+      </tr>
+      <tr>
+        <td>📱 スマホサイズ</td>
+        <td>¥140〜/枚</td>
+        <td>メール添付</td>
+        <td>スマホ・L版</td>
+        <td><span class="dash">—</span></td>
+      </tr>
+      <tr>
+        <td>📦 丸ごとダウンロード</td>
+        <td>¥2,000</td>
+        <td>リンク送付</td>
+        <td>スマホ・L版</td>
+        <td><span class="dash">—</span></td>
+      </tr>
+      <tr>
+        <td>🖨️ A4データ</td>
+        <td>¥800/枚</td>
+        <td>メール送付</td>
+        <td>A4まで</td>
+        <td><span class="dash">—</span></td>
+      </tr>
+      <tr>
+        <td>🖼️ A3データ</td>
+        <td>¥1,200/枚</td>
+        <td>メール送付</td>
+        <td>A3まで</td>
+        <td><span class="dash">—</span></td>
+      </tr>
+      <tr>
+        <td>✨ A4プリント</td>
+        <td>¥3,500/枚</td>
+        <td>郵送</td>
+        <td>A4</td>
+        <td>¥635〜</td>
+      </tr>
+      <tr>
+        <td>🏆 A4平滑パネル</td>
+        <td>¥12,000/枚</td>
+        <td>郵送</td>
+        <td>A4</td>
+        <td>¥635〜</td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<!-- NOTE -->
+<div class="note-box" style="margin-top:48px;">
+  <strong>ご利用にあたってのお願い：</strong>購入した写真のSNS転載・第三者への配布・転売はせず、適正にご利用いただくことをお願いします。購入者情報および購入写真は記録されています。皆様の適正なご利用をお願いいたします。
+</div>
+
+<!-- CTA -->
+<section class="cta-final">
+  <h2>ギャラリーで写真を選ぶ</h2>
+  <p>お気に入りの写真を選んで、あなたにぴったりのプランで購入してください。</p>
+  <a href="https://osanpophoto-store.github.io/gallery/" class="btn-cta-white">ギャラリーを開く →</a>
+</section>
+
+<footer>
+  <p>おさんぽフォト｜order@osanpophoto-store.com</p>
+</footer>
+
+</body>
+</html>
