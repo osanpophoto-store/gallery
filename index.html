@@ -1467,7 +1467,7 @@ async function enterGallery() {
   document.getElementById('btn-logout').classList.add('visible');
 
   // 選択モードをリセット
-  state.selectMode = 'normal';
+  state.selectMode = null; // 未選択状態に
   state.selected.clear();
 
   const ev = state.session.event;
@@ -1531,22 +1531,25 @@ function clearSelection() {
 // 選択モード管理
 // ========================================
 function setSelectMode(mode) {
-  if (state.selected.size > 0 && state.selectMode !== mode) {
+  if (state.selected.size > 0 && state.selectMode !== null && state.selectMode !== mode) {
     const modeLabels = {
       normal: 'スマホサイズ', a4data: 'A4データ',
       a3data: 'A3データ', a4print: 'A4プリント', a4panel: 'A4パネル'
     };
-    showToast(`${modeLabels[state.selectMode]}が選択されています。選択をクリアしてから選び直してください`, 'error');
+    showToast(`${modeLabels[state.selectMode]}が選択されています。クリアしてから選び直してください`, 'error');
     return;
   }
   state.selectMode = mode;
-  // ボタンのアクティブ状態更新
   document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
   document.getElementById('mode-' + mode)?.classList.add('active');
   updateCart();
 }
 
 function onPayClick() {
+  if (!state.selectMode) {
+    showToast('購入方法を選択してください', 'error');
+    return;
+  }
   if (state.selectMode === 'normal') {
     openPaymentModal(false);
   } else {
@@ -1576,17 +1579,14 @@ function updateCart() {
   if (count === 0) {
     panel.classList.remove('visible');
     selInfo.textContent = '';
-    // モードをリセット
-    state.selectMode = 'normal';
+    state.selectMode = null; // 未選択状態に
     document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
-    document.getElementById('mode-normal')?.classList.add('active');
     return;
   }
 
   panel.classList.add('visible');
   selInfo.textContent = `${count}枚選択中`;
 
-  // モードに応じた金額表示
   const modeConfig = {
     normal:  { unit: null,  label: '' },
     a4data:  { unit: 800,   label: 'A4データ' },
@@ -1595,28 +1595,23 @@ function updateCart() {
     a4panel: { unit: 12000, label: 'A4パネル' },
   };
 
-  const cfg = modeConfig[state.selectMode];
   let totalText, detailText;
 
-  if (state.selectMode === 'normal') {
+  if (!state.selectMode || state.selectMode === 'normal') {
     const price = calcPrice(count);
     totalText = `¥${price.total.toLocaleString()}`;
-    detailText = formatPriceDetail(price);
+    detailText = state.selectMode === 'normal' ? formatPriceDetail(price) : '← 購入方法を選択してください';
   } else {
+    const cfg = modeConfig[state.selectMode];
     const subtotal = cfg.unit * count;
     const shipping = (state.selectMode === 'a4print' || state.selectMode === 'a4panel') && subtotal < 5000 ? 635 : 0;
     totalText = `¥${(subtotal + shipping).toLocaleString()}`;
-    detailText = `${cfg.label} ${count}枚` + (shipping > 0 ? ' + 送料¥635' : shipping === 0 && (state.selectMode === 'a4print' || state.selectMode === 'a4panel') ? ' 送料無料' : '');
+    detailText = `${cfg.label} ${count}枚` + (shipping > 0 ? ' + 送料¥635' : (state.selectMode === 'a4print' || state.selectMode === 'a4panel') ? ' 送料無料' : '');
   }
 
   document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>`;
   document.getElementById('cart-detail').innerHTML = detailText;
-  document.getElementById('cart-total').innerHTML = `${totalText}<small> (税込)</small>`;
-
-  // 初回選択時にスマホサイズをデフォルトでアクティブに
-  if (!document.querySelector('.btn-mode.active')) {
-    document.getElementById('mode-normal')?.classList.add('active');
-  }
+  document.getElementById('cart-total').innerHTML = state.selectMode ? `${totalText}<small> (税込)</small>` : '購入方法を選択 →';
 }
 
 // クライアント側料金計算（GAS側と同じロジック）
