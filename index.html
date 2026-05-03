@@ -1050,6 +1050,23 @@ body.cart-open .help-bar { bottom: 80px; }
 .btn-back-top:hover { background: var(--sand); }
 
 /* ===== RESPONSIVE ===== */
+.gallery-notice {
+  max-width: 1200px;
+  margin: 0 auto 16px;
+  padding: 10px 40px;
+  font-size: 12px;
+  color: var(--bark);
+  background: #F0F5F1;
+  border-left: 3px solid var(--forest);
+  border-radius: 0 8px 8px 0;
+}
+
+.btn-mode.active {
+  background: rgba(255,255,255,0.3);
+  border-color: white;
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .site-header { padding: 16px 20px; }
   .gallery-header { padding: 0 20px; }
@@ -1059,6 +1076,7 @@ body.cart-open .help-bar { bottom: 80px; }
   .modal-box { padding: 28px 20px; }
   .login-wrap { padding: 16px; }
   .login-hero h1 { font-size: 24px; }
+  .gallery-notice { padding: 10px 20px; }
 }
 </style>
 </head>
@@ -1127,6 +1145,9 @@ body.cart-open .help-bar { bottom: 80px; }
       </button>
     </div>
   </div>
+  <div class="gallery-notice">
+    📌 写真をタップして選択し、下のボタンから購入方法を選んでください。スマホサイズ・A4データなど、異なるサイズは別々にご決済ください。
+  </div>
 
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
@@ -1145,22 +1166,28 @@ body.cart-open .help-bar { bottom: 80px; }
   </div>
   <div class="cart-options">
     <div class="cart-option-group">
+      <div class="cart-option-label">📱 スマホサイズ</div>
+      <div class="cart-option-btns">
+        <button class="btn-pay-print btn-mode" id="mode-normal" onclick="setSelectMode('normal')">スマホサイズ<br><small>¥140〜/枚</small></button>
+      </div>
+    </div>
+    <div class="cart-option-group">
       <div class="cart-option-label">📁 データで受け取る</div>
       <div class="cart-option-btns">
-        <button class="btn-pay-print" onclick="openPrintModal('a4data')">A4データ<br><small>¥800/枚</small></button>
-        <button class="btn-pay-print" onclick="openPrintModal('a3data')">A3データ<br><small>¥1,200/枚</small></button>
+        <button class="btn-pay-print btn-mode" id="mode-a4data" onclick="setSelectMode('a4data')">A4データ<br><small>¥800/枚</small></button>
+        <button class="btn-pay-print btn-mode" id="mode-a3data" onclick="setSelectMode('a3data')">A3データ<br><small>¥1,200/枚</small></button>
       </div>
     </div>
     <div class="cart-option-group">
       <div class="cart-option-label">✨ プリントして届く</div>
       <div class="cart-option-btns">
-        <button class="btn-pay-print" onclick="openPrintModal('a4print')">A4プリント<br><small>¥3,500/枚</small></button>
-        <button class="btn-pay-print" onclick="openPrintModal('a4panel')">A4パネル<br><small>¥12,000/枚</small></button>
+        <button class="btn-pay-print btn-mode" id="mode-a4print" onclick="setSelectMode('a4print')">A4プリント<br><small>¥3,500/枚</small></button>
+        <button class="btn-pay-print btn-mode" id="mode-a4panel" onclick="setSelectMode('a4panel')">A4パネル<br><small>¥12,000/枚</small></button>
       </div>
     </div>
   </div>
-  <button class="btn-pay" onclick="openPaymentModal(false)">通常購入へ →</button>
-  <div class="cart-note">※ 通常購入とプリントプランは別々にご決済ください</div>
+  <button class="btn-pay" id="btn-pay-main" onclick="onPayClick()">購入へ →</button>
+  <div class="cart-note">※ 異なるサイズは別々にご決済ください</div>
 </div>
 
 <!-- ========== 支払いモーダル ========== -->
@@ -1261,9 +1288,10 @@ const CONFIG = {
 const state = {
   events: [],
   selectedEventId: null,
-  session: null,   // { token, expires, event }
+  session: null,
   photos: [],
   selected: new Set(),
+  selectMode: 'normal', // 'normal' / 'a4data' / 'a3data' / 'a4print' / 'a4panel'
   downloadAll: false,
   buyerEmail: null,
   lastQty: 0,
@@ -1420,6 +1448,10 @@ async function enterGallery() {
   showScreen('gallery');
   document.getElementById('btn-logout').classList.add('visible');
 
+  // 選択モードをリセット
+  state.selectMode = 'normal';
+  state.selected.clear();
+
   const ev = state.session.event;
   document.getElementById('gallery-event-name').textContent = ev.name;
   document.getElementById('gallery-subtitle').textContent =
@@ -1469,6 +1501,33 @@ function renderGrid() {
 }
 
 // ========================================
+// 選択モード管理
+// ========================================
+function setSelectMode(mode) {
+  if (state.selected.size > 0 && state.selectMode !== mode) {
+    const modeLabels = {
+      normal: 'スマホサイズ', a4data: 'A4データ',
+      a3data: 'A3データ', a4print: 'A4プリント', a4panel: 'A4パネル'
+    };
+    showToast(`${modeLabels[state.selectMode]}が選択されています。選択をクリアしてから選び直してください`, 'error');
+    return;
+  }
+  state.selectMode = mode;
+  // ボタンのアクティブ状態更新
+  document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + mode)?.classList.add('active');
+  updateCart();
+}
+
+function onPayClick() {
+  if (state.selectMode === 'normal') {
+    openPaymentModal(false);
+  } else {
+    openPrintModal(state.selectMode);
+  }
+}
+
+// ========================================
 // 選択管理
 // ========================================
 function toggleSelect(num) {
@@ -1490,18 +1549,47 @@ function updateCart() {
   if (count === 0) {
     panel.classList.remove('visible');
     selInfo.textContent = '';
+    // モードをリセット
+    state.selectMode = 'normal';
+    document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+    document.getElementById('mode-normal')?.classList.add('active');
     return;
   }
 
   panel.classList.add('visible');
   selInfo.textContent = `${count}枚選択中`;
 
-  // 料金計算
-  const price = calcPrice(count);
+  // モードに応じた金額表示
+  const modeConfig = {
+    normal:  { unit: null,  label: '' },
+    a4data:  { unit: 800,   label: 'A4データ' },
+    a3data:  { unit: 1200,  label: 'A3データ' },
+    a4print: { unit: 3500,  label: 'A4プリント' },
+    a4panel: { unit: 12000, label: 'A4パネル' },
+  };
+
+  const cfg = modeConfig[state.selectMode];
+  let totalText, detailText;
+
+  if (state.selectMode === 'normal') {
+    const price = calcPrice(count);
+    totalText = `¥${price.total.toLocaleString()}`;
+    detailText = formatPriceDetail(price);
+  } else {
+    const subtotal = cfg.unit * count;
+    const shipping = (state.selectMode === 'a4print' || state.selectMode === 'a4panel') && subtotal < 5000 ? 635 : 0;
+    totalText = `¥${(subtotal + shipping).toLocaleString()}`;
+    detailText = `${cfg.label} ${count}枚` + (shipping > 0 ? ' + 送料¥635' : shipping === 0 && (state.selectMode === 'a4print' || state.selectMode === 'a4panel') ? ' 送料無料' : '');
+  }
 
   document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>`;
-  document.getElementById('cart-detail').innerHTML = formatPriceDetail(price);
-  document.getElementById('cart-total').innerHTML = `¥${price.total.toLocaleString()}<small> (税込)</small>`;
+  document.getElementById('cart-detail').innerHTML = detailText;
+  document.getElementById('cart-total').innerHTML = `${totalText}<small> (税込)</small>`;
+
+  // 初回選択時にスマホサイズをデフォルトでアクティブに
+  if (!document.querySelector('.btn-mode.active')) {
+    document.getElementById('mode-normal')?.classList.add('active');
+  }
 }
 
 // クライアント側料金計算（GAS側と同じロジック）
