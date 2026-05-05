@@ -1813,7 +1813,7 @@ function openPaymentModal(isAll) {
       ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。`
       : `選択した${count}枚の高画質データをダウンロードできます。`;
 
-  // 選択写真サムネイル
+  // 選択写真サムネイル＋番号タグ
   const selectedNums = isAll ? [] : Array.from(state.selected).sort((a,b) => Number(a)-Number(b));
   const photoListHtml = isAll
     ? `<div class="confirm-delivery">📦 全写真（${count}枚）</div>`
@@ -1826,7 +1826,10 @@ function openPaymentModal(isAll) {
           ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
           <div class="confirm-thumb-num">No.${n}</div>
         </div>`;
-      }).join('')}</div>`;
+      }).join('')}</div>
+      <div class="confirm-photos" style="margin-top:8px">${
+        selectedNums.map(n => `<span class="confirm-photo-tag">IMG-${n}</span>`).join('')
+      }</div>`;
 
   // 価格内訳
   let priceRows = '';
@@ -1853,7 +1856,11 @@ function openPaymentModal(isAll) {
       <h4>納品方法</h4>
       <div class="confirm-delivery">${deliveryLabel}</div>
       <div style="font-size:11px;color:var(--bark);margin-top:6px">
-        ${count <= 7 && !isAll ? 'メールに写真を添付してお送りします' : 'ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
+        ${isAll
+          ? '全写真へのフォルダリンクをメールでお送りします（有効期限: 7日間）'
+          : count <= 7
+            ? 'お支払い完了後、写真データをメールに直接添付してお送りします'
+            : 'お支払い完了後、ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
       </div>
     </div>
 
@@ -2013,7 +2020,10 @@ function openPrintModal(planType) {
       ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
       <div class="confirm-thumb-num">No.${n}</div>
     </div>`;
-  }).join('')}</div>`;
+  }).join('')}</div>
+  <div class="confirm-photos" style="margin-top:8px">${
+    selectedNums.map(n => `<span class="confirm-photo-tag">IMG-${n}</span>`).join('')
+  }</div>`;
 
   const html = `
     <div class="confirm-section">
