@@ -563,6 +563,7 @@ body::before {
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-wrap: wrap;
+  overflow: visible;
 }
 
 .cart-panel.visible { transform: translateY(0); }
@@ -1115,6 +1116,38 @@ body.cart-open .help-bar { bottom: 80px; }
   .gallery-notice { padding: 10px 20px; }
 }
 
+/* ===== RECOMMEND BANNER ===== */
+.recommend-banner {
+  display: none;
+  position: absolute;
+  top: -44px;
+  left: 0;
+  right: 0;
+  background: #4a6651;
+  color: rgba(255,255,255,0.95);
+  font-size: 12px;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+.recommend-banner.visible { display: flex; }
+.recommend-banner-text { flex: 1; line-height: 1.5; }
+.recommend-banner-btn {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: white;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.recommend-banner-btn:hover { background: rgba(255,255,255,0.28); }
+
 /* ===== LIGHTBOX ENHANCEMENTS ===== */
 .lightbox-nav {
   position: absolute;
@@ -1251,6 +1284,11 @@ body.cart-open .help-bar { bottom: 80px; }
 
 <!-- ========== カートパネル ========== -->
 <div class="cart-panel" id="cart-panel">
+  <!-- おすすめバナー（15枚以上で表示） -->
+  <div class="recommend-banner" id="recommend-banner">
+    <span class="recommend-banner-text" id="recommend-banner-text"></span>
+    <button class="recommend-banner-btn" onclick="openPaymentModal(true)">丸ごと購入へ →</button>
+  </div>
   <div class="cart-left">
     <div class="cart-count" id="cart-count">0<span>枚</span></div>
     <div class="cart-price-detail" id="cart-detail"></div>
@@ -1695,6 +1733,17 @@ function updateCart() {
   document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>`;
   document.getElementById('cart-detail').innerHTML = detailText;
   document.getElementById('cart-total').innerHTML = state.selectMode ? `${totalText}<small> (税込)</small>` : '購入方法を選択 →';
+
+  // おすすめバナー（スマホサイズ選択中 かつ 15枚以上）
+  const banner = document.getElementById('recommend-banner');
+  const bannerText = document.getElementById('recommend-banner-text');
+  const showBanner = (!state.selectMode || state.selectMode === 'normal') && count >= 15;
+  if (showBanner) {
+    bannerText.textContent = `${count}枚選ばれています。ここまで選ぶなら、当日の空気感ごと残せる「丸ごとダウンロード ¥2,000」もおすすめです。`;
+    banner.classList.add('visible');
+  } else {
+    banner.classList.remove('visible');
+  }
 }
 
 // クライアント側料金計算（GAS側と同じロジック）
