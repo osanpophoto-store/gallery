@@ -1114,6 +1114,61 @@ body.cart-open .help-bar { bottom: 80px; }
   .login-hero h1 { font-size: 24px; }
   .gallery-notice { padding: 10px 20px; }
 }
+
+/* ===== LIGHTBOX ENHANCEMENTS ===== */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  font-size: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+.lightbox-nav:hover { background: rgba(255,255,255,0.28); }
+.lightbox-nav.prev { left: 16px; }
+.lightbox-nav.next { right: 16px; }
+.lightbox-nav:disabled { opacity: 0.25; cursor: default; }
+.lightbox-select-btn {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary, #5C7A67);
+  color: white;
+  border: none;
+  padding: 10px 28px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, opacity 0.2s;
+  z-index: 10;
+}
+.lightbox-select-btn.selected-state {
+  background: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+}
+.lightbox-select-btn:hover { opacity: 0.88; }
+.lightbox-num {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.6);
+  font-size: 12px;
+}
+/* ライトボックス背景クリックで閉じる（ボタン上はバブリング止め済み） */
 </style>
 </head>
 <body>
@@ -1287,7 +1342,10 @@ body.cart-open .help-bar { bottom: 80px; }
 <!-- ========== ライトボックス ========== -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lightbox-img" src="" alt="">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-close" onclick="event.stopPropagation();closeLightbox()">✕</button>
+  <button class="lightbox-nav prev" id="lb-prev" onclick="event.stopPropagation();lbNav(-1)" aria-label="前の写真">&#8249;</button>
+  <button class="lightbox-nav next" id="lb-next" onclick="event.stopPropagation();lbNav(1)" aria-label="次の写真">&#8250;</button>
+  <button class="lightbox-select-btn" id="lb-select-btn" onclick="event.stopPropagation();lbToggleSelect()"></button>
   <div class="lightbox-num" id="lightbox-num"></div>
 </div>
 
@@ -1334,6 +1392,7 @@ const state = {
   buyerEmail: null,
   lastQty: 0,
   lastIsAll: false,
+  lightboxIndex: null, // ライトボックスで表示中のstate.photos配列インデックス
 };
 
 // ========================================
@@ -1978,13 +2037,54 @@ function goBackFromPaid() {
 // ライトボックス
 // ========================================
 function openLightbox(num) {
-  const photo = state.photos.find(p => p.number === num);
-  if (!photo || !photo.fileId) return;
-  const lb = document.getElementById('lightbox');
+  const idx = state.photos.findIndex(p => p.number === num);
+  if (idx === -1) return;
+  const photo = state.photos[idx];
+  if (!photo.fileId) return;
+  state.lightboxIndex = idx;
+  lbRender();
+  document.getElementById('lightbox').classList.add('visible');
+}
+
+// ライトボックスの表示を現在のlightboxIndexで更新
+function lbRender() {
+  const idx = state.lightboxIndex;
+  if (idx === null || !state.photos[idx]) return;
+  const photo = state.photos[idx];
+
+  // 画像
   const img = document.getElementById('lightbox-img');
   img.src = 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w1200';
-  document.getElementById('lightbox-num').textContent = 'IMG-' + num;
-  lb.classList.add('visible');
+
+  // 写真番号
+  document.getElementById('lightbox-num').textContent =
+    'IMG-' + photo.number + '  (' + (idx + 1) + ' / ' + state.photos.length + ')';
+
+  // 前へ/次へボタンの活性状態
+  document.getElementById('lb-prev').disabled = (idx === 0);
+  document.getElementById('lb-next').disabled = (idx === state.photos.length - 1);
+
+  // 選択ボタンの表示
+  const btn = document.getElementById('lb-select-btn');
+  const isSelected = state.selected.has(photo.number);
+  btn.textContent = isSelected ? '✓ 選択中' : 'この写真を選ぶ';
+  btn.classList.toggle('selected-state', isSelected);
+}
+
+// 前へ/次へ
+function lbNav(dir) {
+  const next = state.lightboxIndex + dir;
+  if (next < 0 || next >= state.photos.length) return;
+  state.lightboxIndex = next;
+  lbRender();
+}
+
+// ライトボックス内での選択トグル
+function lbToggleSelect() {
+  const photo = state.photos[state.lightboxIndex];
+  if (!photo) return;
+  toggleSelect(photo.number); // 既存関数をそのまま呼ぶ
+  lbRender(); // 選択ボタンの表示を更新
 }
 
 function closeLightbox() {
