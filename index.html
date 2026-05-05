@@ -1683,7 +1683,7 @@ function toggleSelect(num) {
     document.getElementById('item-' + num)?.classList.remove('selected');
   } else {
     if (state.selected.size >= 19) {
-      showToast('20枚以上は「丸ごとダウンロード ¥2,000」をご利用ください', 'error');
+      showLimitBanner();
       return;
     }
     state.selected.add(num);
@@ -1737,13 +1737,25 @@ function updateCart() {
   // おすすめバナー（スマホサイズ選択中 かつ 15枚以上）
   const banner = document.getElementById('recommend-banner');
   const bannerText = document.getElementById('recommend-banner-text');
-  const showBanner = (!state.selectMode || state.selectMode === 'normal') && count >= 15;
-  if (showBanner) {
-    bannerText.textContent = `${count}枚選ばれています。ここまで選ぶなら、当日の空気感ごと残せる「丸ごとダウンロード ¥2,000」もおすすめです。`;
+  const isNormalMode = (!state.selectMode || state.selectMode === 'normal');
+
+  if (isNormalMode && count >= 15) {
+    // 制限バナー表示中（19枚ちょうど）でなければテキストを更新
+    if (!banner.classList.contains('limit-mode')) {
+      bannerText.textContent = `${count}枚選ばれています。ここまで選ぶなら、当日の空気感ごと残せる「丸ごとダウンロード ¥2,000」もおすすめです。`;
+    }
     banner.classList.add('visible');
   } else {
-    banner.classList.remove('visible');
+    banner.classList.remove('visible', 'limit-mode');
   }
+}
+
+// 19枚上限に達したときのバナー（トーストの代替）
+function showLimitBanner() {
+  const banner = document.getElementById('recommend-banner');
+  const bannerText = document.getElementById('recommend-banner-text');
+  bannerText.textContent = '20枚以上選ぶ場合は、全写真をまとめて残せる「丸ごとダウンロード ¥2,000」がおすすめです。';
+  banner.classList.add('visible', 'limit-mode');
 }
 
 // クライアント側料金計算（GAS側と同じロジック）
