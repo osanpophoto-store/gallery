@@ -1626,8 +1626,8 @@ function renderGrid() {
         src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
         data-src="${p.fileId ? 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w400' : ''}"
         style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0"
-        onload="if(this.src.indexOf('data:image/gif')===-1){this.style.display='block';document.getElementById('skel-${p.number}').style.display='none'}"
-        onerror="if(this.src.indexOf('data:image/gif')===-1){document.getElementById('skel-${p.number}').style.background='var(--sand)';document.getElementById('skel-${p.number}').style.animation='none'}"
+        onload="this.style.display='block';document.getElementById('skel-${p.number}').style.display='none'"
+        onerror="document.getElementById('skel-${p.number}').style.background='var(--sand)';document.getElementById('skel-${p.number}').style.animation='none'"
       >
       <button class="photo-zoom" onclick="event.stopPropagation();openLightbox('${p.number}')" title="拡大">🔍</button>
       <div class="photo-check"></div>
