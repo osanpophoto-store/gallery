@@ -389,6 +389,7 @@ body::before {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
+  scroll-margin-top: 90px; /* ログイン後、固定ヘッダーの下に来るように自動スクロールする際のオフセット */
 }
 .photo-item {
   position: relative;
@@ -502,6 +503,8 @@ body::before {
   display: none;
   align-items: center;
   justify-content: center;
+  touch-action: none; /* 背後のグリッドが一緒にスクロールしてしまうのを防ぐ */
+  overscroll-behavior: contain;
 }
 .lightbox.visible { display: flex; }
 .lightbox img {
@@ -1724,6 +1727,13 @@ async function loadPhotos() {
     });
     state.photos = data.photos || [];
     renderGrid();
+    // パスワード入力画面から切り替わった直後は、上の通知類に隠れて写真が見えないことがあるため
+    // 写真グリッドの位置まで自動でスクロールする
+    if (state.photos.length > 0) {
+      requestAnimationFrame(() => {
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
   } catch(e) {
     grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--danger)">${e.message}</p>`;
   }
@@ -2321,6 +2331,7 @@ function openLightbox(num, navNums) {
   img.style.transform = 'translateX(0)';
   lbRender();
   document.getElementById('lightbox').classList.add('visible');
+  lockBodyScroll(); // 全体表示中は裏のグリッドが一緒に動かないようスクロールを固定
   // 操作ヒントを表示して数秒後にフェードアウト
   const hint = document.getElementById('lightbox-hint');
   if (hint) {
@@ -2328,6 +2339,25 @@ function openLightbox(num, navNums) {
     clearTimeout(hint._hideTimer);
     hint._hideTimer = setTimeout(() => hint.classList.remove('visible'), 2800);
   }
+}
+// 全体表示（ライトボックス）中、背景のグリッドが一緒にスクロールしてしまわないよう
+// bodyをposition:fixedで固定し、閉じたら元のスクロール位置に戻す
+let _lbScrollY = 0;
+function lockBodyScroll() {
+  _lbScrollY = window.scrollY || window.pageYOffset || 0;
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${_lbScrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+}
+function unlockBodyScroll() {
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  window.scrollTo(0, _lbScrollY);
 }
 // 現在ライトボックスに表示中の写真オブジェクトを取得（lightboxNums上のインデックスから引く）
 function lbCurrentPhoto() {
@@ -2377,6 +2407,7 @@ function lbToggleSelect() {
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('visible');
+  unlockBodyScroll();
 }
 // ESCキーで閉じる
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
