@@ -1151,6 +1151,26 @@ body.cart-open .help-bar { bottom: 80px; }
   color: rgba(255,255,255,0.6);
   font-size: 12px;
 }
+.lightbox-hint {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.95);
+  font-size: 12px;
+  padding: 9px 18px;
+  border-radius: 20px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 20;
+}
+.lightbox-hint.visible { opacity: 1; }
+@media (max-width: 480px) {
+  .lightbox-hint { white-space: normal; text-align: center; max-width: 80vw; }
+}
 /* ライトボックス背景クリックで閉じる（ボタン上はバブリング止め済み） */
 </style>
 </head>
@@ -1344,6 +1364,7 @@ body.cart-open .help-bar { bottom: 80px; }
 </main>
 <!-- ========== ライトボックス ========== -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-hint" id="lightbox-hint">👈👉 スワイプで前後の写真へ／写真をタップすると閉じます</div>
   <img id="lightbox-img" src="" alt="">
   <button class="lightbox-close" onclick="event.stopPropagation();closeLightbox()">✕</button>
   <button class="lightbox-nav prev" id="lb-prev" onclick="event.stopPropagation();lbNav(-1)" aria-label="前の写真">&#8249;</button>
@@ -2040,6 +2061,13 @@ function openLightbox(num) {
   img.style.transform = 'translateX(0)';
   lbRender();
   document.getElementById('lightbox').classList.add('visible');
+  // 操作ヒントを表示して数秒後にフェードアウト
+  const hint = document.getElementById('lightbox-hint');
+  if (hint) {
+    hint.classList.add('visible');
+    clearTimeout(hint._hideTimer);
+    hint._hideTimer = setTimeout(() => hint.classList.remove('visible'), 2800);
+  }
 }
 // ライトボックスの表示を現在のlightboxIndexで更新
 function lbRender() {
@@ -2086,7 +2114,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 (function() {
   const lb = document.getElementById('lightbox');
   const img = document.getElementById('lightbox-img');
-  const THRESHOLD = 60;
   let startX = 0, startY = 0, dragDx = 0, dragging = false, horizontal = false;
 
   lb.addEventListener('touchstart', (e) => {
@@ -2118,8 +2145,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     const idx = state.lightboxIndex;
     const dir = dragDx < 0 ? 1 : -1;
     const canMove = dragDx < 0 ? idx < state.photos.length - 1 : idx > 0;
+    const threshold = window.innerWidth / 2; // 中央を越えたら切り替え
     img.style.transition = 'transform 0.22s ease-out';
-    if (horizontal && Math.abs(dragDx) > THRESHOLD && canMove) {
+    if (horizontal && Math.abs(dragDx) > threshold && canMove) {
       // 画面外までスライドさせてから写真を切り替え、反対側からスライドインさせる
       const flyTo = dragDx < 0 ? -window.innerWidth : window.innerWidth;
       img.style.transform = `translateX(${flyTo}px)`;
