@@ -303,6 +303,7 @@ body::before {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 .selection-info {
   font-size: 13px;
@@ -809,6 +810,22 @@ body::before {
   transition: all 0.2s;
 }
 .btn-cancel:hover { background: var(--sand); }
+.btn-fav-addall {
+  flex: 2;
+  padding: 14px;
+  background: var(--forest);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-fav-addall:hover { background: #2e4536; }
+.btn-fav-addall:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-stripe {
   flex: 2;
   padding: 14px;
@@ -1129,7 +1146,18 @@ body.cart-open .help-bar { bottom: 80px; }
 }
 @media (max-width: 640px) {
   .site-header { padding: 16px 20px; }
-  .gallery-header { padding: 0 20px; }
+  .gallery-header { padding: 0 20px; flex-direction: column; align-items: stretch; }
+  .gallery-actions { width: 100%; gap: 8px; }
+  .selection-info { display: none; }
+  .btn-fav-view, .btn-guide, .btn-download-all {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    font-size: 11px;
+    padding: 8px 6px;
+    white-space: normal;
+    line-height: 1.3;
+  }
   .photo-grid { padding: 0 20px; gap: 10px; grid-template-columns: repeat(2, 1fr); }
   .cart-panel { padding: 16px 20px; gap: 12px; }
   .cart-count { font-size: 18px; }
@@ -1454,9 +1482,10 @@ body.cart-open .help-bar { bottom: 80px; }
     <h3>お気に入り</h3>
     <p id="fav-view-count-text"></p>
     <div class="confirm-thumb-grid" id="fav-view-grid" style="max-height:280px;grid-template-columns:repeat(auto-fill, minmax(72px, 1fr))"></div>
-    <p style="font-size:11px;color:var(--bark);margin-top:10px;margin-bottom:16px">写真をタップすると全体表示、ハートをタップするとお気に入りを外せます</p>
+    <p style="font-size:11px;color:var(--bark);margin-top:10px;margin-bottom:16px">写真をタップすると全体表示（お気に入りだけをスワイプできます）、ハートをタップするとお気に入りを外せます</p>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeFavoritesModal()">閉じる</button>
+      <button class="btn-fav-addall" id="btn-fav-addall" onclick="addAllFavoritesToCart()">🛒 全部カートに入れる</button>
     </div>
   </div>
 </div>
@@ -1501,7 +1530,8 @@ const state = {
   buyerEmail: null,
   lastQty: 0,
   lastIsAll: false,
-  lightboxIndex: null, // ライトボックスで表示中のstate.photos配列インデックス
+  lightboxIndex: null, // ライトボックスで表示中の、lightboxNums配列上のインデックス
+  lightboxNums: null, // ライトボックスでスワイプ移動できる写真番号の並び（通常は全写真／お気に入りから開いた時はお気に入りのみ）
 };
 // ========================================
 // 初期化
@@ -1819,7 +1849,7 @@ function toggleFavorite(num) {
   if (document.getElementById('fav-view-overlay')?.classList.contains('visible')) renderFavoritesModal();
 }
 function lbToggleFavorite() {
-  const photo = state.photos[state.lightboxIndex];
+  const photo = lbCurrentPhoto();
   if (!photo) return;
   toggleFavorite(photo.number);
   const btn = document.getElementById('lb-fav-btn');
@@ -1848,15 +1878,50 @@ function renderFavoritesModal() {
   grid.innerHTML = nums.map(n => {
     const photo = state.photos.find(p => p.number === n);
     const thumbUrl = photo && photo.fileId ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120' : '';
-    return `<div class="confirm-thumb" style="cursor:pointer" onclick="closeFavoritesModal();openLightbox('${n}')">
+    return `<div class="confirm-thumb" style="cursor:pointer" onclick="openFavLightbox('${n}')">
       ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
       <div class="confirm-thumb-num" onclick="event.stopPropagation();toggleFavorite('${n}')">♥ IMG-${n}</div>
     </div>`;
   }).join('');
+  const addAllBtn = document.getElementById('btn-fav-addall');
+  if (addAllBtn) {
+    const allInCart = nums.length > 0 && nums.every(n => state.selected.has(n));
+    addAllBtn.disabled = allInCart;
+    addAllBtn.textContent = allInCart ? '✓ 全部カートに入っています' : '🛒 全部カートに入れる';
+  }
 }
 document.getElementById('fav-view-overlay')?.addEventListener('click', function(e) {
   if (e.target === this) closeFavoritesModal();
 });
+// お気に入り一覧からライトボックスを開く（お気に入りだけをスワイプできるようにする）
+function openFavLightbox(num) {
+  const nums = Array.from(state.favorites).sort((a, b) => Number(a) - Number(b));
+  closeFavoritesModal();
+  openLightbox(num, nums);
+}
+// お気に入りを全部カートに入れる
+function addAllFavoritesToCart() {
+  if (state.favorites.size === 0) return;
+  const nums = Array.from(state.favorites).sort((a, b) => Number(a) - Number(b));
+  let added = 0, blocked = false;
+  nums.forEach(num => {
+    if (state.selected.has(num)) return;
+    if (state.selected.size >= 19) { blocked = true; return; }
+    state.selected.add(num);
+    document.getElementById('item-' + num)?.classList.add('selected');
+    added++;
+  });
+  updateCart();
+  if (blocked) {
+    showLimitBanner();
+    showToast(`${added}枚をカートに追加しました（19枚上限のため一部は追加できませんでした）`, 'error');
+  } else if (added > 0) {
+    showToast(`お気に入り${added}枚をカートに追加しました`);
+  } else {
+    showToast('すでに全部カートに入っています');
+  }
+  closeFavoritesModal();
+}
 // ========================================
 // 選択管理
 // ========================================
@@ -2227,11 +2292,14 @@ function goBackFromPaid() {
 // ========================================
 // ライトボックス
 // ========================================
-function openLightbox(num) {
-  const idx = state.photos.findIndex(p => p.number === num);
+function openLightbox(num, navNums) {
+  // navNumsを渡すとその並び（例: お気に入りだけ）の中でスワイプできる。省略時は全写真。
+  const nums = navNums || state.photos.map(p => p.number);
+  const idx = nums.indexOf(num);
   if (idx === -1) return;
-  const photo = state.photos[idx];
-  if (!photo.fileId) return;
+  const photo = state.photos.find(p => p.number === num);
+  if (!photo || !photo.fileId) return;
+  state.lightboxNums = nums;
   state.lightboxIndex = idx;
   const img = document.getElementById('lightbox-img');
   img.style.transition = 'none';
@@ -2246,20 +2314,26 @@ function openLightbox(num) {
     hint._hideTimer = setTimeout(() => hint.classList.remove('visible'), 2800);
   }
 }
+// 現在ライトボックスに表示中の写真オブジェクトを取得（lightboxNums上のインデックスから引く）
+function lbCurrentPhoto() {
+  if (!state.lightboxNums || state.lightboxIndex === null) return null;
+  const num = state.lightboxNums[state.lightboxIndex];
+  return state.photos.find(p => p.number === num) || null;
+}
 // ライトボックスの表示を現在のlightboxIndexで更新
 function lbRender() {
   const idx = state.lightboxIndex;
-  if (idx === null || !state.photos[idx]) return;
-  const photo = state.photos[idx];
+  const photo = lbCurrentPhoto();
+  if (idx === null || !photo) return;
   // 画像
   const img = document.getElementById('lightbox-img');
   img.src = 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w1200';
   // 写真番号
   document.getElementById('lightbox-num').textContent =
-    'IMG-' + photo.number + '  (' + (idx + 1) + ' / ' + state.photos.length + ')';
+    'IMG-' + photo.number + '  (' + (idx + 1) + ' / ' + state.lightboxNums.length + ')';
   // 前へ/次へボタンの活性状態
   document.getElementById('lb-prev').disabled = (idx === 0);
-  document.getElementById('lb-next').disabled = (idx === state.photos.length - 1);
+  document.getElementById('lb-next').disabled = (idx === state.lightboxNums.length - 1);
   // 選択ボタンの表示
   const btn = document.getElementById('lb-select-btn');
   const isSelected = state.selected.has(photo.number);
@@ -2273,14 +2347,15 @@ function lbRender() {
 }
 // 前へ/次へ
 function lbNav(dir) {
+  if (!state.lightboxNums) return;
   const next = state.lightboxIndex + dir;
-  if (next < 0 || next >= state.photos.length) return;
+  if (next < 0 || next >= state.lightboxNums.length) return;
   state.lightboxIndex = next;
   lbRender();
 }
 // ライトボックス内での選択トグル
 function lbToggleSelect() {
-  const photo = state.photos[state.lightboxIndex];
+  const photo = lbCurrentPhoto();
   if (!photo) return;
   toggleSelect(photo.number); // 既存関数をそのまま呼ぶ
   lbRender(); // 選択ボタンの表示を更新
@@ -2326,13 +2401,15 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     dragging = false;
     const idx = state.lightboxIndex;
     const dir = dragDx < 0 ? 1 : -1;
-    const canMove = dragDx < 0 ? idx < state.photos.length - 1 : idx > 0;
+    const total = state.lightboxNums ? state.lightboxNums.length : 0;
+    const canMove = dragDx < 0 ? idx < total - 1 : idx > 0;
     const threshold = window.innerWidth * 0.3; // 最初(60px)と中央(50%)の中間くらい
     img.style.transition = 'transform 0.22s ease-out';
     if (horizontal && Math.abs(dragDx) > threshold && canMove) {
       // 画面外までスライドさせてから写真を切り替え、反対側からスライドインさせる
       const flyTo = dragDx < 0 ? -window.innerWidth : window.innerWidth;
-      const nextPhoto = state.photos[idx + dir];
+      const nextNum = state.lightboxNums[idx + dir];
+      const nextPhoto = state.photos.find(p => p.number === nextNum);
       img.style.transform = `translateX(${flyTo}px)`;
       // 次の写真を先読みしてから切り替える。先読みせずに切り替えると
       // 新しい画像の読み込み待ちの間、古い写真がもう一度表示されて
