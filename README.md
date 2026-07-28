@@ -6,6 +6,18 @@
 
 ---
 
+## ⚠️ Claudeへの申し送り（必読・2026/07/28〜運用変更）
+
+このリポジトリ（https://github.com/osanpophoto-store/gallery）のファイル修正は、**Claudeが直接GitHubに書き込む**運用にしている。ユーザーにファイルを渡して手動アップロードしてもらう方式はやめた。
+
+- index.html・README.md等を修正したら、Claude in Chrome拡張でGitHubの「Add file → Upload files」画面から該当ファイルを直接アップロードし、`main`ブランチへコミットするところまで行う
+- Claude in Chromeが未接続の場合は、ユーザーに拡張機能のインストール・サインインを依頼してから作業する（インストールURL: https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn）
+- 作業前に必ずGitHub上の最新のindex.html・README.mdを取得してから編集する（ローカルに古いコピーが残っている前提で作業しない）
+- 修正内容は都度このREADME.mdの末尾に日付つきセクションで追記し、README.md自体もGitHubにコミットしておく（別セッション・時間が空いた後の引き継ぎのため）
+- スプレッドシート（events / passwords シート）は直接編集する書き込み権限がないため、これは引き続きユーザーに依頼する
+
+---
+
 ## 構成
 
 | 要素 | 内容 |
