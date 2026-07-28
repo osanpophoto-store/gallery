@@ -531,6 +531,7 @@ body::before {
   gap: 12px;
   flex: 1;
   min-width: 0;
+  cursor: pointer;
 }
 .cart-count {
   font-family: var(--serif);
@@ -1239,11 +1240,24 @@ body.cart-open .help-bar { bottom: 80px; }
   </div>
   <div class="cart-mini-row">
     <button class="btn-cart-clear-mini" onclick="clearSelection()" aria-label="選択をクリア">✕</button>
-    <div class="cart-mini-info">
+    <div class="cart-mini-info" onclick="openCartViewModal()" role="button" tabindex="0" aria-label="カートの中身を見る">
       <span class="cart-count" id="cart-count">0<span>枚</span></span>
       <span class="cart-total" id="cart-total">¥0</span>
     </div>
     <button class="btn-cart-next" id="btn-cart-next" onclick="openCartOptionsModal()">受け取り方法を選ぶ →</button>
+  </div>
+</div>
+<!-- ========== カートの中身モーダル ========== -->
+<div class="modal-overlay" id="cart-view-overlay">
+  <div class="modal-box">
+    <h3>カートの中身</h3>
+    <p id="cart-view-count-text"></p>
+    <div class="confirm-thumb-grid" id="cart-view-grid" style="max-height:280px;grid-template-columns:repeat(auto-fill, minmax(72px, 1fr))"></div>
+    <p style="font-size:11px;color:var(--bark);margin-top:10px;margin-bottom:16px">写真をタップすると選択を外せます</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCartViewModal()">閉じる</button>
+      <button class="btn-stripe" onclick="closeCartViewModal();openCartOptionsModal();">受け取り方法を選ぶ →</button>
+    </div>
   </div>
 </div>
 <!-- ========== 受け取り方法選択モーダル ========== -->
@@ -1541,7 +1555,7 @@ function renderGrid() {
     return;
   }
   grid.innerHTML = state.photos.map((p) => `
-    <div class="photo-item" id="item-${p.number}" onclick="toggleSelect('${p.number}')">
+    <div class="photo-item" id="item-${p.number}" onclick="openLightbox('${p.number}')">
       <div class="photo-skeleton" id="skel-${p.number}"></div>
       <img
         id="img-${p.number}"
@@ -1551,7 +1565,6 @@ function renderGrid() {
         onload="this.style.display='block';document.getElementById('skel-${p.number}').style.display='none'"
         onerror="(function(img,num){var retry=parseInt(img.dataset.retry||0);if(retry<3){img.dataset.retry=retry+1;setTimeout(function(){img.src='https://drive.google.com/thumbnail?id=${p.fileId}&sz=w400&t='+Date.now();},1000*Math.pow(2,retry));}else{document.getElementById('skel-'+num).style.background='var(--sand)';document.getElementById('skel-'+num).style.animation='none';}})(this,'${p.number}')"
       >
-      <button class="photo-zoom" onclick="event.stopPropagation();openLightbox('${p.number}')" title="拡大">🔍</button>
       <div class="photo-check"></div>
       <span class="photo-num">IMG-${p.number}</span>
     </div>
@@ -1619,6 +1632,42 @@ document.getElementById('cart-options-overlay')?.addEventListener('click', funct
   if (e.target === this) closeCartOptionsModal();
 });
 // ========================================
+// カートの中身モーダル（ミニバーの枚数・金額タップで展開）
+// ========================================
+function openCartViewModal() {
+  if (state.selected.size === 0) return;
+  renderCartView();
+  document.getElementById('cart-view-overlay').classList.add('visible');
+}
+function closeCartViewModal() {
+  document.getElementById('cart-view-overlay')?.classList.remove('visible');
+}
+function renderCartView() {
+  const grid = document.getElementById('cart-view-grid');
+  const countText = document.getElementById('cart-view-count-text');
+  if (!grid || !countText) return;
+  const nums = Array.from(state.selected).sort((a, b) => Number(a) - Number(b));
+  countText.textContent = `${nums.length}枚選択中`;
+  grid.innerHTML = nums.map(n => {
+    const photo = state.photos.find(p => p.number === n);
+    const thumbUrl = photo && photo.fileId ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120' : '';
+    return `<div class="confirm-thumb" onclick="removeFromCart('${n}')" style="cursor:pointer" title="タップで選択を外す">
+      ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
+      <div class="confirm-thumb-num">✕ IMG-${n}</div>
+    </div>`;
+  }).join('');
+}
+function removeFromCart(num) {
+  state.selected.delete(num);
+  document.getElementById('item-' + num)?.classList.remove('selected');
+  updateCart();
+  if (state.selected.size === 0) { closeCartViewModal(); return; }
+  renderCartView();
+}
+document.getElementById('cart-view-overlay')?.addEventListener('click', function(e) {
+  if (e.target === this) closeCartViewModal();
+});
+// ========================================
 // 選択管理
 // ========================================
 function toggleSelect(num) {
@@ -1645,6 +1694,7 @@ function updateCart() {
     state.selectMode = null; // 未選択状態に
     document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
     closeCartOptionsModal();
+    closeCartViewModal();
     return;
   }
   panel.classList.add('visible');
@@ -1985,6 +2035,9 @@ function openLightbox(num) {
   const photo = state.photos[idx];
   if (!photo.fileId) return;
   state.lightboxIndex = idx;
+  const img = document.getElementById('lightbox-img');
+  img.style.transition = 'none';
+  img.style.transform = 'translateX(0)';
   lbRender();
   document.getElementById('lightbox').classList.add('visible');
 }
@@ -2028,27 +2081,60 @@ function closeLightbox() {
 // ESCキーで閉じる
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 // ========================================
-// ライトボックス スワイプ対応（スマホ用）
+// ライトボックス スワイプ対応（スマホ用・指の動きに追従してスライド）
 // ========================================
 (function() {
   const lb = document.getElementById('lightbox');
-  let touchStartX = 0, touchStartY = 0, touching = false;
+  const img = document.getElementById('lightbox-img');
+  const THRESHOLD = 60;
+  let startX = 0, startY = 0, dragDx = 0, dragging = false, horizontal = false;
+
   lb.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) return;
-    touching = true;
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
+    dragging = true;
+    horizontal = false;
+    dragDx = 0;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    img.style.transition = 'none';
   }, { passive: true });
-  lb.addEventListener('touchend', (e) => {
-    if (!touching) return;
-    touching = false;
-    const touch = e.changedTouches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
-    // 横方向の移動が縦方向より十分大きく、50px以上動いていればスワイプとみなす
-    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      if (dx < 0) lbNav(1);  // 左スワイプ → 次の写真へ
-      else lbNav(-1);        // 右スワイプ → 前の写真へ
+
+  lb.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (!horizontal) {
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return; // 動き出し判定前
+      horizontal = Math.abs(dx) > Math.abs(dy); // 横方向優先か縦方向優先か最初に決める
+    }
+    if (!horizontal) return;
+    dragDx = dx;
+    img.style.transform = `translateX(${dx}px)`;
+  }, { passive: true });
+
+  lb.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false;
+    const idx = state.lightboxIndex;
+    const dir = dragDx < 0 ? 1 : -1;
+    const canMove = dragDx < 0 ? idx < state.photos.length - 1 : idx > 0;
+    img.style.transition = 'transform 0.22s ease-out';
+    if (horizontal && Math.abs(dragDx) > THRESHOLD && canMove) {
+      // 画面外までスライドさせてから写真を切り替え、反対側からスライドインさせる
+      const flyTo = dragDx < 0 ? -window.innerWidth : window.innerWidth;
+      img.style.transform = `translateX(${flyTo}px)`;
+      setTimeout(() => {
+        lbNav(dir);
+        img.style.transition = 'none';
+        img.style.transform = `translateX(${-flyTo}px)`;
+        requestAnimationFrame(() => {
+          img.style.transition = 'transform 0.22s ease-out';
+          img.style.transform = 'translateX(0)';
+        });
+      }, 220);
+    } else {
+      // しきい値未満、または端の写真なら中央に戻す
+      img.style.transform = 'translateX(0)';
     }
   }, { passive: true });
 })();
