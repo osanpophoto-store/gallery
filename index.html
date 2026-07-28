@@ -13,7 +13,6 @@
 <style>
 /* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --cream: #FFFFFF;
   --warm-white: #F8FAF8;
@@ -32,9 +31,7 @@
   --shadow: 0 4px 24px rgba(44,44,44,0.08);
   --shadow-lg: 0 12px 48px rgba(44,44,44,0.14);
 }
-
 html { scroll-behavior: smooth; }
-
 body {
   font-family: 'Zen Maru Gothic', sans-serif;
   background: #FFFFFF;
@@ -42,7 +39,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-
 /* ===== GRAIN OVERLAY ===== */
 body::before {
   content: '';
@@ -53,7 +49,6 @@ body::before {
   z-index: 1000;
   opacity: 0.6;
 }
-
 /* ===== HEADER ===== */
 .site-header {
   position: fixed;
@@ -69,7 +64,6 @@ body::before {
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(74,122,90,0.15);
 }
-
 .logo {
   font-family: var(--serif);
   font-size: 18px;
@@ -79,7 +73,6 @@ body::before {
   align-items: center;
   gap: 10px;
 }
-
 .logo-icon {
   width: 28px;
   height: 28px;
@@ -90,13 +83,11 @@ body::before {
   justify-content: center;
   font-size: 14px;
 }
-
 .header-nav {
   display: flex;
   align-items: center;
   gap: 24px;
 }
-
 .btn-logout {
   font-family: var(--sans);
   font-size: 12px;
@@ -111,7 +102,6 @@ body::before {
 }
 .btn-logout:hover { background: var(--sand); }
 .btn-logout.visible { display: block; }
-
 /* ===== SCREENS ===== */
 .screen {
   display: none;
@@ -119,25 +109,21 @@ body::before {
   padding-top: 80px;
 }
 .screen.active { display: block; }
-
 /* ===== LOGIN SCREEN ===== */
 #screen-login {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .login-wrap {
   width: 100%;
   max-width: 480px;
   padding: 24px;
 }
-
 .login-hero {
   text-align: center;
   margin-bottom: 48px;
 }
-
 .login-hero h1 {
   font-family: var(--serif);
   font-size: 32px;
@@ -146,20 +132,17 @@ body::before {
   line-height: 1.4;
   margin-bottom: 12px;
 }
-
 .login-hero p {
   font-size: 14px;
   color: var(--bark);
   line-height: 1.8;
 }
-
 .event-cards {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 32px;
 }
-
 .event-card {
   background: var(--warm-white);
   border: 1.5px solid var(--sand);
@@ -172,30 +155,25 @@ body::before {
   justify-content: space-between;
   gap: 16px;
 }
-
 .event-card:hover {
   border-color: var(--bark);
   box-shadow: var(--shadow);
   transform: translateY(-1px);
 }
-
 .event-card.selected {
   border-color: var(--forest);
   background: #F0F5F1;
 }
-
 .event-info h3 {
   font-family: var(--serif);
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 4px;
 }
-
 .event-info p {
   font-size: 12px;
   color: var(--bark);
 }
-
 .event-badge {
   font-size: 11px;
   color: var(--moss);
@@ -205,7 +183,6 @@ body::before {
   white-space: nowrap;
   flex-shrink: 0;
 }
-
 .pw-section {
   background: var(--warm-white);
   border: 1.5px solid var(--sand);
@@ -214,12 +191,10 @@ body::before {
   margin-bottom: 16px;
   animation: slideUp 0.3s ease;
 }
-
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
 .pw-section label {
   display: block;
   font-size: 12px;
@@ -227,11 +202,9 @@ body::before {
   margin-bottom: 10px;
   letter-spacing: 0.06em;
 }
-
 .pw-input-wrap {
   position: relative;
 }
-
 .pw-input {
   width: 100%;
   padding: 14px 48px 14px 18px;
@@ -245,10 +218,8 @@ body::before {
   transition: border-color 0.2s;
   -webkit-appearance: none;
 }
-
 .pw-input:focus { border-color: var(--forest); }
 .pw-input.error { border-color: var(--danger); }
-
 .pw-toggle {
   position: absolute;
   right: 14px;
@@ -261,7 +232,6 @@ body::before {
   font-size: 12px;
   padding: 4px;
 }
-
 .error-msg {
   font-size: 12px;
   color: var(--danger);
@@ -269,7 +239,6 @@ body::before {
   display: none;
 }
 .error-msg.visible { display: block; }
-
 .btn-primary {
   width: 100%;
   padding: 16px;
@@ -286,18 +255,15 @@ body::before {
   position: relative;
   overflow: hidden;
 }
-
 .btn-primary:hover:not(:disabled) {
   background: #2e4536;
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(61,90,71,0.3);
 }
-
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-
 .btn-primary.loading::after {
   content: '';
   position: absolute;
@@ -305,17 +271,14 @@ body::before {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   animation: shimmer 1s infinite;
 }
-
 @keyframes shimmer {
   from { transform: translateX(-100%); }
   to   { transform: translateX(100%); }
 }
-
 /* ===== GALLERY SCREEN ===== */
 #screen-gallery {
   padding: 100px 0 60px;
 }
-
 .gallery-header {
   max-width: 1200px;
   margin: 0 auto 40px;
@@ -326,32 +289,27 @@ body::before {
   gap: 20px;
   flex-wrap: wrap;
 }
-
 .gallery-title h2 {
   font-family: var(--serif);
   font-size: 26px;
   font-weight: 500;
   margin-bottom: 6px;
 }
-
 .gallery-title p {
   font-size: 13px;
   color: var(--bark);
 }
-
 .gallery-actions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-
 .selection-info {
   font-size: 13px;
   color: var(--forest);
   font-weight: 500;
   min-width: 80px;
 }
-
 .btn-guide {
   font-size: 12px;
   color: var(--forest);
@@ -366,7 +324,6 @@ body::before {
   font-family: var(--sans);
 }
 .btn-guide:hover { background: var(--forest); color: white; }
-
 .btn-download-all {
   padding: 8px 16px;
   background: var(--accent);
@@ -380,12 +337,10 @@ body::before {
   transition: all 0.2s;
   white-space: nowrap;
 }
-
 .btn-download-all:hover {
   background: #b85e2e;
   box-shadow: 0 4px 16px rgba(212,114,58,0.4);
 }
-
 /* グリッド */
 .photo-grid {
   max-width: 1200px;
@@ -395,7 +350,6 @@ body::before {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
 }
-
 .photo-item {
   position: relative;
   cursor: pointer;
@@ -406,17 +360,14 @@ body::before {
   box-shadow: 0 2px 12px rgba(44,31,23,0.08);
   transition: all 0.25s;
 }
-
 .photo-item:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);
 }
-
 .photo-item.selected {
   outline: 3px solid var(--forest);
   outline-offset: 2px;
 }
-
 .photo-item.selected::before {
   content: '';
   position: absolute;
@@ -425,13 +376,11 @@ body::before {
   z-index: 2;
   pointer-events: none;
 }
-
 .photo-item canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
-
 .photo-check {
   position: absolute;
   top: 10px;
@@ -446,16 +395,13 @@ body::before {
   z-index: 3;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-
 .photo-check::after {
   content: '✓';
   color: white;
   font-size: 14px;
   line-height: 1;
 }
-
 .photo-item.selected .photo-check { display: flex; }
-
 .photo-num {
   position: absolute;
   bottom: 8px;
@@ -466,7 +412,6 @@ body::before {
   text-shadow: 0 1px 3px rgba(0,0,0,0.5);
   letter-spacing: 0.04em;
 }
-
 .photo-zoom {
   position: absolute;
   top: 8px;
@@ -487,11 +432,9 @@ body::before {
   transition: opacity 0.2s;
 }
 .photo-item:hover .photo-zoom { opacity: 1; }
-
 @media (hover: none) {
   .photo-zoom { opacity: 0.75; }
 }
-
 /* ===== LIGHTBOX ===== */
 .lightbox {
   position: fixed;
@@ -533,7 +476,6 @@ body::before {
   color: rgba(255,255,255,0.6);
   font-size: 12px;
 }
-
 .photo-skeleton {
   width: 100%;
   height: 100%;
@@ -541,12 +483,10 @@ body::before {
   background-size: 200% 100%;
   animation: skel 1.2s infinite;
 }
-
 @keyframes skel {
   from { background-position: 200% 0; }
   to   { background-position: -200% 0; }
 }
-
 /* ===== CART PANEL ===== */
 .cart-panel {
   position: fixed;
@@ -556,54 +496,109 @@ body::before {
   z-index: 200;
   background: var(--cart-bg);
   color: white;
-  padding: 20px 40px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
+  padding: 14px 20px;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  flex-wrap: wrap;
   overflow: visible;
 }
-
 .cart-panel.visible { transform: translateY(0); }
-
+.cart-mini-row {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.btn-cart-clear-mini {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.btn-cart-clear-mini:hover { background: rgba(255,255,255,0.22); }
+.cart-mini-info {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
 .cart-count {
   font-family: var(--serif);
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 500;
-  min-width: 80px;
+  white-space: nowrap;
 }
-
 .cart-count span {
-  font-size: 13px;
+  font-size: 12px;
   font-family: var(--sans);
   font-weight: 300;
   color: rgba(255,255,255,0.6);
-  margin-left: 4px;
+  margin-left: 3px;
 }
-
-.cart-price-detail {
-  flex: 1;
-  font-size: 12px;
-  color: rgba(255,255,255,0.6);
-  line-height: 1.8;
-}
-
 .cart-total {
   font-family: var(--serif);
-  font-size: 24px;
+  font-size: 17px;
   font-weight: 600;
   color: #F2C98A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 .cart-total small {
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 11px;
   color: rgba(255,255,255,0.6);
   font-weight: 300;
 }
-
+.btn-cart-next {
+  flex-shrink: 0;
+  padding: 12px 18px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 13px;
+  font-family: var(--sans);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-cart-next:hover {
+  background: #B07A52;
+  box-shadow: 0 6px 20px rgba(196,149,106,0.4);
+}
+.cart-options-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.cart-options-modal-body .cart-option-label { color: var(--bark); }
+.cart-options-modal-body .btn-pay-print {
+  color: var(--deep);
+  border: 1.5px solid var(--sand);
+  background: var(--cream);
+}
+.cart-options-modal-body .btn-pay-print:hover {
+  background: var(--warm-white);
+  border-color: var(--forest);
+}
+.cart-options-modal-body .btn-mode.active {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: white;
+}
 .btn-pay {
   padding: 14px 32px;
   background: var(--accent);
@@ -617,13 +612,11 @@ body::before {
   transition: all 0.2s;
   white-space: nowrap;
 }
-
 .btn-pay:hover {
   background: #B07A52;
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(196,149,106,0.4);
 }
-
 .btn-pay-print {
   padding: 8px 14px;
   background: none;
@@ -639,49 +632,41 @@ body::before {
   line-height: 1.5;
   text-align: center;
 }
-
 .btn-pay-print:hover {
   background: rgba(255,255,255,0.12);
   border-color: rgba(255,255,255,0.6);
 }
-
 .cart-print-btns {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
-
 .cart-left {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
 }
-
 .cart-options {
   display: flex;
   gap: 16px;
   flex: 1;
   flex-wrap: wrap;
 }
-
 .cart-option-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .cart-option-label {
   font-size: 10px;
   color: rgba(255,255,255,0.5);
   letter-spacing: 0.06em;
 }
-
 .cart-option-btns {
   display: flex;
   gap: 6px;
 }
-
 /* ===== PAYMENT MODAL ===== */
 .modal-overlay {
   position: fixed;
@@ -695,9 +680,7 @@ body::before {
   padding: 24px;
   overflow-y: auto;
 }
-
 .modal-overlay.visible { display: flex; }
-
 .modal-box {
   background: var(--warm-white);
   border-radius: 20px;
@@ -708,33 +691,28 @@ body::before {
   animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin: auto;
 }
-
 @keyframes modalIn {
   from { opacity: 0; transform: scale(0.9) translateY(20px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-
 .modal-box h3 {
   font-family: var(--serif);
   font-size: 20px;
   font-weight: 500;
   margin-bottom: 8px;
 }
-
 .modal-box p {
   font-size: 13px;
   color: var(--bark);
   line-height: 1.8;
   margin-bottom: 24px;
 }
-
 .price-breakdown {
   background: var(--cream);
   border-radius: 10px;
   padding: 20px;
   margin-bottom: 24px;
 }
-
 .price-row {
   display: flex;
   justify-content: space-between;
@@ -743,7 +721,6 @@ body::before {
   color: var(--bark);
   padding: 4px 0;
 }
-
 .price-row.total {
   border-top: 1px solid var(--sand);
   margin-top: 10px;
@@ -753,12 +730,10 @@ body::before {
   font-family: var(--serif);
   font-weight: 500;
 }
-
 .modal-actions {
   display: flex;
   gap: 12px;
 }
-
 .btn-cancel {
   flex: 1;
   padding: 14px;
@@ -771,9 +746,7 @@ body::before {
   color: var(--bark);
   transition: all 0.2s;
 }
-
 .btn-cancel:hover { background: var(--sand); }
-
 .btn-stripe {
   flex: 2;
   padding: 14px;
@@ -792,12 +765,10 @@ body::before {
   gap: 8px;
   text-decoration: none;
 }
-
 .btn-stripe:hover {
   background: #2e4536;
   box-shadow: 0 6px 20px rgba(61,90,71,0.3);
 }
-
 /* ===== TOAST ===== */
 .toast {
   position: fixed;
@@ -814,18 +785,15 @@ body::before {
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-width: 280px;
 }
-
 .toast.visible { transform: translateX(0); }
 .toast.success { border-left: 4px solid var(--moss); }
 .toast.error   { border-left: 4px solid var(--danger); }
-
 /* ===== EMPTY / LOADING ===== */
 .loading-wrap {
   text-align: center;
   padding: 80px 20px;
   color: var(--bark);
 }
-
 .spinner {
   width: 40px;
   height: 40px;
@@ -835,9 +803,7 @@ body::before {
   animation: spin 0.8s linear infinite;
   margin: 0 auto 16px;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
-
 /* ===== HELP BAR ===== */
 .help-bar {
   position: fixed;
@@ -853,27 +819,21 @@ body::before {
   overflow: hidden;
   white-space: nowrap;
 }
-
 .help-bar-track {
   display: inline-flex;
   gap: 48px;
   animation: marquee 30s linear infinite;
   padding-left: 100%;
 }
-
 .help-bar-track span { flex-shrink: 0; }
 .help-bar-track a { color: rgba(255,255,255,0.55); text-decoration: underline; }
-
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
-
 .help-bar:hover .help-bar-track { animation-play-state: paused; }
-
 .cart-panel.visible ~ .help-bar,
 body.cart-open .help-bar { bottom: 80px; }
-
 .btn-cart-clear {
   padding: 10px 16px;
   background: none;
@@ -890,7 +850,6 @@ body.cart-open .help-bar { bottom: 80px; }
   background: rgba(255,255,255,0.1);
   color: white;
 }
-
 .cart-note {
   font-size: 10px;
   color: rgba(255,255,255,0.4);
@@ -898,7 +857,6 @@ body.cart-open .help-bar { bottom: 80px; }
   text-align: center;
   padding-top: 4px;
 }
-
 /* サムネイルグリッド（確認モーダル内） */
 .confirm-thumb-grid {
   display: grid;
@@ -931,7 +889,6 @@ body.cart-open .help-bar { bottom: 80px; }
   text-align: center;
   padding: 2px 0;
 }
-
 .confirm-section {
   background: var(--cream);
   border-radius: 10px;
@@ -969,7 +926,6 @@ body.cart-open .help-bar { bottom: 80px; }
   color: var(--deep);
   word-break: break-all;
 }
-
 /* 同意チェックボックス */
 .consent-area {
   margin-bottom: 20px;
@@ -997,7 +953,6 @@ body.cart-open .help-bar { bottom: 80px; }
   line-height: 1.6;
   cursor: pointer;
 }
-
 /* ===== PAID SCREEN ===== */
 #screen-paid {
   display: none;
@@ -1005,7 +960,6 @@ body.cart-open .help-bar { bottom: 80px; }
   justify-content: center;
 }
 #screen-paid.active { display: flex; }
-
 .paid-wrap {
   max-width: 480px;
   width: 100%;
@@ -1085,7 +1039,6 @@ body.cart-open .help-bar { bottom: 80px; }
   transition: all 0.2s;
 }
 .btn-back-top:hover { background: var(--sand); }
-
 /* ===== RESPONSIVE ===== */
 .gallery-notice {
   max-width: 1200px;
@@ -1097,13 +1050,11 @@ body.cart-open .help-bar { bottom: 80px; }
   border-left: 3px solid var(--forest);
   border-radius: 0 8px 8px 0;
 }
-
 .btn-mode.active {
   background: rgba(255,255,255,0.3);
   border-color: white;
   font-weight: 500;
 }
-
 @media (max-width: 640px) {
   .site-header { padding: 16px 20px; }
   .gallery-header { padding: 0 20px; }
@@ -1115,7 +1066,6 @@ body.cart-open .help-bar { bottom: 80px; }
   .login-hero h1 { font-size: 24px; }
   .gallery-notice { padding: 10px 20px; }
 }
-
 /* ===== RECOMMEND BANNER ===== */
 .recommend-banner {
   display: none;
@@ -1147,7 +1097,6 @@ body.cart-open .help-bar { bottom: 80px; }
   flex-shrink: 0;
 }
 .recommend-banner-btn:hover { background: rgba(255,255,255,0.28); }
-
 /* ===== LIGHTBOX ENHANCEMENTS ===== */
 .lightbox-nav {
   position: absolute;
@@ -1205,7 +1154,6 @@ body.cart-open .help-bar { bottom: 80px; }
 </style>
 </head>
 <body>
-
 <!-- ヘッダー -->
 <header class="site-header">
   <div class="logo">
@@ -1215,7 +1163,6 @@ body.cart-open .help-bar { bottom: 80px; }
     <button class="btn-logout" id="btn-logout" onclick="logout()">ログアウト</button>
   </nav>
 </header>
-
 <!-- ========== ログイン画面 ========== -->
 <main class="screen active" id="screen-login">
   <div class="login-wrap">
@@ -1223,7 +1170,6 @@ body.cart-open .help-bar { bottom: 80px; }
       <h1>写真を<br>選んでください</h1>
       <p>撮影イベントを選択し、<br>お知らせしたパスワードを入力してください</p>
     </div>
-
     <!-- イベント一覧 -->
     <div class="event-cards" id="event-list">
       <div class="loading-wrap">
@@ -1231,7 +1177,6 @@ body.cart-open .help-bar { bottom: 80px; }
         <p>イベントを読み込み中...</p>
       </div>
     </div>
-
     <!-- パスワード入力（イベント選択後に表示） -->
     <div class="pw-section" id="pw-section" style="display:none;">
       <label>パスワード</label>
@@ -1248,13 +1193,11 @@ body.cart-open .help-bar { bottom: 80px; }
       </div>
       <p class="error-msg" id="error-msg"></p>
     </div>
-
     <button class="btn-primary" id="btn-login" onclick="doLogin()" disabled>
       ギャラリーを開く
     </button>
   </div>
 </main>
-
 <!-- ========== ギャラリー画面 ========== -->
 <main class="screen" id="screen-gallery">
   <div class="gallery-header">
@@ -1280,7 +1223,6 @@ body.cart-open .help-bar { bottom: 80px; }
     　・Android：画面を下に引っ張って放す、または右上の「⋮」→「更新」<br>
     ② LINEから開いている場合：右下の「・・・」→「ブラウザで開く」
   </div>
-
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
       <div class="spinner"></div>
@@ -1288,54 +1230,61 @@ body.cart-open .help-bar { bottom: 80px; }
     </div>
   </div>
 </main>
-
-<!-- ========== カートパネル ========== -->
+<!-- ========== カートパネル（ミニバー） ========== -->
 <div class="cart-panel" id="cart-panel">
   <!-- おすすめバナー（15枚以上で表示） -->
   <div class="recommend-banner" id="recommend-banner">
     <span class="recommend-banner-text" id="recommend-banner-text"></span>
     <button class="recommend-banner-btn" onclick="openPaymentModal(true)">丸ごと購入へ →</button>
   </div>
-  <div class="cart-left">
-    <div class="cart-count" id="cart-count">0<span>枚</span></div>
-    <div class="cart-price-detail" id="cart-detail"></div>
-    <div class="cart-total" id="cart-total">¥0<small> (税込)</small></div>
+  <div class="cart-mini-row">
+    <button class="btn-cart-clear-mini" onclick="clearSelection()" aria-label="選択をクリア">✕</button>
+    <div class="cart-mini-info">
+      <span class="cart-count" id="cart-count">0<span>枚</span></span>
+      <span class="cart-total" id="cart-total">¥0</span>
+    </div>
+    <button class="btn-cart-next" id="btn-cart-next" onclick="openCartOptionsModal()">受け取り方法を選ぶ →</button>
   </div>
-  <div class="cart-options">
-    <div class="cart-option-group">
-      <div class="cart-option-label">📱 スマホサイズ</div>
-      <div class="cart-option-btns">
-        <button class="btn-pay-print btn-mode" id="mode-normal" onclick="setSelectMode('normal')">スマホサイズ<br><small>¥140〜/枚</small></button>
-      </div>
-    </div>
-    <div class="cart-option-group">
-      <div class="cart-option-label">📁 データで受け取る</div>
-      <div class="cart-option-btns">
-        <button class="btn-pay-print btn-mode" id="mode-a4data" onclick="setSelectMode('a4data')">A4データ<br><small>¥800/枚</small></button>
-        <button class="btn-pay-print btn-mode" id="mode-a3data" onclick="setSelectMode('a3data')">A3データ<br><small>¥1,200/枚</small></button>
-      </div>
-    </div>
-    <div class="cart-option-group">
-      <div class="cart-option-label">✨ プリントして届く</div>
-      <div class="cart-option-btns">
-        <button class="btn-pay-print btn-mode" id="mode-a4print" onclick="setSelectMode('a4print')">A4プリント<br><small>¥3,500/枚</small></button>
-        <button class="btn-pay-print btn-mode" id="mode-a4panel" onclick="setSelectMode('a4panel')">A4パネル<br><small>¥12,000/枚</small></button>
-      </div>
-    </div>
-  </div>
-  <button class="btn-pay" id="btn-pay-main" onclick="onPayClick()">購入へ →</button>
-  <button class="btn-cart-clear" onclick="clearSelection()">✕ クリア</button>
-  <div class="cart-note">※ 異なるサイズは別々にご決済ください</div>
 </div>
-
+<!-- ========== 受け取り方法選択モーダル ========== -->
+<div class="modal-overlay" id="cart-options-overlay">
+  <div class="modal-box">
+    <h3>受け取り方法を選んでください</h3>
+    <p id="cart-options-count-text"></p>
+    <div class="cart-options-modal-body">
+      <div class="cart-option-group">
+        <div class="cart-option-label">📱 スマホサイズ</div>
+        <div class="cart-option-btns">
+          <button class="btn-pay-print btn-mode" id="mode-normal" onclick="chooseMode('normal')">スマホサイズ<br><small>¥140〜/枚</small></button>
+        </div>
+      </div>
+      <div class="cart-option-group">
+        <div class="cart-option-label">📁 データで受け取る</div>
+        <div class="cart-option-btns">
+          <button class="btn-pay-print btn-mode" id="mode-a4data" onclick="chooseMode('a4data')">A4データ<br><small>¥800/枚</small></button>
+          <button class="btn-pay-print btn-mode" id="mode-a3data" onclick="chooseMode('a3data')">A3データ<br><small>¥1,200/枚</small></button>
+        </div>
+      </div>
+      <div class="cart-option-group">
+        <div class="cart-option-label">✨ プリントして届く</div>
+        <div class="cart-option-btns">
+          <button class="btn-pay-print btn-mode" id="mode-a4print" onclick="chooseMode('a4print')">A4プリント<br><small>¥3,500/枚</small></button>
+          <button class="btn-pay-print btn-mode" id="mode-a4panel" onclick="chooseMode('a4panel')">A4パネル<br><small>¥12,000/枚</small></button>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--bark);margin-top:-8px;margin-bottom:16px">※ 異なるサイズは別々にご決済ください</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCartOptionsModal()">戻る</button>
+    </div>
+  </div>
+</div>
 <!-- ========== 支払いモーダル ========== -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
     <h3 id="modal-title">お支払い確認</h3>
     <p id="modal-desc"></p>
-
     <div class="price-breakdown" id="price-breakdown"></div>
-
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">戻る</button>
       <a class="btn-stripe" id="btn-stripe" href="#" target="_blank" onclick="onStripeClick()">
@@ -1344,7 +1293,6 @@ body.cart-open .help-bar { bottom: 80px; }
     </div>
   </div>
 </div>
-
 <!-- ========== 購入完了画面 ========== -->
 <main class="screen" id="screen-paid">
   <div class="paid-wrap">
@@ -1354,7 +1302,6 @@ body.cart-open .help-bar { bottom: 80px; }
       ご登録のメールアドレスに写真をお送りします。<br>
       通常<strong>1分以内</strong>に届きます。
     </p>
-
     <div class="paid-info-box">
       <h4>ご確認ください</h4>
       <div class="paid-info-row">
@@ -1374,16 +1321,13 @@ body.cart-open .help-bar { bottom: 80px; }
         <span>届かない・開けない場合は <a href="https://lin.ee/Y2WBhzF" style="color:var(--forest)">公式LINEへお問い合わせください</a></span>
       </div>
     </div>
-
     <p class="paid-note">
       ※ メールの送信には最大1分程度かかる場合があります。<br>
       しばらく経っても届かない場合はお問い合わせください。
     </p>
-
     <button class="btn-back-top" onclick="goBackFromPaid()">トップに戻る</button>
   </div>
 </main>
-
 <!-- ========== ライトボックス ========== -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lightbox-img" src="" alt="">
@@ -1393,10 +1337,8 @@ body.cart-open .help-bar { bottom: 80px; }
   <button class="lightbox-select-btn" id="lb-select-btn" onclick="event.stopPropagation();lbToggleSelect()"></button>
   <div class="lightbox-num" id="lightbox-num"></div>
 </div>
-
 <!-- ========== トースト通知 ========== -->
 <div class="toast" id="toast"></div>
-
 <!-- ========== ヘルプ常設バー ========== -->
 <div class="help-bar" id="help-bar">
   <div class="help-bar-track">
@@ -1412,7 +1354,6 @@ body.cart-open .help-bar { bottom: 80px; }
     <span>📞 <a href="https://lin.ee/Y2WBhzF">LINEでお問い合わせ</a></span>
   </div>
 </div>
-
 <script>
 // ========================================
 // CONFIG - GASのWebアプリURLを設定
@@ -1422,7 +1363,6 @@ const CONFIG = {
   WATERMARK_TEXT: 'おさんぽフォト サンプル',
   WATERMARK_OPACITY: 0.35,
 };
-
 // ========================================
 // STATE
 // ========================================
@@ -1439,7 +1379,6 @@ const state = {
   lastIsAll: false,
   lightboxIndex: null, // ライトボックスで表示中のstate.photos配列インデックス
 };
-
 // ========================================
 // 初期化
 // ========================================
@@ -1452,7 +1391,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     history.replaceState({}, '', window.location.pathname);
     return;
   }
-
   // セッション復元
   const saved = sessionStorage.getItem('osanpo_session');
   if (saved) {
@@ -1467,9 +1405,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {}
     sessionStorage.removeItem('osanpo_session');
   }
-
   await loadEvents();
-
   // カートパネルとヘルプバーの位置連動
   const cartPanel = document.getElementById('cart-panel');
   const helpBar = document.getElementById('help-bar');
@@ -1478,7 +1414,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
   observer.observe(cartPanel, { attributes: true, attributeFilter: ['class'] });
 });
-
 // ========================================
 // イベント一覧読み込み
 // ========================================
@@ -1492,14 +1427,12 @@ async function loadEvents() {
       '<p style="color:var(--danger);font-size:13px;text-align:center">読み込みに失敗しました。ページを再読み込みしてください。</p>';
   }
 }
-
 function renderEventList() {
   const el = document.getElementById('event-list');
   if (!state.events.length) {
     el.innerHTML = '<p style="color:var(--bark);font-size:13px;text-align:center">現在公開中のイベントはありません</p>';
     return;
   }
-
   el.innerHTML = state.events.map(ev => `
     <div class="event-card" id="card-${ev.id}" onclick="selectEvent('${ev.id}')">
       <div class="event-info">
@@ -1510,16 +1443,12 @@ function renderEventList() {
     </div>
   `).join('');
 }
-
 function selectEvent(id) {
   state.selectedEventId = id;
-
   document.querySelectorAll('.event-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('card-' + id)?.classList.add('selected');
-
   const pw = document.getElementById('pw-section');
   pw.style.display = 'block';
-
   const input = document.getElementById('pw-input');
   input.value = '';
   input.classList.remove('error');
@@ -1527,25 +1456,21 @@ function selectEvent(id) {
   document.getElementById('btn-login').disabled = false;
   input.focus();
 }
-
 // ========================================
 // ログイン
 // ========================================
 async function doLogin() {
   if (!state.selectedEventId) { showToast('イベントを選択してください', 'error'); return; }
-
   const pw = document.getElementById('pw-input').value.trim();
   if (!pw) {
     setError('パスワードを入力してください');
     return;
   }
-
   const btn = document.getElementById('btn-login');
   btn.disabled = true;
   btn.classList.add('loading');
   btn.textContent = '確認中...';
   clearError();
-
   try {
     const data = await api('login', { eventId: state.selectedEventId, password: pw });
     state.session = data;
@@ -1560,7 +1485,6 @@ async function doLogin() {
     btn.textContent = 'ギャラリーを開く';
   }
 }
-
 function setError(msg) {
   const el = document.getElementById('error-msg');
   el.textContent = msg;
@@ -1570,7 +1494,6 @@ function clearError() {
   document.getElementById('error-msg').classList.remove('visible');
   document.getElementById('pw-input').classList.remove('error');
 }
-
 function togglePwVisibility() {
   const inp = document.getElementById('pw-input');
   const btn = document.getElementById('pw-toggle-btn');
@@ -1582,30 +1505,24 @@ function togglePwVisibility() {
     btn.textContent = '表示';
   }
 }
-
 // ========================================
 // ギャラリー表示
 // ========================================
 async function enterGallery() {
   showScreen('gallery');
   document.getElementById('btn-logout').classList.add('visible');
-
   // 選択モードをリセット
   state.selectMode = null; // 未選択状態に
   state.selected.clear();
-
   const ev = state.session.event;
   document.getElementById('gallery-event-name').textContent = ev.name;
   document.getElementById('gallery-subtitle').textContent =
     `${ev.count}枚 ｜ 写真をタップして選択 → まとめて購入できます`;
-
   await loadPhotos();
 }
-
 async function loadPhotos() {
   const grid = document.getElementById('photo-grid');
   grid.innerHTML = '<div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div><p>写真を読み込み中...</p></div>';
-
   try {
     const data = await api('getPhotos', {
       eventId: state.selectedEventId,
@@ -1617,14 +1534,12 @@ async function loadPhotos() {
     grid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:var(--danger)">${e.message}</p>`;
   }
 }
-
 function renderGrid() {
   const grid = document.getElementById('photo-grid');
   if (!state.photos.length) {
     grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--bark)">写真がありません</p>';
     return;
   }
-
   grid.innerHTML = state.photos.map((p) => `
     <div class="photo-item" id="item-${p.number}" onclick="toggleSelect('${p.number}')">
       <div class="photo-skeleton" id="skel-${p.number}"></div>
@@ -1643,7 +1558,6 @@ function renderGrid() {
   `).join('');
   initLazyLoad();
 }
-
 function clearSelection() {
   state.selected.forEach(num => {
     document.getElementById('item-' + num)?.classList.remove('selected');
@@ -1652,7 +1566,6 @@ function clearSelection() {
   updateCart();
   showToast('選択をクリアしました', 'success');
 }
-
 // ========================================
 // 選択モード管理
 // ========================================
@@ -1670,7 +1583,6 @@ function setSelectMode(mode) {
   document.getElementById('mode-' + mode)?.classList.add('active');
   updateCart();
 }
-
 function onPayClick() {
   if (!state.selectMode) {
     showToast('購入方法を選択してください', 'error');
@@ -1682,7 +1594,30 @@ function onPayClick() {
     openPrintModal(state.selectMode);
   }
 }
-
+// ========================================
+// 受け取り方法選択モーダル（ミニバーから展開）
+// ========================================
+function openCartOptionsModal() {
+  if (state.selected.size === 0) return;
+  if (state.selectMode) {
+    // すでに方法を選択済みなら直接購入確認へ進む
+    if (state.selectMode === 'normal') openPaymentModal(false); else openPrintModal(state.selectMode);
+    return;
+  }
+  document.getElementById('cart-options-overlay').classList.add('visible');
+}
+function closeCartOptionsModal() {
+  document.getElementById('cart-options-overlay')?.classList.remove('visible');
+}
+function chooseMode(mode) {
+  setSelectMode(mode);
+  if (state.selectMode !== mode) return; // 別サイズ選択中でブロックされた場合はモーダルを開いたまま
+  closeCartOptionsModal();
+  onPayClick();
+}
+document.getElementById('cart-options-overlay')?.addEventListener('click', function(e) {
+  if (e.target === this) closeCartOptionsModal();
+});
 // ========================================
 // 選択管理
 // ========================================
@@ -1700,55 +1635,32 @@ function toggleSelect(num) {
   }
   updateCart();
 }
-
 function updateCart() {
   const count = state.selected.size;
   const panel = document.getElementById('cart-panel');
   const selInfo = document.getElementById('selection-info');
-
   if (count === 0) {
     panel.classList.remove('visible');
     selInfo.textContent = '';
     state.selectMode = null; // 未選択状態に
     document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+    closeCartOptionsModal();
     return;
   }
-
   panel.classList.add('visible');
   selInfo.textContent = `${count}枚選択中`;
-
-  const modeConfig = {
-    normal:  { unit: null,  label: '' },
-    a4data:  { unit: 800,   label: 'A4データ' },
-    a3data:  { unit: 1200,  label: 'A3データ' },
-    a4print: { unit: 3500,  label: 'A4プリント' },
-    a4panel: { unit: 12000, label: 'A4パネル' },
-  };
-
-  let totalText, detailText;
-
-  if (!state.selectMode || state.selectMode === 'normal') {
-    const price = calcPrice(count);
-    totalText = `¥${price.total.toLocaleString()}`;
-    detailText = state.selectMode === 'normal' ? formatPriceDetail(price) : '← 購入方法を選択してください';
-  } else {
-    const cfg = modeConfig[state.selectMode];
-    const subtotal = cfg.unit * count;
-    const shipping = (state.selectMode === 'a4print' || state.selectMode === 'a4panel') && subtotal < 5000 ? 635 : 0;
-    totalText = `¥${(subtotal + shipping).toLocaleString()}`;
-    detailText = `${cfg.label} ${count}枚` + (shipping > 0 ? ' + 送料¥635' : (state.selectMode === 'a4print' || state.selectMode === 'a4panel') ? ' 送料無料' : '');
-  }
-
   document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>`;
-  document.getElementById('cart-detail').innerHTML = detailText;
-  document.getElementById('cart-total').innerHTML = state.selectMode ? `${totalText}<small> (税込)</small>` : '購入方法を選択 →';
-
-  // おすすめバナー（スマホサイズ選択中 かつ 15枚以上）
+  // ミニバーの金額はスマホサイズ基準の目安（実際の金額は受け取り方法選択後に確定）
+  const price = calcPrice(count);
+  document.getElementById('cart-total').innerHTML = `¥${price.total.toLocaleString()}<small>〜</small>`;
+  const btnNext = document.getElementById('btn-cart-next');
+  if (btnNext) btnNext.textContent = state.selectMode ? '購入へ進む →' : '受け取り方法を選ぶ →';
+  const countText = document.getElementById('cart-options-count-text');
+  if (countText) countText.textContent = `${count}枚選択中`;
+  // おすすめバナー（15枚以上で表示）
   const banner = document.getElementById('recommend-banner');
   const bannerText = document.getElementById('recommend-banner-text');
-  const isNormalMode = (!state.selectMode || state.selectMode === 'normal');
-
-  if (isNormalMode && count >= 15) {
+  if (count >= 15) {
     // 制限バナー表示中（19枚ちょうど）でなければテキストを更新
     if (!banner.classList.contains('limit-mode')) {
       bannerText.textContent = `${count}枚選ばれています。ここまで選ぶなら、当日の空気感ごと残せる「丸ごとダウンロード ¥2,000」もおすすめです。`;
@@ -1758,7 +1670,6 @@ function updateCart() {
     banner.classList.remove('visible', 'limit-mode');
   }
 }
-
 // 19枚上限に達したときのバナー（トーストの代替）
 function showLimitBanner() {
   const banner = document.getElementById('recommend-banner');
@@ -1766,12 +1677,10 @@ function showLimitBanner() {
   bannerText.textContent = '20枚以上選ぶ場合は、全写真をまとめて残せる「丸ごとダウンロード ¥2,000」がおすすめです。';
   banner.classList.add('visible', 'limit-mode');
 }
-
 // クライアント側料金計算（GAS側と同じロジック）
 function calcPrice(qty) {
   const P = { DOWNLOAD_ALL: 2000, PACK10: 900, PACK5: 500, SINGLE: 140 };
   let pack10=0, pack5=0, single=0, total=0;
-
   if (qty>=20)       { total=P.DOWNLOAD_ALL; }
   else if (qty<=3)   { single=qty; total=qty*P.SINGLE; }
   else if (qty<=5)   { pack5=1; total=P.PACK5; }
@@ -1786,10 +1695,8 @@ function calcPrice(qty) {
   else if (qty===17) { pack10=1; pack5=1; single=2; total=P.PACK10+P.PACK5+P.SINGLE*2; }
   else if (qty===18) { pack10=1; pack5=1; single=3; total=P.PACK10+P.PACK5+P.SINGLE*3; }
   else if (qty===19) { pack10=1; pack5=1; single=4; total=P.PACK10+P.PACK5+P.SINGLE*4; }
-
   return { total, pack10, pack5, single };
 }
-
 function formatPriceDetail(price) {
   const parts = [];
   if (price.pack10) parts.push(`10枚セット×${price.pack10}`);
@@ -1798,7 +1705,6 @@ function formatPriceDetail(price) {
   if (!parts.length && price.total===2000) parts.push('丸ごとダウンロード');
   return parts.join('　');
 }
-
 // ========================================
 // モーダル（購入確認 + 同意チェック + Stripe）
 // ========================================
@@ -1806,22 +1712,18 @@ function openPaymentModal(isAll) {
   state.downloadAll = isAll;
   const count = isAll ? state.session?.event?.count : state.selected.size;
   const price = isAll ? { total: 2000, pack10: 0, pack5: 0, single: 0 } : calcPrice(count);
-
   // 納品方法の判定
   const deliveryLabel = isAll
     ? '📂 フォルダリンク（全データ）'
     : count <= 7
       ? '📎 メール添付'
       : '🔗 ダウンロードリンク';
-
   document.getElementById('modal-title').textContent =
     isAll ? '丸ごとダウンロード' : `${count}枚を購入`;
-
   document.getElementById('modal-desc').textContent =
     isAll
       ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。`
       : `選択した${count}枚の高画質データをダウンロードできます。`;
-
   // 選択写真サムネイル＋番号タグ
   const selectedNums = isAll ? [] : Array.from(state.selected).sort((a,b) => Number(a)-Number(b));
   const photoListHtml = isAll
@@ -1839,7 +1741,6 @@ function openPaymentModal(isAll) {
       <div class="confirm-photos" style="margin-top:8px">${
         selectedNums.map(n => `<span class="confirm-photo-tag">IMG-${n}</span>`).join('')
       }</div>`;
-
   // 価格内訳
   let priceRows = '';
   if (price.pack10) priceRows += `<div class="price-row"><span>10枚セット × ${price.pack10}</span><span>¥${(price.pack10*900).toLocaleString()}</span></div>`;
@@ -1847,19 +1748,16 @@ function openPaymentModal(isAll) {
   if (price.single) priceRows += `<div class="price-row"><span>単品 × ${price.single}枚</span><span>¥${(price.single*140).toLocaleString()}</span></div>`;
   if (isAll)        priceRows += `<div class="price-row"><span>全データ一括</span><span>¥2,000</span></div>`;
   priceRows += `<div class="price-row total"><span>合計</span><span>¥${price.total.toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
-
   const html = `
     <!-- 選択写真 -->
     <div class="confirm-section">
       <h4>選択した写真</h4>
       ${photoListHtml}
     </div>
-
     <!-- 金額内訳 -->
     <div class="price-breakdown" style="margin-bottom:12px">
       ${priceRows}
     </div>
-
     <!-- 納品方法 -->
     <div class="confirm-section">
       <h4>納品方法</h4>
@@ -1872,7 +1770,6 @@ function openPaymentModal(isAll) {
             : 'お支払い完了後、ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
       </div>
     </div>
-
     <!-- メールアドレス -->
     <div style="margin-bottom:16px">
       <label style="display:block;font-size:12px;color:var(--bark);margin-bottom:6px">
@@ -1885,7 +1782,6 @@ function openPaymentModal(isAll) {
         onblur="this.style.borderColor='var(--sand)'">
       <p id="email-error" style="font-size:11px;color:var(--danger);margin-top:4px;display:none"></p>
     </div>
-
     <!-- 利用規約同意 -->
     <div class="consent-area">
       <div class="consent-item">
@@ -1902,24 +1798,19 @@ function openPaymentModal(isAll) {
       </div>
     </div>
   `;
-
   document.getElementById('price-breakdown').innerHTML = html;
-
   const btnStripe = document.getElementById('btn-stripe');
   btnStripe.href = '#';
   btnStripe.style.opacity = '0.5';
   btnStripe.style.pointerEvents = 'none';
   btnStripe.onclick = (e) => { e.preventDefault(); doCreatePayment(isAll, 'normal'); };
-
   document.getElementById('modal-overlay').classList.add('visible');
 }
-
 // チェックボックスのクリックバブリングを防ぐ
 function toggleConsent(id) {
   const el = document.getElementById(id);
   if (el) { el.checked = !el.checked; updatePayBtn(); }
 }
-
 // 同意チェック＋メール入力で支払いボタンを有効化
 function updatePayBtn() {
   const email = (document.getElementById('buyer-email')?.value || '').trim();
@@ -1932,12 +1823,10 @@ function updatePayBtn() {
   btn.style.opacity = valid ? '1' : '0.5';
   btn.style.pointerEvents = valid ? 'auto' : 'none';
 }
-
 async function doCreatePayment(isAll, planType) {
   const emailEl = document.getElementById('buyer-email');
   const email = emailEl?.value?.trim();
   const errEl = document.getElementById('email-error');
-
   // メールバリデーション
   if (!email || !email.includes('@') || !email.includes('.')) {
     if (errEl) { errEl.textContent = 'メールアドレスを正しく入力してください'; errEl.style.display = 'block'; }
@@ -1945,7 +1834,6 @@ async function doCreatePayment(isAll, planType) {
     return;
   }
   if (errEl) errEl.style.display = 'none';
-
   // 同意チェック
   if (!document.getElementById('c1')?.checked ||
       !document.getElementById('c2')?.checked ||
@@ -1953,17 +1841,14 @@ async function doCreatePayment(isAll, planType) {
     showToast('すべての項目に同意してください', 'error');
     return;
   }
-
   const btnStripe = document.getElementById('btn-stripe');
   btnStripe.textContent = '決済ページを準備中...';
   btnStripe.style.opacity = '0.7';
   btnStripe.style.pointerEvents = 'none';
-
   try {
     const plan = planType || 'normal';
     const photoNumbers = isAll ? [] : Array.from(state.selected);
     const qty = isAll ? state.session?.event?.count : state.selected.size;
-
     const data = await api('createPayment', {
       eventId: state.selectedEventId,
       token: state.session.token,
@@ -1972,11 +1857,9 @@ async function doCreatePayment(isAll, planType) {
       email: email,
       planType: plan
     });
-
     state.buyerEmail = email;
     state.lastQty = qty;
     state.lastIsAll = isAll;
-
     closeModal();
     window.location.href = data.paymentUrl;
   } catch(e) {
@@ -1986,40 +1869,32 @@ async function doCreatePayment(isAll, planType) {
     btnStripe.style.pointerEvents = 'auto';
   }
 }
-
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('visible');
 }
-
 function onStripeClick() {
   // doCreatePaymentに統合済み
 }
-
 // ========================================
 // A4/A3データ購入モーダル
 // ========================================
 function openPrintModal(planType) {
   const count = state.selected.size;
   if (count === 0) { showToast('写真を選択してください', 'error'); return; }
-
   const planConfig = {
     a4data:  { label: 'A4データ',    unit: 800,   delivery: 'データをメールでお届け（数日以内）',        note: '印刷に適した解像度のデータをお届けします。お好みのプリントサービスや写真屋さんでプリントいただけます。', shipping: false },
     a3data:  { label: 'A3データ',    unit: 1200,  delivery: 'データをメールでお届け（数日以内）',        note: 'A3サイズ印刷に対応した解像度のデータをお届けします。大きく引き伸ばしても美しい仕上がりです。', shipping: false },
     a4print: { label: 'A4プリント',  unit: 3500,  delivery: '富士フイルムのプレミアムプリントでご自宅にお届け', note: '富士フイルムのプレミアムプリントで仕上げてお届けします。最高の銀塩技術で再現された、とっておきの一枚をお気に入りの額に飾ってください。送料¥635（¥5,000以上で無料）。', shipping: true  },
     a4panel: { label: 'A4平滑パネル', unit: 12000, delivery: '富士フイルムのプレミアムプリント＋パネル加工でご自宅にお届け', note: '富士フイルムのプレミアムプリント＋平滑パネル加工でお届けします。最高の銀塩技術で仕上げた写真が、届いたその日から壁に飾れる完成品に。額装不要で、インテリアとしても映えます。送料¥635（¥5,000以上で無料）。', shipping: true  }
   };
-
   const config = planConfig[planType];
   if (!config) return;
-
   const total = config.unit * count;
   const shippingNote = config.shipping && total < 5000 ? '+ 送料¥635' : config.shipping ? '送料無料' : '';
   const selectedNums = Array.from(state.selected).sort((a,b) => Number(a)-Number(b));
-
   document.getElementById('modal-title').textContent = config.label + 'で購入';
   document.getElementById('modal-desc').textContent =
     `選択した${count}枚を${config.label}（¥${config.unit.toLocaleString()}/枚）でご注文します。`;
-
   const thumbsHtml = `<div class="confirm-thumb-grid">${selectedNums.map(n => {
     const photo = state.photos.find(p => p.number === n);
     const thumbUrl = photo && photo.fileId
@@ -2033,25 +1908,21 @@ function openPrintModal(planType) {
   <div class="confirm-photos" style="margin-top:8px">${
     selectedNums.map(n => `<span class="confirm-photo-tag">IMG-${n}</span>`).join('')
   }</div>`;
-
   const html = `
     <div class="confirm-section">
       <h4>選択した写真（${count}枚）</h4>
       ${thumbsHtml}
     </div>
-
     <div class="price-breakdown" style="margin-bottom:12px">
       <div class="price-row"><span>${config.label} × ${count}枚</span><span>¥${total.toLocaleString()}</span></div>
       ${config.shipping ? `<div class="price-row"><span>送料</span><span>${total >= 5000 ? '無料' : '¥635'}</span></div>` : ''}
       <div class="price-row total"><span>合計</span><span>¥${(total + (config.shipping && total < 5000 ? 635 : 0)).toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>
     </div>
-
     <div class="confirm-section">
       <h4>納品方法</h4>
       <div class="confirm-delivery">${config.shipping ? '📦' : '📧'} ${config.delivery}</div>
       <div style="font-size:11px;color:var(--bark);margin-top:6px">${config.note}</div>
     </div>
-
     <div style="margin-bottom:16px">
       <label style="display:block;font-size:12px;color:var(--bark);margin-bottom:6px">送付先メールアドレス</label>
       <input type="email" id="buyer-email" placeholder="example@gmail.com"
@@ -2061,7 +1932,6 @@ function openPrintModal(planType) {
         onblur="this.style.borderColor='var(--sand)'">
       <p id="email-error" style="font-size:11px;color:var(--danger);margin-top:4px;display:none"></p>
     </div>
-
     <div class="consent-area">
       <div class="consent-item">
         <input type="checkbox" id="c1" onchange="updatePayBtn()">
@@ -2077,24 +1947,19 @@ function openPrintModal(planType) {
       </div>
     </div>
   `;
-
   document.getElementById('price-breakdown').innerHTML = html;
-
   const btnStripe = document.getElementById('btn-stripe');
   btnStripe.innerHTML = `💳 ${config.label}を注文する`;
   btnStripe.href = '#';
   btnStripe.style.opacity = '0.5';
   btnStripe.style.pointerEvents = 'none';
   btnStripe.onclick = (e) => { e.preventDefault(); doCreatePayment(false, planType); };
-
   document.getElementById('modal-overlay').classList.add('visible');
 }
-
 // モーダル外クリックで閉じる
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
   if (e.target === this) closeModal();
 });
-
 // ========================================
 // 購入完了画面
 // ========================================
@@ -2104,7 +1969,6 @@ function showPaidScreen() {
   document.getElementById('cart-panel').classList.remove('visible');
   document.getElementById('help-bar').style.bottom = '0';
 }
-
 function goBackFromPaid() {
   state.selected.clear();
   state.buyerEmail = null;
@@ -2112,7 +1976,6 @@ function goBackFromPaid() {
   loadEvents();
   document.getElementById('btn-logout').classList.remove('visible');
 }
-
 // ========================================
 // ライトボックス
 // ========================================
@@ -2125,32 +1988,26 @@ function openLightbox(num) {
   lbRender();
   document.getElementById('lightbox').classList.add('visible');
 }
-
 // ライトボックスの表示を現在のlightboxIndexで更新
 function lbRender() {
   const idx = state.lightboxIndex;
   if (idx === null || !state.photos[idx]) return;
   const photo = state.photos[idx];
-
   // 画像
   const img = document.getElementById('lightbox-img');
   img.src = 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w1200';
-
   // 写真番号
   document.getElementById('lightbox-num').textContent =
     'IMG-' + photo.number + '  (' + (idx + 1) + ' / ' + state.photos.length + ')';
-
   // 前へ/次へボタンの活性状態
   document.getElementById('lb-prev').disabled = (idx === 0);
   document.getElementById('lb-next').disabled = (idx === state.photos.length - 1);
-
   // 選択ボタンの表示
   const btn = document.getElementById('lb-select-btn');
   const isSelected = state.selected.has(photo.number);
   btn.textContent = isSelected ? '✓ 選択中' : 'この写真を選ぶ';
   btn.classList.toggle('selected-state', isSelected);
 }
-
 // 前へ/次へ
 function lbNav(dir) {
   const next = state.lightboxIndex + dir;
@@ -2158,7 +2015,6 @@ function lbNav(dir) {
   state.lightboxIndex = next;
   lbRender();
 }
-
 // ライトボックス内での選択トグル
 function lbToggleSelect() {
   const photo = state.photos[state.lightboxIndex];
@@ -2166,14 +2022,11 @@ function lbToggleSelect() {
   toggleSelect(photo.number); // 既存関数をそのまま呼ぶ
   lbRender(); // 選択ボタンの表示を更新
 }
-
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('visible');
 }
-
 // ESCキーで閉じる
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-
 // ========================================
 // ログアウト
 // ========================================
@@ -2188,7 +2041,6 @@ function logout() {
   showScreen('login');
   loadEvents();
 }
-
 // ========================================
 // 画面切り替え
 // ========================================
@@ -2196,7 +2048,6 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
 }
-
 // ========================================
 // GAS API呼び出し（GETリクエスト）
 // ========================================
@@ -2204,19 +2055,15 @@ async function api(action, params = {}) {
   const url = new URL(CONFIG.GAS_URL);
   url.searchParams.set('action', action);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-
   const res = await fetch(url.toString(), {
     method: 'GET',
     redirect: 'follow'
   });
-
   if (!res.ok) throw new Error(`通信エラー: ${res.status}`);
-
   const data = await res.json();
   if (!data.ok) throw new Error(data.error || '不明なエラー');
   return data;
 }
-
 // ========================================
 // トースト通知
 // ========================================
@@ -2227,7 +2074,6 @@ function showToast(msg, type = 'success') {
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(() => t.classList.remove('visible'), 3500);
 }
-
 // ========================================
 // Lazy Load（Intersection Observer）
 // ========================================
@@ -2245,17 +2091,14 @@ function initLazyLoad() {
       }
     });
   }, { rootMargin: '200px' });
-
   document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
 }
-
 // ========================================
 // ユーティリティ
 // ========================================
 function escHtml(str) {
   return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
 function formatDate(d) {
   if (!d) return '';
   try {
