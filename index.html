@@ -341,6 +341,30 @@ body::before {
   background: #b85e2e;
   box-shadow: 0 4px 16px rgba(212,114,58,0.4);
 }
+.btn-fav-view {
+  font-size: 12px;
+  color: var(--dusk);
+  background: none;
+  border: 1px solid var(--dusk);
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: var(--sans);
+}
+.btn-fav-view:hover { background: var(--dusk); color: white; }
+#fav-count-badge:not(:empty) { margin-left: 4px; font-weight: 600; }
+.deadline-banner {
+  max-width: 1200px;
+  margin: 0 auto 16px;
+  padding: 10px 40px;
+  font-size: 12px;
+  color: #8a5a1a;
+  background: #FFF3E0;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+}
 /* グリッド */
 .photo-grid {
   max-width: 1200px;
@@ -402,6 +426,24 @@ body::before {
   line-height: 1;
 }
 .photo-item.selected .photo-check { display: flex; }
+.photo-fav-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  background: rgba(0,0,0,0.4);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-fav-btn.active { background: rgba(212,58,120,0.85); }
 .photo-num {
   position: absolute;
   bottom: 8px;
@@ -468,6 +510,25 @@ body::before {
   align-items: center;
   justify-content: center;
 }
+.lightbox-fav-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 20;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.lightbox-fav-btn.active { background: rgba(212,58,120,0.85); }
 .lightbox-num {
   position: absolute;
   bottom: 16px;
@@ -1028,6 +1089,16 @@ body.cart-open .help-bar { bottom: 80px; }
   margin-bottom: 24px;
   line-height: 1.7;
 }
+.upsell-banner {
+  font-size: 12px;
+  color: var(--bark);
+  background: #FFF8F0;
+  border-left: 3px solid var(--accent);
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
 .btn-back-top {
   padding: 14px 32px;
   background: none;
@@ -1228,6 +1299,9 @@ body.cart-open .help-bar { bottom: 80px; }
     </div>
     <div class="gallery-actions">
       <span class="selection-info" id="selection-info"></span>
+      <button class="btn-fav-view" id="btn-fav-view" onclick="openFavoritesModal()">
+        ♡ お気に入り<span id="fav-count-badge"></span>
+      </button>
       <a href="album.html" class="btn-guide">写真の楽しみ方ガイド →</a>
       <button class="btn-download-all" onclick="openPaymentModal(true)">
         📦 丸ごとダウンロード ¥2,000
@@ -1235,8 +1309,9 @@ body.cart-open .help-bar { bottom: 80px; }
     </div>
   </div>
   <div class="gallery-notice">
-    📌 写真をタップして選択し、下のボタンから購入方法を選んでください。スマホサイズ・A4データなど、異なるサイズは別々にご決済ください。
+    📌 写真をタップすると全体表示されます。気に入ったら「この写真を選ぶ」でカートに追加、左上のハートでお気に入りに保存できます。
   </div>
+  <div class="deadline-banner" id="deadline-banner" style="display:none"></div>
   <div style="background:#fff8e1;border-left:4px solid #f9a825;padding:10px 16px;margin:0 0 8px;font-size:0.85rem;color:#555;line-height:1.6">
     📱 写真が表示されない場合は以下をお試しください。<br>
     ① ページをリロード（更新）する<br>
@@ -1367,10 +1442,23 @@ body.cart-open .help-bar { bottom: 80px; }
   <div class="lightbox-hint" id="lightbox-hint">👈👉 スワイプで前後の写真へ／写真をタップすると閉じます</div>
   <img id="lightbox-img" src="" alt="">
   <button class="lightbox-close" onclick="event.stopPropagation();closeLightbox()">✕</button>
+  <button class="lightbox-fav-btn" id="lb-fav-btn" onclick="event.stopPropagation();lbToggleFavorite()" title="お気に入り">♡</button>
   <button class="lightbox-nav prev" id="lb-prev" onclick="event.stopPropagation();lbNav(-1)" aria-label="前の写真">&#8249;</button>
   <button class="lightbox-nav next" id="lb-next" onclick="event.stopPropagation();lbNav(1)" aria-label="次の写真">&#8250;</button>
   <button class="lightbox-select-btn" id="lb-select-btn" onclick="event.stopPropagation();lbToggleSelect()"></button>
   <div class="lightbox-num" id="lightbox-num"></div>
+</div>
+<!-- ========== お気に入りモーダル ========== -->
+<div class="modal-overlay" id="fav-view-overlay">
+  <div class="modal-box">
+    <h3>お気に入り</h3>
+    <p id="fav-view-count-text"></p>
+    <div class="confirm-thumb-grid" id="fav-view-grid" style="max-height:280px;grid-template-columns:repeat(auto-fill, minmax(72px, 1fr))"></div>
+    <p style="font-size:11px;color:var(--bark);margin-top:10px;margin-bottom:16px">写真をタップすると全体表示、ハートをタップするとお気に入りを外せます</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeFavoritesModal()">閉じる</button>
+    </div>
+  </div>
 </div>
 <!-- ========== トースト通知 ========== -->
 <div class="toast" id="toast"></div>
@@ -1407,6 +1495,7 @@ const state = {
   session: null,
   photos: [],
   selected: new Set(),
+  favorites: new Set(), // お気に入り（購入とは別の一時ブックマーク）
   selectMode: 'normal', // 'normal' / 'a4data' / 'a3data' / 'a4print' / 'a4panel'
   downloadAll: false,
   buyerEmail: null,
@@ -1549,11 +1638,36 @@ async function enterGallery() {
   // 選択モードをリセット
   state.selectMode = null; // 未選択状態に
   state.selected.clear();
+  state.favorites.clear();
+  updateFavCountBadge();
   const ev = state.session.event;
   document.getElementById('gallery-event-name').textContent = ev.name;
   document.getElementById('gallery-subtitle').textContent =
-    `${ev.count}枚 ｜ 写真をタップして選択 → まとめて購入できます`;
+    `${ev.count}枚 ｜ 写真をタップすると全体表示できます`;
+  renderDeadlineBanner(ev);
   await loadPhotos();
+}
+// 閲覧・購入期限のカウントダウン表示
+// ※ GAS側のlogin/listEventsレスポンスに closeDate（閲覧終了日）等の項目が
+//   含まれていない場合は何も表示されない（バックエンド側の対応が別途必要）
+function renderDeadlineBanner(ev) {
+  const banner = document.getElementById('deadline-banner');
+  if (!banner) return;
+  const raw = ev.closeDate || ev.viewEndDate || ev.endDate || ev.purchaseDeadline || ev.deadline;
+  if (!raw) { banner.style.display = 'none'; return; }
+  const deadline = new Date(raw);
+  if (isNaN(deadline.getTime())) { banner.style.display = 'none'; return; }
+  const now = new Date();
+  const diffMs = deadline - now;
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  if (diffMs <= 0) {
+    banner.textContent = '⏰ このギャラリーの閲覧・購入期限は終了しています';
+  } else if (diffDays <= 1) {
+    banner.textContent = '⏰ 閲覧・購入期限は本日までです！お早めにどうぞ';
+  } else {
+    banner.textContent = `⏰ 閲覧・購入期限まであと${diffDays}日（${formatDate(raw)}まで）`;
+  }
+  banner.style.display = 'block';
 }
 async function loadPhotos() {
   const grid = document.getElementById('photo-grid');
@@ -1586,6 +1700,7 @@ function renderGrid() {
         onload="this.style.display='block';document.getElementById('skel-${p.number}').style.display='none'"
         onerror="(function(img,num){var retry=parseInt(img.dataset.retry||0);if(retry<3){img.dataset.retry=retry+1;setTimeout(function(){img.src='https://drive.google.com/thumbnail?id=${p.fileId}&sz=w400&t='+Date.now();},1000*Math.pow(2,retry));}else{document.getElementById('skel-'+num).style.background='var(--sand)';document.getElementById('skel-'+num).style.animation='none';}})(this,'${p.number}')"
       >
+      <button class="photo-fav-btn${state.favorites.has(p.number) ? ' active' : ''}" id="fav-${p.number}" onclick="event.stopPropagation();toggleFavorite('${p.number}')" title="お気に入り">${state.favorites.has(p.number) ? '♥' : '♡'}</button>
       <div class="photo-check"></div>
       <span class="photo-num">IMG-${p.number}</span>
     </div>
@@ -1687,6 +1802,60 @@ function removeFromCart(num) {
 }
 document.getElementById('cart-view-overlay')?.addEventListener('click', function(e) {
   if (e.target === this) closeCartViewModal();
+});
+// ========================================
+// お気に入り管理（購入とは別のブックマーク）
+// ========================================
+function toggleFavorite(num) {
+  const btn = document.getElementById('fav-' + num);
+  if (state.favorites.has(num)) {
+    state.favorites.delete(num);
+    if (btn) { btn.classList.remove('active'); btn.textContent = '♡'; }
+  } else {
+    state.favorites.add(num);
+    if (btn) { btn.classList.add('active'); btn.textContent = '♥'; }
+  }
+  updateFavCountBadge();
+  if (document.getElementById('fav-view-overlay')?.classList.contains('visible')) renderFavoritesModal();
+}
+function lbToggleFavorite() {
+  const photo = state.photos[state.lightboxIndex];
+  if (!photo) return;
+  toggleFavorite(photo.number);
+  const btn = document.getElementById('lb-fav-btn');
+  const isFav = state.favorites.has(photo.number);
+  btn.textContent = isFav ? '♥' : '♡';
+  btn.classList.toggle('active', isFav);
+}
+function updateFavCountBadge() {
+  const badge = document.getElementById('fav-count-badge');
+  if (badge) badge.textContent = state.favorites.size > 0 ? ` (${state.favorites.size})` : '';
+}
+function openFavoritesModal() {
+  if (state.favorites.size === 0) { showToast('お気に入りはまだありません', 'error'); return; }
+  renderFavoritesModal();
+  document.getElementById('fav-view-overlay').classList.add('visible');
+}
+function closeFavoritesModal() {
+  document.getElementById('fav-view-overlay')?.classList.remove('visible');
+}
+function renderFavoritesModal() {
+  const grid = document.getElementById('fav-view-grid');
+  const countText = document.getElementById('fav-view-count-text');
+  if (!grid || !countText) return;
+  const nums = Array.from(state.favorites).sort((a, b) => Number(a) - Number(b));
+  countText.textContent = `${nums.length}枚のお気に入り`;
+  grid.innerHTML = nums.map(n => {
+    const photo = state.photos.find(p => p.number === n);
+    const thumbUrl = photo && photo.fileId ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120' : '';
+    return `<div class="confirm-thumb" style="cursor:pointer" onclick="closeFavoritesModal();openLightbox('${n}')">
+      ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
+      <div class="confirm-thumb-num" onclick="event.stopPropagation();toggleFavorite('${n}')">♥ IMG-${n}</div>
+    </div>`;
+  }).join('');
+}
+document.getElementById('fav-view-overlay')?.addEventListener('click', function(e) {
+  if (e.target === this) closeFavoritesModal();
 });
 // ========================================
 // 選択管理
@@ -1840,6 +2009,14 @@ function openPaymentModal(isAll) {
             ? 'お支払い完了後、写真データをメールに直接添付してお送りします'
             : 'お支払い完了後、ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
       </div>
+    </div>
+    <!-- アップセル -->
+    <div class="upsell-banner">
+      🖼 とっておきの1枚は、A4プリントやパネルにするとより特別な形で残せます。${
+        state.favorites.size > 0
+          ? `お気に入りに${state.favorites.size}枚保存されています。`
+          : ''
+      }ご注文はこの決済とは別に、ギャラリーからいつでも追加できます。
     </div>
     <!-- メールアドレス -->
     <div style="margin-bottom:16px">
@@ -2088,6 +2265,11 @@ function lbRender() {
   const isSelected = state.selected.has(photo.number);
   btn.textContent = isSelected ? '✓ 選択中' : 'この写真を選ぶ';
   btn.classList.toggle('selected-state', isSelected);
+  // お気に入りボタンの表示
+  const favBtn = document.getElementById('lb-fav-btn');
+  const isFav = state.favorites.has(photo.number);
+  favBtn.textContent = isFav ? '♥' : '♡';
+  favBtn.classList.toggle('active', isFav);
 }
 // 前へ/次へ
 function lbNav(dir) {
@@ -2145,13 +2327,26 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     const idx = state.lightboxIndex;
     const dir = dragDx < 0 ? 1 : -1;
     const canMove = dragDx < 0 ? idx < state.photos.length - 1 : idx > 0;
-    const threshold = window.innerWidth / 2; // 中央を越えたら切り替え
+    const threshold = window.innerWidth * 0.3; // 最初(60px)と中央(50%)の中間くらい
     img.style.transition = 'transform 0.22s ease-out';
     if (horizontal && Math.abs(dragDx) > threshold && canMove) {
       // 画面外までスライドさせてから写真を切り替え、反対側からスライドインさせる
       const flyTo = dragDx < 0 ? -window.innerWidth : window.innerWidth;
+      const nextPhoto = state.photos[idx + dir];
       img.style.transform = `translateX(${flyTo}px)`;
-      setTimeout(() => {
+      // 次の写真を先読みしてから切り替える。先読みせずに切り替えると
+      // 新しい画像の読み込み待ちの間、古い写真がもう一度表示されて
+      // 「同じ写真が2枚送られたように見える」瞬間ができてしまうため。
+      const preload = new Promise((resolve) => {
+        if (!nextPhoto || !nextPhoto.fileId) { resolve(); return; }
+        const im = new Image();
+        im.onload = resolve;
+        im.onerror = resolve;
+        im.src = 'https://drive.google.com/thumbnail?id=' + nextPhoto.fileId + '&sz=w1200';
+        setTimeout(resolve, 600); // 読み込みが遅い場合の保険
+      });
+      const slideOutDone = new Promise((resolve) => setTimeout(resolve, 220));
+      Promise.all([preload, slideOutDone]).then(() => {
         lbNav(dir);
         img.style.transition = 'none';
         img.style.transform = `translateX(${-flyTo}px)`;
@@ -2159,7 +2354,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
           img.style.transition = 'transform 0.22s ease-out';
           img.style.transform = 'translateX(0)';
         });
-      }, 220);
+      });
     } else {
       // しきい値未満、または端の写真なら中央に戻す
       img.style.transform = 'translateX(0)';
