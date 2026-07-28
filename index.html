@@ -2028,6 +2028,31 @@ function closeLightbox() {
 // ESCキーで閉じる
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 // ========================================
+// ライトボックス スワイプ対応（スマホ用）
+// ========================================
+(function() {
+  const lb = document.getElementById('lightbox');
+  let touchStartX = 0, touchStartY = 0, touching = false;
+  lb.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    touching = true;
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  lb.addEventListener('touchend', (e) => {
+    if (!touching) return;
+    touching = false;
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+    // 横方向の移動が縦方向より十分大きく、50px以上動いていればスワイプとみなす
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0) lbNav(1);  // 左スワイプ → 次の写真へ
+      else lbNav(-1);        // 右スワイプ → 前の写真へ
+    }
+  }, { passive: true });
+})();
+// ========================================
 // ログアウト
 // ========================================
 function logout() {
