@@ -1552,12 +1552,55 @@ const state = {
   lightboxNums: null, // ライトボックスでスワイプ移動できる写真番号の並び（通常は全写真／お気に入りから開いた時はお気に入りのみ）
 };
 // ========================================
+// カートの永続化（localStorage）
+// ページやタブを閉じてから後で開いても選択中の写真が消えないようにする。
+// イベントIDごとに別キーで保存するので、別イベントを見ても選択が混ざらない。
+// ========================================
+function cartStorageKey(eventId) {
+  return 'osanpo_cart_' + eventId;
+}
+function saveCartToStorage() {
+  if (!state.selectedEventId) return;
+  const key = cartStorageKey(state.selectedEventId);
+  if (state.selected.size === 0) {
+    localStorage.removeItem(key);
+    return;
+  }
+  try {
+    localStorage.setItem(key, JSON.stringify({
+      photos: Array.from(state.selected),
+      ts: Date.now()
+    }));
+  } catch(e) { /* 保存容量超過等は無視し、カート機能自体は継続動作させる */ }
+}
+function loadCartFromStorage(eventId) {
+  if (!eventId) return [];
+  try {
+    const raw = localStorage.getItem(cartStorageKey(eventId));
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    return Array.isArray(data.photos) ? data.photos : [];
+  } catch(e) { return []; }
+}
+function clearCartStorage(eventId) {
+  if (!eventId) return;
+  localStorage.removeItem(cartStorageKey(eventId));
+}
+// ========================================
 // 初期化
 // ========================================
 window.addEventListener('DOMContentLoaded', async () => {
   // ?paid=1 の場合は完了画面を表示
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('paid') === '1') {
+    // 購入完了後は、そのイベントで保存していたカートをクリアする（購入済み写真を次回に残さないため）
+    try {
+      const savedForPaid = sessionStorage.getItem('osanpo_session');
+      if (savedForPaid) {
+        const sForPaid = JSON.parse(savedForPaid);
+        if (sForPaid.event && sForPaid.event.id) clearCartStorage(sForPaid.event.id);
+      }
+    } catch(e) {}
     showPaidScreen();
     // URLをきれいにする
     history.replaceState({}, '', window.location.pathname);
@@ -1685,7 +1728,8 @@ async function enterGallery() {
   document.getElementById('btn-logout').classList.add('visible');
   // 選択モードをリセット
   state.selectMode = null; // 未選択状態に
-  state.selected.clear();
+  // カートは端末に保存されていれば復元する（一度選んだ写真を家族に見せてから購入できるように）
+  state.selected = new Set(loadCartFromStorage(state.selectedEventId));
   state.favorites.clear();
   updateFavCountBadge();
   const ev = state.session.event;
@@ -1727,6 +1771,7 @@ async function loadPhotos() {
     });
     state.photos = data.photos || [];
     renderGrid();
+    updateCart(); // 保存されていたカートがあればカートバーを復元表示
     // パスワード入力画面から切り替わった直後は、上の通知類に隠れて写真が見えないことがあるため
     // 写真グリッドの位置まで自動でスクロールする
     if (state.photos.length > 0) {
@@ -1761,6 +1806,10 @@ function renderGrid() {
     </div>
   `).join('');
   initLazyLoad();
+  // 保存されていたカートの選択状態をグリッドの見た目に反映
+  state.selected.forEach(num => {
+    document.getElementById('item-' + num)?.classList.add('selected');
+  });
 }
 function clearSelection() {
   state.selected.forEach(num => {
@@ -1768,6 +1817,7 @@ function clearSelection() {
   });
   state.selected.clear();
   updateCart();
+  saveCartToStorage();
   showToast('選択をクリアしました', 'success');
 }
 // ========================================
@@ -1852,6 +1902,7 @@ function removeFromCart(num) {
   state.selected.delete(num);
   document.getElementById('item-' + num)?.classList.remove('selected');
   updateCart();
+  saveCartToStorage();
   if (state.selected.size === 0) { closeCartViewModal(); return; }
   renderCartView();
 }
@@ -1937,6 +1988,7 @@ function addAllFavoritesToCart() {
     added++;
   });
   updateCart();
+  saveCartToStorage();
   if (blocked) {
     showLimitBanner();
     showToast(`${added}枚をカートに追加しました（19枚上限のため一部は追加できませんでした）`, 'error');
@@ -1963,6 +2015,7 @@ function toggleSelect(num) {
     document.getElementById('item-' + num)?.classList.add('selected');
   }
   updateCart();
+  saveCartToStorage();
 }
 function updateCart() {
   const count = state.selected.size;
@@ -2115,10 +2168,11 @@ function openPaymentModal(isAll) {
       </label>
       <input type="email" id="buyer-email" placeholder="example@gmail.com"
         style="width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:var(--sans);background:var(--cream);color:var(--deep);outline:none;transition:border-color 0.2s"
-        oninput="updatePayBtn()"
+        oninput="updatePayBtn();updateCarrierEmailHint()"
         onfocus="this.style.borderColor='var(--forest)'"
         onblur="this.style.borderColor='var(--sand)'">
       <p id="email-error" style="font-size:11px;color:var(--danger);margin-top:4px;display:none"></p>
+      <p id="carrier-email-hint" style="display:none;font-size:11px;color:#2d5a3d;background:#EDF3ED;border-left:3px solid var(--forest);border-radius:0 6px 6px 0;padding:8px 10px;margin-top:8px;line-height:1.6">📱 docomo・au・softbankのメールアドレスですね。写真は添付ではなく「ダウンロードリンク」形式でお送りします。Googleアカウントがなくても大丈夫です。メール内のリンクをタップ→表示されたページの「ダウンロード」ボタンを押すと保存できます。</p>
     </div>
     <!-- 利用規約同意 -->
     <div class="consent-area">
@@ -2160,6 +2214,16 @@ function updatePayBtn() {
   if (!btn) return;
   btn.style.opacity = valid ? '1' : '0.5';
   btn.style.pointerEvents = valid ? 'auto' : 'none';
+}
+// キャリアメール（docomo/au/softbank）宛の場合、リンク配信になる旨を案内表示する
+const CARRIER_EMAIL_DOMAINS = ['docomo.ne.jp', 'ezweb.ne.jp', 'au.com', 'softbank.ne.jp', 'i.softbank.jp'];
+function updateCarrierEmailHint() {
+  const email = (document.getElementById('buyer-email')?.value || '').trim().toLowerCase();
+  const hint = document.getElementById('carrier-email-hint');
+  if (!hint) return;
+  const domain = email.split('@')[1] || '';
+  const isCarrier = CARRIER_EMAIL_DOMAINS.some(d => domain === d);
+  hint.style.display = isCarrier ? 'block' : 'none';
 }
 async function doCreatePayment(isAll, planType) {
   const emailEl = document.getElementById('buyer-email');
@@ -2265,10 +2329,11 @@ function openPrintModal(planType) {
       <label style="display:block;font-size:12px;color:var(--bark);margin-bottom:6px">送付先メールアドレス</label>
       <input type="email" id="buyer-email" placeholder="example@gmail.com"
         style="width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:var(--sans);background:var(--cream);color:var(--deep);outline:none;transition:border-color 0.2s"
-        oninput="updatePayBtn()"
+        oninput="updatePayBtn();updateCarrierEmailHint()"
         onfocus="this.style.borderColor='var(--forest)'"
         onblur="this.style.borderColor='var(--sand)'">
       <p id="email-error" style="font-size:11px;color:var(--danger);margin-top:4px;display:none"></p>
+      <p id="carrier-email-hint" style="display:none;font-size:11px;color:#2d5a3d;background:#EDF3ED;border-left:3px solid var(--forest);border-radius:0 6px 6px 0;padding:8px 10px;margin-top:8px;line-height:1.6">📱 docomo・au・softbankのメールアドレスですね。写真は添付ではなく「ダウンロードリンク」形式でお送りします。Googleアカウントがなくても大丈夫です。メール内のリンクをタップ→表示されたページの「ダウンロード」ボタンを押すと保存できます。</p>
     </div>
     <div class="consent-area">
       <div class="consent-item">
@@ -2308,6 +2373,7 @@ function showPaidScreen() {
   document.getElementById('help-bar').style.bottom = '0';
 }
 function goBackFromPaid() {
+  if (state.selectedEventId) clearCartStorage(state.selectedEventId);
   state.selected.clear();
   state.buyerEmail = null;
   showScreen('login');
