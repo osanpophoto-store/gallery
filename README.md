@@ -804,3 +804,36 @@ Code.gsは購入者への送信先に **Stripeの `customer_details.email`（決
 ### 補足: Stripe MCP連携が切れていた件
 
 同日の日次チェック実行時、Stripe MCPコネクタがセッションから消えており、Stripe側の記録漏れチェックが一時実行できなかった。カスタムコネクタとして `https://mcp.stripe.com` を再追加し、おさんぽフォト株式会社（`acct_1T22mgF6UULduc0C`）でOAuth再認証して復旧済み。
+
+---
+
+## 2026/09/21 Stripe Webhookエラーメールの調査（おさんぽフォトは無関係・別アカウントeducareの問題だった）
+
+「Stripeから大事そうなメールが来た」という相談から調査。件名は `Stripe Webhook の配信に関する問題: https://script.google.com`。結論として**おさんぽフォトのシステムには一切影響がなく**、原因は同一Gmailで運用している別事業のStripeアカウントだった。
+
+### ⚠️ 次回同じメールが来たときの最初の一手
+
+**メール本文のアカウントIDを必ず確認すること。** おさんぽフォト以外のアカウントである可能性がある。
+
+| アカウント | ID | Webhook URL | 備考 |
+|---|---|---|---|
+| おさんぽフォト株式会社 | `acct_1T22mgF6UULduc0C` | `AKfycbwv49my...` | `we_1TObHf...` / `status: disabled` / 想定内・実害なし |
+| educare（jumpup-nagoya等） | `acct_1UBZiaEUv5R0Gegj` | `AKfycbxw3QIz...` | 別事業。月謝サブスク決済システム |
+
+GAS URLの `AKfycb` に続く数文字を見るだけでどちらのシステムか判別できる。
+
+### おさんぽフォト側の確認結果（実害ゼロ）
+
+9/16〜9/20の決済12件をStripeのCheckout Sessionとpurchase_logで突き合わせ、**12件すべて「完了」**でフォルフィルメント漏れなしを確認。そもそも注文処理は `checkNewPayments` の1分ポーリングが担っており、Webhookは使っていない（「Stripe設定」セクション参照）。
+
+### educare側の原因と対応
+
+- GASのウェブアプリはPOSTに対して200ではなく302リダイレクトを返すため、Stripeは配信失敗と判定する。トークンやURLの誤りではなく**構造的に必ず失敗する**
+- GAS側の処理自体は毎回完走していた（実行ログで `doPost` が「完了」。深夜の実行＝Stripeの再送）
+- `processStripeEvent` に冪等性チェックがなく、再送のたびにスタッフへの通知メールと保護者へのLINEプッシュが重複送信される状態だった
+- 対応: 処理済み `event.id` を台帳シートに記録する冪等性チェックを追加し、Stripe APIを5分おきにポーリングする `pollStripeEvents()` へ移行。Webhookエンドポイント `we_1UGJ7f...` は `disabled` 化した
+- あわせて `checkout.session.expired` が既存会員のステータスを「入会金支払い済み」→「決済失敗（要フォロー）」に誤って上書きするバグも修正
+
+### 教訓
+
+READMEに「StripeからWebhookエラーのメールが届いても無視してOK」と書いてあるが、**これはおさんぽフォトのアカウントに限った話**。他アカウントのWebhookエラーは本物の不具合である可能性があるので、アカウントIDを確認してから判断すること。
