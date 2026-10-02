@@ -1480,6 +1480,10 @@ body.cart-open .help-bar { bottom: 80px; }
       ※ メールの送信には最大1分程度かかる場合があります。<br>
       しばらく経っても届かない場合はお問い合わせください。
     </p>
+    <div id="selfhelp-box" style="display:none;margin:4px 0 16px;padding:14px;border:1.5px dashed var(--sand,#E0D8C8);border-radius:12px;background:var(--cream,#FBF8F2)">
+      <button type="button" class="btn-back-top" style="margin:0;background:#fff;color:var(--forest);border:1.5px solid var(--forest)" onclick="selfHelpRetry=0;openSelfHelp()">📭 メールが届かない方はこちら</button>
+      <div id="selfhelp-panel" style="display:none;margin-top:12px"></div>
+    </div>
     <button class="btn-back-top" onclick="goBackFromPaid()">トップに戻る</button>
   </div>
 </main>
@@ -2366,11 +2370,118 @@ document.getElementById('modal-overlay').addEventListener('click', function(e) {
 // ========================================
 // 購入完了画面
 // ========================================
+// ============================================================
+// 購入後の自己解決（メールが届かない方へ：再送・この画面からダウンロード）
+// success_url に付く ref / exp / sig（GAS側でHMAC署名済み）を使う。決済IDはURLに出ない。
+// ============================================================
+const ORDER_REF_KEY = 'osanpo_order_ref';
+let selfHelpRetry = 0;
+let selfHelpTimer = null;
+function selfHelpEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function getOrderParams() {
+  const p = new URLSearchParams(window.location.search);
+  let o = null;
+  if (p.get('ref') && p.get('exp') && p.get('sig')) {
+    o = { ref: p.get('ref'), exp: p.get('exp'), sig: p.get('sig') };
+    try { sessionStorage.setItem(ORDER_REF_KEY, JSON.stringify(o)); } catch (e) {}
+  } else {
+    try { o = JSON.parse(sessionStorage.getItem(ORDER_REF_KEY) || 'null'); } catch (e) {}
+  }
+  return o;
+}
+function initSelfHelp() {
+  const box = document.getElementById('selfhelp-box');
+  if (!box) return;
+  box.style.display = getOrderParams() ? 'block' : 'none';
+}
+function selfHelpLineHtml() {
+  return '<p style="font-size:12px;color:var(--mist,#7A7A7A);margin-top:12px;line-height:1.7">それでも解決しない場合は <a href="https://lin.ee/Y2WBhzF" style="color:var(--forest)">公式LINE</a> へお問い合わせください。</p>';
+}
+async function openSelfHelp() {
+  const o = getOrderParams();
+  const panel = document.getElementById('selfhelp-panel');
+  if (!o || !panel) return;
+  clearTimeout(selfHelpTimer);
+  panel.style.display = 'block';
+  panel.innerHTML = '<p style="font-size:13px;line-height:1.8">ご注文を確認しています…</p>';
+  try {
+    const d = await api('orderStatus', o);
+    if (d.status === '未記録' || d.status === '処理中') {
+      if (selfHelpRetry < 12) {
+        selfHelpRetry++;
+        panel.innerHTML = '<p style="font-size:13px;line-height:1.8">⏳ ただいまお写真を準備しています（お支払いから1〜2分ほどかかります）。<br>このままお待ちください。自動で確認し直します…</p>';
+        selfHelpTimer = setTimeout(openSelfHelp, 10000);
+      } else {
+        panel.innerHTML = '<p style="font-size:13px;line-height:1.8">お写真の準備に時間がかかっています。少し時間をおいて、もう一度このボタンを押してください。</p>' + selfHelpLineHtml();
+      }
+      return;
+    }
+    selfHelpRetry = 0;
+    let html = '<div style="font-size:13px;line-height:1.9;text-align:left">';
+    html += '<div><strong>' + selfHelpEsc(d.eventName) + '</strong>（' + selfHelpEsc(d.qty) + '枚・' + selfHelpEsc(d.delivery) + '）</div>';
+    html += '<div>送信先: ' + (d.emailsMasked || []).map(selfHelpEsc).join(' / ') + '</div>';
+    if (d.sentAt) html += '<div>送信日時: ' + selfHelpEsc(d.sentAt) + '</div>';
+    if (d.status === 'エラー') html += '<div style="color:var(--danger,#c0392b)">送信でエラーが発生しています。下のボタンからもう一度お送りできます。</div>';
+    html += '<p style="font-size:12px;margin:8px 0 0;color:#2d5a3d;background:#EDF3ED;border-radius:6px;padding:8px 10px">📌 迷惑メールフォルダもご確認ください。キャリアメールの方は <strong>@osanpophoto-store.com</strong> からの受信を許可してから「もう一度送る」を押してください。</p>';
+    html += '</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">';
+    if (d.canResend) html += '<button type="button" class="btn-back-top" style="margin:0" onclick="selfHelpResend(this)">📧 もう一度メールを送る</button>';
+    if (d.canDownload) html += '<button type="button" class="btn-back-top" style="margin:0" onclick="selfHelpFiles(this)">📥 この画面から写真をダウンロード</button>';
+    html += '</div><div id="selfhelp-result"></div>' + selfHelpLineHtml();
+    panel.innerHTML = html;
+  } catch (e) {
+    panel.innerHTML = '<p style="font-size:13px;line-height:1.8;color:var(--danger,#c0392b)">' + selfHelpEsc(e.message) + '</p>' + selfHelpLineHtml();
+  }
+}
+async function selfHelpResend(btn) {
+  const o = getOrderParams();
+  const out = document.getElementById('selfhelp-result');
+  if (!o) return;
+  btn.disabled = true;
+  try {
+    const d = await api('resendOrder', o);
+    if (out) out.innerHTML = '<p style="font-size:13px;line-height:1.8;margin-top:10px">✅ ' + (d.sentTo || []).map(selfHelpEsc).join(' / ') + ' にお送りしました。数分以内に届かない場合は、下の「この画面から写真をダウンロード」をお使いください。</p>';
+    showToast('メールを再送しました');
+  } catch (e) {
+    if (out) out.innerHTML = '<p style="font-size:13px;line-height:1.8;margin-top:10px;color:var(--danger,#c0392b)">' + selfHelpEsc(e.message) + '</p>';
+    btn.disabled = false;
+  }
+}
+async function selfHelpFiles(btn) {
+  const o = getOrderParams();
+  const out = document.getElementById('selfhelp-result');
+  if (!o || !out) return;
+  btn.disabled = true;
+  out.innerHTML = '<p style="font-size:13px;margin-top:10px">準備しています…</p>';
+  try {
+    const d = await api('orderFiles', o);
+    let html = '<div style="margin-top:10px;text-align:left">';
+    if (d.mode === 'folder') {
+      html += '<a href="' + selfHelpEsc(d.folderUrl) + '" target="_blank" rel="noopener" class="btn-back-top" style="display:block;text-align:center;text-decoration:none;margin:0">📁 写真フォルダを開く</a>';
+      if (d.googleLogin && d.googleLogin.length) html += '<p style="font-size:12px;line-height:1.7;margin-top:6px">※ ' + d.googleLogin.map(selfHelpEsc).join(' / ') + ' のGoogleアカウントでログインしてお開きください。</p>';
+      else html += '<p style="font-size:12px;line-height:1.7;margin-top:6px">※ 開けない場合は公式LINEへご連絡ください。閲覧できるよう設定いたします。</p>';
+    } else {
+      (d.files || []).forEach(f => {
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--sand,#E8E8E8);border-radius:8px;margin-bottom:6px;background:#fff">'
+          + '<span style="font-size:13px">' + selfHelpEsc(f.label) + '</span>'
+          + '<a href="' + selfHelpEsc(f.url) + '" target="_blank" rel="noopener" style="font-size:13px;font-weight:bold;color:#fff;background:#4A7A5A;border-radius:6px;padding:6px 14px;text-decoration:none">開く・保存</a></div>';
+      });
+      html += '<p style="font-size:12px;line-height:1.7;margin-top:6px">リンク先の画面で「ダウンロード」（↓アイコン）を押すと保存できます。' + (d.expiresAt ? '（' + selfHelpEsc(d.expiresAt) + 'まで有効）' : '') + '</p>';
+    }
+    html += '</div>';
+    out.innerHTML = html;
+  } catch (e) {
+    out.innerHTML = '<p style="font-size:13px;line-height:1.8;margin-top:10px;color:var(--danger,#c0392b)">' + selfHelpEsc(e.message) + '</p>';
+    btn.disabled = false;
+  }
+}
 function showPaidScreen() {
   showScreen('paid');
   document.getElementById('btn-logout').classList.remove('visible');
   document.getElementById('cart-panel').classList.remove('visible');
   document.getElementById('help-bar').style.bottom = '0';
+  initSelfHelp();
 }
 function goBackFromPaid() {
   if (state.selectedEventId) clearCartStorage(state.selectedEventId);
