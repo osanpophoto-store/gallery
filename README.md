@@ -870,3 +870,36 @@ Code.gs v2.5 は 2026/09/24 に共有されたが、リポジトリには `gas/C
 - Code.gs を `gas/Code.gs` としてリポジトリにコミットしてもらえたら、七五三タスクの改修と統合した v2.6 を作成する
 - Code.gs 変更後は「デプロイ」→「既存のデプロイを管理」→鉛筆アイコン→「バージョン: 新しいバージョン」→「デプロイ」が必要（保存だけでは反映されない）
 - 適用後の確認: 園イベントで1枚¥140のまま／フォーム入力とStripe入力を変えたテスト購入で2通届くこと
+
+---
+
+## 2026/10/03（続き）Code.gs v2.7 デプロイ・購入後の自己解決ページ公開
+
+taikiさんの承認（改修案C・自己解決ページ・1回のデプロイにまとめる）を受けて実装・デプロイした。
+
+### Code.gs v2.6 → v2.7（Apps Script「おさんぽ販売用」プロジェクト、ウェブアプリ バージョン33としてデプロイ済み）
+
+- ⚠️ 実際に動いていたのは v2.6（2026/10/01 更新・丸ごとプランの閲覧者自動追加版）だった。v2.6 をベースに改修している
+- **送信先フォールバック（案C）**: `resolveRecipients()` で Stripe取得アドレス（customer_details.email）とフォーム入力（metadata.customerEmail）を正規化（小文字・trim）して比較し、食い違う時だけ両方に**別々の1通**で送る（`sendToEach()`）。片方が失敗しても1件成功すれば「完了」、失敗分は L列に「[一部送信失敗]」で残る
+- `forceLink` は「送信先のどれか1つでもキャリアならリンク配信」に変更
+- 丸ごとプランの閲覧者追加も、Gmail宛であれば両方のアドレスに対して行う
+- **purchase_log に列追加**: N=フォーム入力メール / O=実送信先 / P=注文参照ID。見出しは `ensureLogHeaders()` が自動で書き込む。`LOG_LEN`=16
+- 手動再送メニュー（`retrySendSelected`）は共通関数 `resendLogRow()` に整理し、C列・N列の両方に送る。`revokeExpiredShares` も両方の閲覧者権限を外す。`anonymizeOldLogs` は N・O列もマスキング
+- **自己解決ページ用API**: `createPayment()` が注文参照ID（ref、UUID）を発行して Stripe metadata.orderRef に入れ、success_url を `?paid=1&ref=…&exp=…&sig=…` に変更（HMAC-SHA256・TOKEN_SECRET・有効10日）。決済ID（cs_live_…）はURLに出さない
+- `handleRequest()` に `orderStatus` / `resendOrder`（記録済みアドレスにのみ再送・6時間に3回まで・M列にメモ）/ `orderFiles`（購入写真だけを個別にリンク共有し、I列に7日後の解除予定を書いて既存の revokeExpiredShares で解除。丸ごとはフォルダURLを返す）を追加。すべて署名検証必須
+- 一時利用の手動再送関数（manualResendYuki / manualResendNatsumatsuriAll、顧客アドレス直書き）を削除
+- 確認: ローカルでGASをモックした単体テスト（食い違い時2通・一致時1通・キャリア判定・片方失敗・署名改ざん/期限切れ拒否・再送回数上限・未記録時の応答）を通過。デプロイ後、本番URLで `calcPrice(1)`=¥140 のまま、偽の署名は `orderStatus` / `resendOrder` とも拒否されることを確認
+- 注意: 新しい列・自己解決は **v2.7 デプロイ後に作られた決済リンクから**有効（それ以前のリンクには ref が無い）
+
+### index.html
+
+- 購入完了画面（?paid=1）に「📭 メールが届かない方はこちら」ボックスを追加。ref/exp/sig は sessionStorage に退避してからURLを消す。注文状況（伏字アドレス・送信日時）を表示し、「もう一度メールを送る」「この画面から写真をダウンロード」ボタンを出す。処理待ち（ポーリング前）の間は10秒おきに最大12回再確認
+- **既存不具合の修正**: `#screen-login { display:flex }`（IDセレクタ）が `.screen { display:none }` を上書きしていたため、ログイン後のギャラリー画面・購入完了画面の上に**ログイン画面が常に残っていた**（購入完了メッセージが1画面分下に隠れていた。7/28の「写真グリッドまで自動スクロール」はこの症状への対症療法だった可能性が高い）。`#screen-login:not(.active) { display:none }` を追加して修正
+- 確認: JS構文チェックOK、div/button開閉数一致、本番で偽の ref 付きURLを開き、完了画面とボックスの表示・エラー表示を確認
+
+### 未対応・申し送り
+
+- **七五三プラン（osanpo-753-setup）の Code.gs 改修は v2.7 に含めていない**。価格（PACK10 ¥3,500 の扱い・A4/A3データ価格・込みの5枚の選び方・出張プランの扱い）が未確定のため。確定したら v2.8 として PRICE_PROFILES と `forceLink` に `/^753/.test(eventId)` を追加する（forceLink 行は v2.7 で `rcpt.all.some(isCarrierEmail)` になっている点に注意）
+- Code.gs はスタンドアロンのスクリプトのため `onOpen()` のカスタムメニュー（再送・匿名化）はスプレッドシートに出ない（7/29に「メニューが見当たらない」となった原因）。使う場合はスプレッドシート側のApps Scriptから呼ぶ形にする必要がある
+- Code.gs はこのリポジトリが公開のためコミットしていない（v2.7 の全文は Apps Script 側が正）
+- 次の販売で、フォーム入力とStripe入力が食い違う注文が出たら purchase_log の N/O列を確認すること
