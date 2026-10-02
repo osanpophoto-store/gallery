@@ -115,6 +115,11 @@ body::before {
   align-items: center;
   justify-content: center;
 }
+/* ログイン画面は active の時だけ表示（IDセレクタの display:flex が .screen の display:none を上書きし、
+   ギャラリー・購入完了画面の上にログイン画面が残っていた不具合の修正 2026/10/03） */
+#screen-login:not(.active) {
+  display: none;
+}
 .login-wrap {
   width: 100%;
   max-width: 480px;
