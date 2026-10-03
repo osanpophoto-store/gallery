@@ -1294,6 +1294,24 @@ body.cart-open .help-bar { bottom: 80px; }
   .lightbox-hint { white-space: normal; text-align: center; max-width: 80vw; }
 }
 /* ライトボックス背景クリックで閉じる（ボタン上はバブリング止め済み） */
+/* ===== 七五三モード（v2.8） ===== */
+body.mode-753 .btn-download-all,
+body.mode-753 .btn-guide,
+body.mode-753 .recommend-banner { display: none !important; }
+body.mode-753 .lightbox-select-btn { transform: translateX(-104%); }
+body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: translateX(4%); background: #7A6A8A; }
+.lightbox-select-btn.small-btn { display: none; }
+.photo-size-badge {
+  position: absolute; bottom: 8px; right: 8px; z-index: 3;
+  font-size: 10px; font-weight: 700; color: #fff; letter-spacing: 0.04em;
+  background: var(--forest); padding: 3px 8px; border-radius: 999px; display: none;
+}
+.photo-item.has-size .photo-size-badge { display: block; }
+.plan-753-note {
+  max-width: 1200px; margin: 0 auto 12px; padding: 12px 40px; font-size: 12px; line-height: 1.8;
+  color: #2d5a3d; background: #EDF3ED; border-left: 3px solid var(--forest); border-radius: 0 8px 8px 0;
+}
+@media (max-width: 640px) { .plan-753-note { padding: 10px 20px; } }
 </style>
 </head>
 <body>
@@ -1362,6 +1380,7 @@ body.cart-open .help-bar { bottom: 80px; }
   <div class="gallery-notice">
     📌 写真をタップすると全体表示されます。気に入ったら「この写真を選ぶ」でカートに追加、左上のハートでお気に入りに保存できます。
   </div>
+  <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
   <a class="event-blog-banner" id="event-blog-banner" href="#" style="display:none;align-items:center;gap:14px;margin:0 0 12px;padding:12px 14px;border-radius:14px;background:#FBF8F2;border:1.5px solid #E8E2D6;text-decoration:none;color:var(--deep);scroll-margin-top:90px;box-shadow:0 4px 18px rgba(44,44,44,0.06)"><img id="event-blog-thumb" alt="" referrerpolicy="no-referrer" style="width:84px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#E8E2D6"><span style="flex:1;min-width:0;line-height:1.5"><span style="display:block;font-size:11px;letter-spacing:0.12em;color:var(--accent);font-weight:700">PHOTO STORY</span><span id="event-blog-title" style="display:block;font-size:15px;font-weight:700"></span><span id="event-blog-lead" style="display:block;font-size:12px;color:var(--bark)"></span></span><span style="font-size:13px;font-weight:700;color:var(--forest);white-space:nowrap">読む →</span></a>
   <div class="deadline-banner" id="deadline-banner" style="display:none"></div>
   <div style="background:#fff8e1;border-left:4px solid #f9a825;padding:10px 16px;margin:0 0 8px;font-size:0.85rem;color:#555;line-height:1.6">
@@ -1502,6 +1521,7 @@ body.cart-open .help-bar { bottom: 80px; }
   <button class="lightbox-nav prev" id="lb-prev" onclick="event.stopPropagation();lbNav(-1)" aria-label="前の写真">&#8249;</button>
   <button class="lightbox-nav next" id="lb-next" onclick="event.stopPropagation();lbNav(1)" aria-label="次の写真">&#8250;</button>
   <button class="lightbox-select-btn" id="lb-select-btn" onclick="event.stopPropagation();lbToggleSelect()"></button>
+  <button class="lightbox-select-btn small-btn" id="lb-select-small-btn" onclick="event.stopPropagation();lbToggleSelectSmall()"></button>
   <div class="lightbox-num" id="lightbox-num"></div>
 </div>
 <!-- ========== お気に入りモーダル ========== -->
@@ -1552,6 +1572,10 @@ const state = {
   session: null,
   photos: [],
   selected: new Set(),
+  selectedSmall: new Set(), // 七五三モード: スマホデータとして選んだ写真（selected は「大きいデータ」）
+  mode753: false,           // 七五三モード（イベントIDが 753 で始まる）
+  freeLargeRemaining: 0,    // 七五三: 込みの大きいデータの残り枚数（家族ごとの通算・GASから受け取る）
+  directEventId: null,      // ?event=ID で開いたときのイベントID（一覧を出さず、そのイベントだけ）
   favorites: new Set(), // お気に入り（購入とは別の一時ブックマーク）
   selectMode: 'normal', // 'normal' / 'a4data' / 'a3data' / 'a4print' / 'a4panel'
   downloadAll: false,
@@ -1572,13 +1596,14 @@ function cartStorageKey(eventId) {
 function saveCartToStorage() {
   if (!state.selectedEventId) return;
   const key = cartStorageKey(state.selectedEventId);
-  if (state.selected.size === 0) {
+  if (state.selected.size === 0 && state.selectedSmall.size === 0) {
     localStorage.removeItem(key);
     return;
   }
   try {
     localStorage.setItem(key, JSON.stringify({
       photos: Array.from(state.selected),
+      small: Array.from(state.selectedSmall),
       ts: Date.now()
     }));
   } catch(e) { /* 保存容量超過等は無視し、カート機能自体は継続動作させる */ }
@@ -1590,6 +1615,13 @@ function loadCartFromStorage(eventId) {
     if (!raw) return [];
     const data = JSON.parse(raw);
     return Array.isArray(data.photos) ? data.photos : [];
+  } catch(e) { return []; }
+}
+function loadSmallCartFromStorage(eventId) {
+  if (!eventId) return [];
+  try {
+    const data = JSON.parse(localStorage.getItem(cartStorageKey(eventId)) || 'null');
+    return data && Array.isArray(data.small) ? data.small : [];
   } catch(e) { return []; }
 }
 function clearCartStorage(eventId) {
@@ -1605,6 +1637,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   // ?next=blog-xxx.html … ログイン後に PHOTO STORY（同じフォルダの blog-*.html のみ）へ戻る
   const nextParam = urlParams.get('next') || '';
   if (/^blog-[A-Za-z0-9_-]+\.html$/.test(nextParam)) state.afterLoginNext = nextParam;
+  // ?event=ID … 一覧に出さないイベント（七五三など）への直リンク。そのイベントのパスワード入力だけを出す
+  const eventParam = (urlParams.get('event') || '').trim();
+  if (/^[A-Za-z0-9_-]{1,64}$/.test(eventParam)) state.directEventId = eventParam;
   if (urlParams.get('paid') === '1') {
     // 購入完了後は、そのイベントで保存していたカートをクリアする（購入済み写真を次回に残さないため）
     try {
@@ -1634,7 +1669,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {}
     sessionStorage.removeItem('osanpo_session');
   }
-  await loadEvents();
+  if (state.directEventId) await loadDirectEvent(state.directEventId); else await loadEvents();
   // カートパネルとヘルプバーの位置連動
   const cartPanel = document.getElementById('cart-panel');
   const helpBar = document.getElementById('help-bar');
@@ -1654,6 +1689,20 @@ async function loadEvents() {
   } catch(e) {
     document.getElementById('event-list').innerHTML =
       '<p style="color:var(--danger);font-size:13px;text-align:center">読み込みに失敗しました。ページを再読み込みしてください。</p>';
+  }
+}
+// 直リンク（?event=ID）: イベント名だけ取得して、そのイベントのパスワード入力を出す
+async function loadDirectEvent(eventId) {
+  const el = document.getElementById('event-list');
+  try {
+    const data = await api('eventInfo', { eventId });
+    state.events = [data.event];
+    renderEventList();
+    selectEvent(eventId);
+    const hero = document.querySelector('.login-hero p');
+    if (hero) hero.innerHTML = 'お知らせしたパスワードを入力してください';
+  } catch(e) {
+    el.innerHTML = '<p style="color:var(--danger);font-size:13px;text-align:center">' + escHtml(e.message || 'イベントが見つかりません') + '</p>';
   }
 }
 function renderEventList() {
@@ -1745,12 +1794,33 @@ async function enterGallery() {
   state.selectMode = null; // 未選択状態に
   // カートは端末に保存されていれば復元する（一度選んだ写真を家族に見せてから購入できるように）
   state.selected = new Set(loadCartFromStorage(state.selectedEventId));
+  state.selectedSmall = new Set(loadSmallCartFromStorage(state.selectedEventId));
   state.favorites.clear();
   updateFavCountBadge();
   const ev = state.session.event;
+  // 七五三モード（v2.8）: 大／スマホの2種類を写真ごとに選ぶ。丸ごと・プリント系は出さない
+  state.mode753 = !!ev.is753 || /^753/.test(String(ev.id || ''));
+  state.freeLargeRemaining = state.mode753 ? (parseInt(ev.freeLargeRemaining) || 0) : 0;
+  document.body.classList.toggle('mode-753', state.mode753);
+  const note = document.getElementById('plan-753-note');
+  if (note) {
+    note.style.display = state.mode753 ? 'block' : 'none';
+    if (state.mode753) {
+      const P = PRICE_753;
+      note.innerHTML = '🎎 <strong>七五三 データの選び方</strong><br>'
+        + '写真をタップして「<strong>大きいデータ</strong>」か「<strong>スマホデータ</strong>」（両方も可）を選んでください。<br>'
+        + '大きいデータは <strong>' + P.FREE_LARGE + '枚まで撮影料に込み</strong>'
+        + (state.freeLargeRemaining < P.FREE_LARGE ? '（あと ' + state.freeLargeRemaining + '枚）' : '')
+        + '、6枚目から ¥' + P.LARGE.toLocaleString() + '／枚。スマホデータは ¥' + P.SMALL + '／枚。'
+        + '追加分が ¥' + P.CAP.toLocaleString() + ' に達したら<strong>全カット</strong>をお届けします。'
+        + (ev.hasSmall === false ? '<br>※ スマホデータは準備中です' : '');
+    }
+  }
+  if (!state.mode753) state.selectedSmall.clear();
   document.getElementById('gallery-event-name').textContent = ev.name;
-  document.getElementById('gallery-subtitle').textContent =
-    `${ev.count}枚 ｜ 写真をタップすると全体表示できます`;
+  document.getElementById('gallery-subtitle').textContent = state.mode753
+    ? `${ev.count}枚 ｜ 写真をタップして「大」「スマホ」を選べます`
+    : `${ev.count}枚 ｜ 写真をタップすると全体表示できます`;
   renderDeadlineBanner(ev);
   renderEventBlogBanner(ev);
   await loadPhotos();
@@ -1828,6 +1898,7 @@ function renderGrid() {
       <button class="photo-fav-btn${state.favorites.has(p.number) ? ' active' : ''}" id="fav-${p.number}" onclick="event.stopPropagation();toggleFavorite('${p.number}')" title="お気に入り">${state.favorites.has(p.number) ? '♥' : '♡'}</button>
       <div class="photo-check"></div>
       <span class="photo-num">IMG-${p.number}</span>
+      <span class="photo-size-badge" id="size-${p.number}"></span>
     </div>
   `).join('');
   initLazyLoad();
@@ -1835,12 +1906,28 @@ function renderGrid() {
   state.selected.forEach(num => {
     document.getElementById('item-' + num)?.classList.add('selected');
   });
+  if (state.mode753) state.photos.forEach(p => refreshSizeBadge(p.number));
+}
+// 七五三モード: 写真の右下に「大」「スマホ」「大+スマホ」のバッジを出す
+function refreshSizeBadge(num) {
+  const item = document.getElementById('item-' + num);
+  const badge = document.getElementById('size-' + num);
+  if (!item || !badge) return;
+  const L = state.selected.has(num), S = state.selectedSmall.has(num);
+  badge.textContent = L && S ? '大 + スマホ' : (L ? '大' : (S ? 'スマホ' : ''));
+  item.classList.toggle('has-size', state.mode753 && (L || S));
+  item.classList.toggle('selected', L || S);
 }
 function clearSelection() {
   state.selected.forEach(num => {
     document.getElementById('item-' + num)?.classList.remove('selected');
   });
+  state.selectedSmall.forEach(num => {
+    document.getElementById('item-' + num)?.classList.remove('selected');
+  });
   state.selected.clear();
+  state.selectedSmall.clear();
+  if (state.mode753) state.photos.forEach(p => refreshSizeBadge(p.number));
   updateCart();
   saveCartToStorage();
   showToast('選択をクリアしました', 'success');
@@ -1877,6 +1964,7 @@ function onPayClick() {
 // 受け取り方法選択モーダル（ミニバーから展開）
 // ========================================
 function openCartOptionsModal() {
+  if (state.mode753) { if (cart753Count() > 0) openPaymentModal753(); return; }
   if (state.selected.size === 0) return;
   if (state.selectMode) {
     // すでに方法を選択済みなら直接購入確認へ進む
@@ -1901,7 +1989,7 @@ document.getElementById('cart-options-overlay')?.addEventListener('click', funct
 // カートの中身モーダル（ミニバーの枚数・金額タップで展開）
 // ========================================
 function openCartViewModal() {
-  if (state.selected.size === 0) return;
+  if (state.mode753 ? cart753Count() === 0 : state.selected.size === 0) return;
   renderCartView();
   document.getElementById('cart-view-overlay').classList.add('visible');
 }
@@ -1912,6 +2000,22 @@ function renderCartView() {
   const grid = document.getElementById('cart-view-grid');
   const countText = document.getElementById('cart-view-count-text');
   if (!grid || !countText) return;
+  if (state.mode753) {
+    const items = [];
+    Array.from(state.selected).forEach(n => items.push({ n, size: 'L' }));
+    Array.from(state.selectedSmall).forEach(n => items.push({ n, size: 'S' }));
+    items.sort((a, b) => Number(a.n) - Number(b.n) || (a.size === 'L' ? -1 : 1));
+    countText.textContent = `大 ${state.selected.size}枚・スマホ ${state.selectedSmall.size}枚`;
+    grid.innerHTML = items.map(it => {
+      const photo = state.photos.find(p => p.number === it.n);
+      const thumbUrl = photo && photo.fileId ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120' : '';
+      return `<div class="confirm-thumb" onclick="removeFromCart('${it.n}','${it.size}')" style="cursor:pointer" title="タップで選択を外す">
+        ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
+        <div class="confirm-thumb-num">✕ ${it.n} ${it.size === 'L' ? '大' : 'スマホ'}</div>
+      </div>`;
+    }).join('');
+    return;
+  }
   const nums = Array.from(state.selected).sort((a, b) => Number(a) - Number(b));
   countText.textContent = `${nums.length}枚選択中`;
   grid.innerHTML = nums.map(n => {
@@ -1923,12 +2027,12 @@ function renderCartView() {
     </div>`;
   }).join('');
 }
-function removeFromCart(num) {
-  state.selected.delete(num);
-  document.getElementById('item-' + num)?.classList.remove('selected');
+function removeFromCart(num, size) {
+  if (state.mode753 && size === 'S') state.selectedSmall.delete(num); else state.selected.delete(num);
+  if (state.mode753) refreshSizeBadge(num); else document.getElementById('item-' + num)?.classList.remove('selected');
   updateCart();
   saveCartToStorage();
-  if (state.selected.size === 0) { closeCartViewModal(); return; }
+  if ((state.mode753 ? cart753Count() : state.selected.size) === 0) { closeCartViewModal(); return; }
   renderCartView();
 }
 document.getElementById('cart-view-overlay')?.addEventListener('click', function(e) {
@@ -2007,9 +2111,10 @@ function addAllFavoritesToCart() {
   let added = 0, blocked = false;
   nums.forEach(num => {
     if (state.selected.has(num)) return;
-    if (state.selected.size >= 19) { blocked = true; return; }
+    if (!state.mode753 && state.selected.size >= 19) { blocked = true; return; }
     state.selected.add(num);
     document.getElementById('item-' + num)?.classList.add('selected');
+    if (state.mode753) refreshSizeBadge(num);
     added++;
   });
   updateCart();
@@ -2032,18 +2137,27 @@ function toggleSelect(num) {
     state.selected.delete(num);
     document.getElementById('item-' + num)?.classList.remove('selected');
   } else {
-    if (state.selected.size >= 19) {
+    if (!state.mode753 && state.selected.size >= 19) {
       showLimitBanner();
       return;
     }
     state.selected.add(num);
     document.getElementById('item-' + num)?.classList.add('selected');
   }
+  if (state.mode753) refreshSizeBadge(num);
   updateCart();
   saveCartToStorage();
 }
+// 七五三モード: スマホデータとしての選択トグル
+function toggleSelectSmall(num) {
+  if (state.selectedSmall.has(num)) state.selectedSmall.delete(num); else state.selectedSmall.add(num);
+  refreshSizeBadge(num);
+  updateCart();
+  saveCartToStorage();
+}
+function cart753Count() { return state.selected.size + state.selectedSmall.size; }
 function updateCart() {
-  const count = state.selected.size;
+  const count = state.mode753 ? cart753Count() : state.selected.size;
   const panel = document.getElementById('cart-panel');
   const selInfo = document.getElementById('selection-info');
   if (count === 0) {
@@ -2056,6 +2170,17 @@ function updateCart() {
     return;
   }
   panel.classList.add('visible');
+  if (state.mode753) {
+    // 七五三: 大／スマホの枚数と確定金額（込み分・上限を反映）
+    const p = calcPrice753(state.selected.size, state.selectedSmall.size, state.freeLargeRemaining);
+    selInfo.textContent = `大${state.selected.size}・スマホ${state.selectedSmall.size}`;
+    document.getElementById('cart-count').innerHTML = `大${state.selected.size}<span>・</span>スマホ${state.selectedSmall.size}<span>枚</span>`;
+    document.getElementById('cart-total').innerHTML = p.capped ? `¥${p.total.toLocaleString()}<small>（全カット）</small>` : `¥${p.total.toLocaleString()}`;
+    const btnNext753 = document.getElementById('btn-cart-next');
+    if (btnNext753) btnNext753.textContent = p.total === 0 ? '受け取りへ進む →' : '購入へ進む →';
+    document.getElementById('recommend-banner')?.classList.remove('visible', 'limit-mode');
+    return;
+  }
   selInfo.textContent = `${count}枚選択中`;
   document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>`;
   // ミニバーの金額はスマホサイズ基準の目安（実際の金額は受け取り方法選択後に確定）
@@ -2104,6 +2229,113 @@ function calcPrice(qty) {
   else if (qty===18) { pack10=1; pack5=1; single=3; total=P.PACK10+P.PACK5+P.SINGLE*3; }
   else if (qty===19) { pack10=1; pack5=1; single=4; total=P.PACK10+P.PACK5+P.SINGLE*4; }
   return { total, pack10, pack5, single };
+}
+// 七五三プラン（GAS側の calcPrice753() と同じ式）
+const PRICE_753 = { FREE_LARGE: 5, LARGE: 1200, SMALL: 400, CAP: 18000 };
+function calcPrice753(qtyLarge, qtySmall, freeRemaining) {
+  const P = PRICE_753;
+  qtyLarge = Math.max(0, qtyLarge | 0); qtySmall = Math.max(0, qtySmall | 0);
+  const freeAvail = Math.max(0, Math.min(P.FREE_LARGE, freeRemaining == null ? P.FREE_LARGE : (freeRemaining | 0)));
+  const freeLarge = Math.min(qtyLarge, freeAvail);
+  const extraLarge = qtyLarge - freeLarge;
+  const raw = extraLarge * P.LARGE + qtySmall * P.SMALL;
+  const capped = raw >= P.CAP;
+  return { total: capped ? P.CAP : raw, qtyLarge, qtySmall, freeLarge, freeAvail, extraLarge, largeAmount: extraLarge * P.LARGE, smallAmount: qtySmall * P.SMALL, capped, cap: P.CAP };
+}
+// 七五三: 購入確認モーダル
+function openPaymentModal753() {
+  const L = Array.from(state.selected).sort((a, b) => Number(a) - Number(b));
+  const S = Array.from(state.selectedSmall).sort((a, b) => Number(a) - Number(b));
+  if (L.length + S.length === 0) { showToast('写真を選択してください', 'error'); return; }
+  const p = calcPrice753(L.length, S.length, state.freeLargeRemaining);
+  const P = PRICE_753;
+  document.getElementById('modal-title').textContent = p.capped ? '七五三 全カットでお届け' : (p.total === 0 ? '七五三 込みのデータを受け取る' : '七五三 データを購入');
+  document.getElementById('modal-desc').textContent = p.capped
+    ? `追加分が ¥${P.CAP.toLocaleString()} に達したため、撮影した全カット（大きいデータ・スマホデータ）をお届けします。`
+    : `大きいデータ ${L.length}枚・スマホデータ ${S.length}枚をお届けします。`;
+  const thumb = (n, label) => {
+    const photo = state.photos.find(x => x.number === n);
+    const u = photo && photo.fileId ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120' : '';
+    return `<div class="confirm-thumb">${u ? `<img src="${u}">` : ''}<div class="confirm-thumb-num">${n} ${label}</div></div>`;
+  };
+  const photoListHtml = `<div class="confirm-thumb-grid">${L.map(n => thumb(n, '大')).join('')}${S.map(n => thumb(n, 'スマホ')).join('')}</div>`;
+  let rows = '';
+  if (L.length) rows += `<div class="price-row"><span>大きいデータ ${L.length}枚（うち${p.freeLarge}枚は撮影料に込み）</span><span>¥0</span></div>`;
+  if (p.extraLarge) rows += `<div class="price-row"><span>追加 大きいデータ × ${p.extraLarge}枚</span><span>¥${p.largeAmount.toLocaleString()}</span></div>`;
+  if (S.length) rows += `<div class="price-row"><span>スマホデータ × ${S.length}枚</span><span>¥${p.smallAmount.toLocaleString()}</span></div>`;
+  if (p.capped) rows += `<div class="price-row"><span>上限（全カット）</span><span>¥${P.CAP.toLocaleString()}</span></div>`;
+  rows += `<div class="price-row total"><span>合計</span><span>¥${p.total.toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
+  const html = `
+    <div class="confirm-section"><h4>選択した写真</h4>${photoListHtml}</div>
+    <div class="price-breakdown" style="margin-bottom:12px">${rows}</div>
+    <div class="confirm-section">
+      <h4>納品方法</h4>
+      <div class="confirm-delivery">${p.capped ? '📂 フォルダリンク（全カット・大とスマホ）' : '🔗 ダウンロードリンク'}</div>
+      <div style="font-size:11px;color:var(--bark);margin-top:6px">${p.total === 0 ? 'このまま進むと、すぐにダウンロードリンクをメールでお送りします（有効期限: 7日間）' : 'お支払い完了後、ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}</div>
+      <div style="font-size:11px;color:var(--bark);margin-top:6px">※ 撮影料 ¥12,000 は撮影当日にお支払いいただいています。ここでは追加分のみお支払いください。</div>
+    </div>
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:12px;color:var(--bark);margin-bottom:6px">送付先メールアドレス</label>
+      <input type="email" id="buyer-email" placeholder="example@gmail.com"
+        style="width:100%;padding:12px 14px;border:1.5px solid var(--sand);border-radius:8px;font-size:14px;font-family:var(--sans);background:var(--cream);color:var(--deep);outline:none;transition:border-color 0.2s"
+        oninput="updatePayBtn();updateCarrierEmailHint()" onfocus="this.style.borderColor='var(--forest)'" onblur="this.style.borderColor='var(--sand)'">
+      <p id="email-error" style="font-size:11px;color:var(--danger);margin-top:4px;display:none"></p>
+      <p id="carrier-email-hint" style="display:none;font-size:11px;color:#2d5a3d;background:#EDF3ED;border-left:3px solid var(--forest);border-radius:0 6px 6px 0;padding:8px 10px;margin-top:8px;line-height:1.6">⚠️ キャリアメールは迷惑メール設定によって届かないことがあります。<strong>@osanpophoto-store.com</strong> からのメールを受信できるよう設定してからお進みください。</p>
+    </div>
+    <div class="consent-area">
+      <div class="consent-item"><input type="checkbox" id="c1" onchange="updatePayBtn()"><label for="c1">SNSや外部サイトへの転載・第三者への配布はしません</label></div>
+      <div class="consent-item"><input type="checkbox" id="c2" onchange="updatePayBtn()"><label for="c2">ダウンロードリンクの有効期限（7日間）を確認しました</label></div>
+      <div class="consent-item"><input type="checkbox" id="c3" onchange="updatePayBtn()"><label for="c3">購入後のデータ保存は自己責任で行います</label></div>
+    </div>`;
+  document.getElementById('price-breakdown').innerHTML = html;
+  const btn = document.getElementById('btn-stripe');
+  btn.href = '#';
+  btn.textContent = p.total === 0 ? '📩 この内容で受け取る（¥0）' : '💳 カードで支払う';
+  btn.style.opacity = '0.5';
+  btn.style.pointerEvents = 'none';
+  btn.onclick = (e) => { e.preventDefault(); doCreatePayment753(); };
+  document.getElementById('modal-overlay').classList.add('visible');
+}
+async function doCreatePayment753() {
+  const emailEl = document.getElementById('buyer-email');
+  const email = emailEl?.value?.trim();
+  const errEl = document.getElementById('email-error');
+  if (!email || !email.includes('@') || !email.includes('.')) {
+    if (errEl) { errEl.textContent = 'メールアドレスを正しく入力してください'; errEl.style.display = 'block'; }
+    emailEl?.focus();
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
+  if (!document.getElementById('c1')?.checked || !document.getElementById('c2')?.checked || !document.getElementById('c3')?.checked) {
+    showToast('すべての項目に同意してください', 'error');
+    return;
+  }
+  const btn = document.getElementById('btn-stripe');
+  const label = btn.textContent;
+  btn.textContent = '準備中...';
+  btn.style.opacity = '0.7';
+  btn.style.pointerEvents = 'none';
+  try {
+    const L = Array.from(state.selected), S = Array.from(state.selectedSmall);
+    const data = await api('createPayment', {
+      eventId: state.selectedEventId,
+      token: state.session.token,
+      photoNumbers: L.join(','),
+      photoNumbersSmall: S.join(','),
+      qty: String(L.length + S.length),
+      email: email,
+      planType: '753'
+    });
+    state.buyerEmail = email;
+    closeModal();
+    // ¥0 のときは Stripe を通さず、すでに納品済み。署名付きの完了画面URLが返る
+    window.location.href = data.paymentUrl;
+  } catch(e) {
+    showToast('エラー: ' + e.message, 'error');
+    btn.textContent = label;
+    btn.style.opacity = '1';
+    btn.style.pointerEvents = 'auto';
+  }
 }
 function formatPriceDetail(price) {
   const parts = [];
@@ -2479,7 +2711,10 @@ async function selfHelpFiles(btn) {
     const d = await api('orderFiles', o);
     let html = '<div style="margin-top:10px;text-align:left">';
     if (d.mode === 'folder') {
-      html += '<a href="' + selfHelpEsc(d.folderUrl) + '" target="_blank" rel="noopener" class="btn-back-top" style="display:block;text-align:center;text-decoration:none;margin:0">📁 写真フォルダを開く</a>';
+      const urls = (d.folderUrls && d.folderUrls.length) ? d.folderUrls : [d.folderUrl];
+      urls.forEach((u, i) => {
+        html += '<a href="' + selfHelpEsc(u) + '" target="_blank" rel="noopener" class="btn-back-top" style="display:block;text-align:center;text-decoration:none;margin:0 0 6px">📁 写真フォルダを開く' + (urls.length > 1 ? '（' + (i === 0 ? '大きいデータ' : 'スマホデータ') + '）' : '') + '</a>';
+      });
       if (d.googleLogin && d.googleLogin.length) html += '<p style="font-size:12px;line-height:1.7;margin-top:6px">※ ' + d.googleLogin.map(selfHelpEsc).join(' / ') + ' のGoogleアカウントでログインしてお開きください。</p>';
       else html += '<p style="font-size:12px;line-height:1.7;margin-top:6px">※ 開けない場合は公式LINEへご連絡ください。閲覧できるよう設定いたします。</p>';
     } else {
@@ -2607,7 +2842,15 @@ function lbRender() {
   // 選択ボタンの表示
   const btn = document.getElementById('lb-select-btn');
   const isSelected = state.selected.has(photo.number);
-  btn.textContent = isSelected ? '✓ 選択中' : 'この写真を選ぶ';
+  if (state.mode753) {
+    btn.textContent = isSelected ? '✓ 大きいデータ' : '大きいデータ';
+    const sbtn = document.getElementById('lb-select-small-btn');
+    const isSmall = state.selectedSmall.has(photo.number);
+    sbtn.textContent = isSmall ? '✓ スマホデータ' : 'スマホデータ';
+    sbtn.classList.toggle('selected-state', isSmall);
+  } else {
+    btn.textContent = isSelected ? '✓ 選択中' : 'この写真を選ぶ';
+  }
   btn.classList.toggle('selected-state', isSelected);
   // お気に入りボタンの表示
   const favBtn = document.getElementById('lb-fav-btn');
@@ -2629,6 +2872,12 @@ function lbToggleSelect() {
   if (!photo) return;
   toggleSelect(photo.number); // 既存関数をそのまま呼ぶ
   lbRender(); // 選択ボタンの表示を更新
+}
+function lbToggleSelectSmall() {
+  const photo = lbCurrentPhoto();
+  if (!photo || !state.mode753) return;
+  toggleSelectSmall(photo.number);
+  lbRender();
 }
 function closeLightbox() {
   document.getElementById('lightbox').classList.remove('visible');
@@ -2713,6 +2962,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
 // ログアウト
 // ========================================
 function logout() {
+  state.mode753 = false;
+  state.selectedSmall.clear();
+  document.body.classList.remove('mode-753');
   sessionStorage.removeItem('osanpo_session');
   state.session = null;
   state.selectedEventId = null;
