@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>おみせやさんごっこ、準備の日。 | おさんぽフォト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Klee+One:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #FBF8F2;
+  --white: #FFFFFF;
+  --sand: #E8E2D6;
+  --bark: #7A7A7A;
+  --deep: #2C2C2C;
+  --forest: #4A7A5A;
+  --moss: #7AAD8A;
+  --accent: #D4723A;
+  --radius: 14px;
+  --shadow: 0 6px 28px rgba(44,44,44,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--paper);
+  color: var(--deep);
+  line-height: 1.95;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; width: 100%; height: auto; }
+a { color: inherit; }
+
+/* ヘッダー */
+.site-header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(251,248,242,0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--sand);
+}
+.brand { font-size: 13px; letter-spacing: 0.08em; color: var(--forest); font-weight: 700; text-decoration: none; }
+.header-cta {
+  font-size: 12px; font-weight: 700; text-decoration: none;
+  color: #fff; background: var(--forest);
+  padding: 7px 14px; border-radius: 999px;
+}
+
+/* ヒーロー */
+.hero { max-width: 760px; margin: 0 auto; padding: 28px 16px 8px; }
+.hero-photo { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); background: var(--sand); }
+.eyebrow { margin-top: 22px; font-size: 12px; letter-spacing: 0.18em; color: var(--accent); font-weight: 700; }
+h1 {
+  font-family: 'Klee One', 'Zen Maru Gothic', serif;
+  font-size: clamp(26px, 6.4vw, 38px);
+  line-height: 1.45; font-weight: 600; margin-top: 6px;
+}
+.meta { margin-top: 8px; font-size: 13px; color: var(--bark); }
+
+/* 本文 */
+article { max-width: 680px; margin: 0 auto; padding: 8px 16px 40px; }
+.lead { font-size: 16px; margin-top: 18px; }
+.chapter { margin-top: 48px; }
+.chapter h2 {
+  font-family: 'Klee One', 'Zen Maru Gothic', serif;
+  font-size: 22px; font-weight: 600; line-height: 1.5;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.chapter h2 .no { font-family: 'Zen Maru Gothic', sans-serif; font-size: 12px; color: var(--accent); letter-spacing: 0.12em; }
+.chapter p { margin-top: 14px; font-size: 15.5px; }
+
+/* 写真 */
+.photos { margin-top: 18px; display: grid; gap: 10px; }
+.photos.cols-2 { grid-template-columns: 1fr 1fr; }
+.photos.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+figure { position: relative; }
+.photo-link { display: block; border-radius: 10px; overflow: hidden; background: var(--sand); position: relative; }
+.photo-link img { aspect-ratio: 4 / 3; object-fit: cover; transition: transform .4s ease; }
+.photo-link:hover img { transform: scale(1.02); }
+.photo-no {
+  position: absolute; right: 8px; bottom: 8px;
+  font-size: 11px; font-weight: 700; color: #fff;
+  background: rgba(44,44,44,0.55); padding: 3px 8px; border-radius: 999px;
+}
+figcaption { font-size: 12.5px; color: var(--bark); margin-top: 6px; line-height: 1.7; }
+.placeholder {
+  aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center;
+  color: var(--bark); font-size: 12px;
+  background: repeating-linear-gradient(45deg, #EFE9DD, #EFE9DD 10px, #F5F0E6 10px, #F5F0E6 20px);
+}
+
+/* 引用（子どもの言葉など） */
+.voice {
+  margin-top: 18px; padding: 14px 18px;
+  background: var(--white); border-radius: var(--radius);
+  border-left: 4px solid var(--moss);
+  font-family: 'Klee One', 'Zen Maru Gothic', serif; font-size: 16px;
+}
+
+/* カメラマンから */
+.note {
+  margin-top: 56px; padding: 22px 20px;
+  background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.note-title { font-size: 12px; letter-spacing: 0.16em; color: var(--forest); font-weight: 700; }
+.note p { margin-top: 10px; font-size: 15px; }
+.note .sign { margin-top: 12px; text-align: right; font-size: 13px; color: var(--bark); }
+
+/* 写真を選ぶ導線 */
+.cta {
+  margin-top: 36px; text-align: center; padding: 26px 18px;
+  background: #EDF3ED; border-radius: var(--radius);
+}
+.cta p { font-size: 14px; }
+.cta-btn {
+  display: inline-block; margin-top: 14px;
+  background: var(--forest); color: #fff; text-decoration: none; font-weight: 700;
+  padding: 13px 28px; border-radius: 999px; font-size: 15px;
+  box-shadow: 0 6px 18px rgba(74,122,90,0.3);
+}
+.cta small { display: block; margin-top: 10px; font-size: 12px; color: var(--bark); }
+
+footer { text-align: center; padding: 24px 16px 40px; font-size: 12px; color: var(--bark); }
+
+figure.wide { grid-column: 1 / -1; }
+.photo-no { max-width: calc(100% - 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 480px) {
+  .photos.cols-3 { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="./">おさんぽフォト</a>
+  <a class="header-cta" href="./">写真を選ぶ →</a>
+</header>
+
+<div id="app"></div>
+
+<script>
+// ============================================================
+// 記事データ（ここだけ書き換えれば記事が変わる）
+//  - id:  Google Drive「透かし入り」フォルダの写真ファイルID
+//  - ev:  't' = ひまわり・たんぽぽ / 'y' = ゆり・すみれ・あじさい
+//  - no:  そのクラスのギャラリーでの写真番号
+//  ログイン中のクラスの写真だけ、タップでギャラリーのその写真が開く
+// ============================================================
+const EVENTS = {
+  t: { id: 'omise-tanpopohimawari', label: 'ひまわり・たんぽぽ' },
+  y: { id: 'omise-yurisumireajisai', label: 'ゆり・すみれ・あじさい' }
+};
+const BLOG = {
+  eyebrow: 'PHOTO STORY ｜ 美園幼稚園',
+  title: 'おみせやさんごっこ、準備の日。',
+  meta: '2026年9月18日・25日撮影 ／ 写真・文：おさんぽフォト',
+  hero: { ev: 'y', no: '203', id: '10i-b0Rldf9ivAL48Ye63DA2jfhxmo-mb' },
+  lead: [
+    '9月18日と25日、英語遊びの合間を縫って、おみせやさんごっこの準備の様子を撮影しました。どちらも1時間ほど、合わせて2時間のコンパクトな撮影です。',
+    'この時期はお休みの子がとても多く、早退の子もちらほら。本番はみんな元気に参加できることを祈っています。'
+  ],
+  chapters: [
+    {
+      heading: 'どこまで任せて、どこを手伝うか',
+      text: [
+        '各クラスの様子を見ていると、作業の段取りや進め方は、まさに先生たちの腕の見せどころ。',
+        '子どもたちが自分たちでなるべく進められるように、どこまで子どもに任せ、どこを先生が手伝うのか。その見極めが、クラスごとに少しずつ違っていました。'
+      ],
+      cols: 2,
+      photos: [
+        { ev: 'y', no: '045', id: '1H5HlNJLnUgBmcgNDBEi5A_YAiOx5RvTH' },
+        { ev: 't', no: '095', id: '1kIY-2Eh5kvL5Qm9zADFZjQI7ma-JeEgT' },
+        { ev: 'y', no: '147', id: '12xJIpwWMFVXE0XYz1bY0dkJRgFPgARYN' },
+        { ev: 'y', no: '229', id: '14pteEdV-1Bl_YUV1cfwAWML9_BhDRQXm' }
+      ]
+    },
+    {
+      heading: 'やってみて、直して、また進む',
+      text: [
+        'やってみたものの、うまくいかないところもある。そんなときは、その場でクラスの先生たちが相談しながら修正して、少しずつ形にしていきます。',
+        'そうやって、それぞれのクラスが本番に向けて、気持ちをクラス全体で向けていく。そんな印象を受けました。'
+      ],
+      cols: 2,
+      photos: [
+        { ev: 't', no: '045', id: '1URZqzoamgF5FKzhGzaFB652ZVJuYsdlW' },
+        { ev: 't', no: '054', id: '108pJwlW49p48lE9VdhrNhnrcDeyfZD7G' },
+        { ev: 'y', no: '128', id: '1WUk6J4Lg-4whwPQYLOjz-9AdLniAB0nF' },
+        { ev: 'y', no: '153', id: '1BPSVqA5c5JHJVYfUppx9N5aHgFgLyQGV' }
+      ]
+    },
+    {
+      heading: '本番では味わえない、準備の醍醐味',
+      text: [
+        'ちょっとしたトラブルや、うまくいかないこと。そして先生たちの予想を超える仕上がりになったときの高揚感や一体感。',
+        'これは本番では味わえない、クラス全体で何かを準備するからこその醍醐味です。'
+      ],
+      cols: 3,
+      photos: [
+        { ev: 't', no: '112', id: '1a7zsZLFbTdVAk7HsISXmNvkB_nva0seV', wide: true },
+        { ev: 't', no: '146', id: '1A-YA251rM-cIoXK4fCfo8OhaW96a_n5g' },
+        { ev: 'y', no: '252', id: '1GeEx_AemSbj0Fh4DY2lW3Zet0bEirIpt' },
+        { ev: 'y', no: '196', id: '1mvDG6vfqFUMtu7Qq_BKsYUchIR6MVWjm' }
+      ]
+    },
+    {
+      heading: 'クラスの色、先生の色',
+      text: [
+        'それぞれのクラスにはメンバーのカラーがあり、担任の先生のカラーがあります。毎年メンバーが違う中で、先生方はその時の顔ぶれや個性に合わせてクラス全体の準備を段取りし、援助しすぎずにバランスをとりながら全体を見守っていました。',
+        'これは単に子どもの主体性を大事にしたおみせやさんごっこの一面だけではなく、先生たちも含めたクラスのカラーと、異年齢保育の難しさと面白さがギュッと詰まった、美園幼稚園らしい取り組みだなと改めて感じました。'
+      ],
+      cols: 3,
+      photos: [
+        { ev: 't', no: '036', id: '1sAXBaitnZmhT3U9S6xKYiiTdyHE5AQix' },
+        { ev: 'y', no: '098', id: '14RQHBauLIlVwldpzN1O9-m35CgRuVQuS' },
+        { ev: 't', no: '077', id: '1nTTT5s2BKZGkyrCIJ8fRLgk5ZPM4u3pC' }
+      ]
+    }
+  ],
+  note: '本番の撮影にも伺います。本番は私ではなく別のカメラマンが伺いますが、子どもたちがおみせやさんを頑張っている姿をしっかりカメラに収められるよう頑張ります！',
+  sign: 'おさんぽフォト'
+};
+
+// ============================================================
+// 表示処理
+// ============================================================
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function imgUrl(id, w) {
+  return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w' + (w || 1200);
+}
+// ログイン中のイベント（ギャラリーと同じ sessionStorage を参照）
+function currentEventId() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem('osanpo_session') || 'null');
+    if (s && s.event && s.expires > Date.now()) return String(s.event.id);
+  } catch (e) {}
+  return '';
+}
+const CURRENT = currentEventId();
+function photoHtml(p, w) {
+  if (!p.id) return '<div class="photo-link"><div class="placeholder">写真（準備中）</div></div>';
+  const ev = EVENTS[p.ev] || {};
+  const label = (ev.label ? ev.label + ' ' : '') + 'No.' + Number(p.no);
+  const inner = '<img src="' + imgUrl(p.id, w) + '" alt="おみせやさんごっこ準備の写真（' + esc(label) + '）" loading="lazy" referrerpolicy="no-referrer">'
+    + '<span class="photo-no">' + esc(label) + '</span>';
+  // ログイン中のクラスの写真なら、タップでギャラリーのその写真を開く
+  if (ev.id && ev.id === CURRENT) {
+    return '<a class="photo-link" href="./#photo-' + esc(p.no) + '" aria-label="この写真をギャラリーで見る">' + inner + '</a>';
+  }
+  return '<div class="photo-link">' + inner + '</div>';
+}
+function paras(t, cls) {
+  return (Array.isArray(t) ? t : [t]).filter(Boolean).map(x => '<p' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(x) + '</p>').join('');
+}
+function render() {
+  let h = '<section class="hero">';
+  h += '<div class="hero-photo">' + photoHtml(BLOG.hero, 1600) + '</div>';
+  h += '<div class="eyebrow">' + esc(BLOG.eyebrow) + '</div>';
+  h += '<h1>' + esc(BLOG.title) + '</h1>';
+  h += '<div class="meta">' + esc(BLOG.meta) + '</div>';
+  h += '</section><article>';
+  h += paras(BLOG.lead, 'lead');
+  BLOG.chapters.forEach((c, i) => {
+    h += '<section class="chapter">';
+    h += '<h2><span class="no">' + String(i + 1).padStart(2, '0') + '</span>' + esc(c.heading) + '</h2>';
+    h += paras(c.text);
+    if (c.photos && c.photos.length) {
+      h += '<div class="photos cols-' + (c.cols || 1) + '">';
+      c.photos.forEach(p => {
+        h += '<figure' + (p.wide ? ' class="wide"' : '') + '>' + photoHtml(p, (c.cols > 1 && !p.wide) ? 800 : 1400) + '</figure>';
+      });
+      h += '</div>';
+    }
+    if (c.voice) h += '<div class="voice">' + esc(c.voice) + '</div>';
+    h += '</section>';
+  });
+  if (BLOG.note) {
+    h += '<div class="note"><div class="note-title">カメラマンより</div><p>' + esc(BLOG.note) + '</p><div class="sign">' + esc(BLOG.sign) + '</div></div>';
+  }
+  h += '<div class="cta"><p>準備の日の写真は、ギャラリーから<br>1枚ずつ選んでお求めいただけます。</p>'
+     + '<a class="cta-btn" href="./">写真を選ぶ →</a>'
+     + '<small>' + (CURRENT ? 'お子さまのクラスの写真は、タップするとギャラリーでその写真が開きます' : 'ギャラリーにログインしてから開くと、写真をタップしてそのまま選べます') + '</small></div>';
+  h += '</article>';
+  document.getElementById('app').innerHTML = h;
+}
+render();
+</script>
+
+<footer>© おさんぽフォト ／ 写真の転載・二次利用はご遠慮ください</footer>
+</body>
+</html>
