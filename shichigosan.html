@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>七五三の出張撮影 ｜ おさんぽフォト（春日井・名古屋）</title>
+<meta name="description" content="春日井・名古屋近辺の神社に出張して七五三を撮影します。撮影料 ¥12,000（大きいデータ5枚込み）。名古屋市内・瀬戸・春日井など出張費無料。園の行事を撮っている子ども慣れしたカメラマンが、子どものペースに合わせて自然な表情を残します。">
+<meta property="og:title" content="七五三の出張撮影 ｜ おさんぽフォト">
+<meta property="og:description" content="撮影料 ¥12,000（大きいデータ5枚込み）。ご希望の神社に出張します。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w1200">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #FBF8F2; --white: #FFFFFF; --sand: #E8E2D6; --bark: #7A7A7A; --deep: #2C2C2C;
+  --forest: #4A7A5A; --moss: #7AAD8A; --accent: #D4723A; --gold: #C9A24B;
+  --radius: 14px; --shadow: 0 6px 28px rgba(44,44,44,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Zen Maru Gothic', sans-serif; font-weight: 500; background: var(--paper); color: var(--deep); line-height: 1.95; -webkit-font-smoothing: antialiased; }
+img { display: block; width: 100%; height: auto; }
+a { color: inherit; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+/* ヘッダー */
+.site-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(251,248,242,0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--sand); }
+.brand { font-size: 13px; letter-spacing: 0.08em; color: var(--forest); font-weight: 700; text-decoration: none; }
+.header-cta { font-size: 12px; font-weight: 700; text-decoration: none; color: #fff; background: var(--accent); padding: 8px 14px; border-radius: 999px; white-space: nowrap; }
+
+/* ヒーロー */
+.hero { padding: 24px 0 8px; }
+.hero-photo { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); background: var(--sand); }
+.hero-photo img { aspect-ratio: 3 / 2; object-fit: cover; }
+.eyebrow { margin-top: 22px; font-size: 12px; letter-spacing: 0.18em; color: var(--accent); font-weight: 700; }
+h1 { font-size: clamp(26px, 6.4vw, 38px); line-height: 1.45; font-weight: 700; margin-top: 6px; letter-spacing: 0.04em; }
+.lead { margin-top: 14px; font-size: 16px; }
+.lead strong { color: var(--forest); }
+.cta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; align-items: center; }
+.btn { display: inline-block; text-decoration: none; font-weight: 700; padding: 14px 26px; border-radius: 999px; font-size: 15px; text-align: center; }
+.btn-primary { background: var(--accent); color: #fff; box-shadow: 0 6px 18px rgba(212,114,58,0.3); }
+.btn-ghost { background: var(--white); color: var(--forest); border: 1.5px solid var(--forest); }
+.cta-note { font-size: 12px; color: var(--bark); width: 100%; }
+
+/* セクション */
+section { margin-top: 56px; }
+.sec-label { font-size: 12px; letter-spacing: 0.18em; color: var(--accent); font-weight: 700; }
+h2 { font-size: 22px; font-weight: 700; line-height: 1.5; margin-top: 4px; letter-spacing: 0.03em; }
+.sec-text { margin-top: 12px; font-size: 15px; }
+.sec-text + .sec-text { margin-top: 10px; }
+
+/* 写真グリッド */
+.photos { margin-top: 18px; display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+.photos .ph { border-radius: 10px; overflow: hidden; background: var(--sand); }
+.photos .ph img { aspect-ratio: 4 / 3; object-fit: cover; transition: transform .4s ease; }
+.photos .ph.wide { grid-column: 1 / -1; }
+.photos .ph.wide img { aspect-ratio: 16 / 9; }
+.photos .ph:hover img { transform: scale(1.02); }
+@media (min-width: 560px) { .photos { grid-template-columns: repeat(4, 1fr); } .photos .ph.wide img { aspect-ratio: 21 / 9; } }
+
+/* 料金 */
+.price-card { margin-top: 18px; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 22px; }
+.price-main { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 1px dashed var(--sand); padding-bottom: 14px; }
+.price-main .name { font-size: 15px; font-weight: 700; }
+.price-main .name small { display: block; font-size: 12px; color: var(--bark); font-weight: 500; }
+.price-main .yen { font-size: 30px; font-weight: 900; color: var(--forest); letter-spacing: 0.02em; }
+.price-main .yen small { font-size: 12px; font-weight: 500; color: var(--bark); margin-left: 4px; }
+.price-rows { margin-top: 12px; }
+.price-row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; padding: 7px 0; border-bottom: 1px solid #F1EDE4; }
+.price-row:last-child { border-bottom: none; }
+.price-row span:last-child { font-weight: 700; white-space: nowrap; }
+.price-cap { margin-top: 14px; padding: 12px 14px; background: #EDF3ED; border-left: 3px solid var(--forest); border-radius: 0 8px 8px 0; font-size: 13px; color: #2d5a3d; line-height: 1.8; }
+.price-ex { margin-top: 14px; font-size: 12.5px; color: var(--bark); line-height: 1.8; }
+.price-ex b { color: var(--deep); }
+.compare { margin-top: 12px; font-size: 12.5px; color: var(--bark); }
+.area-box { margin-top: 12px; background: var(--white); border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 2px 12px rgba(44,44,44,0.05); }
+.area-box h3 { font-size: 14px; font-weight: 700; letter-spacing: 0.06em; color: var(--forest); }
+.area-box p { font-size: 13.5px; margin-top: 8px; line-height: 1.8; }
+.area-box p.small { font-size: 12px; color: var(--bark); }
+
+/* 流れ */
+.steps { margin-top: 18px; display: grid; gap: 10px; }
+.step { display: flex; gap: 14px; background: var(--white); border-radius: 12px; padding: 16px 16px; box-shadow: 0 2px 12px rgba(44,44,44,0.05); }
+.step .no { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; background: var(--forest); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.step h3 { font-size: 15px; font-weight: 700; line-height: 1.5; }
+.step p { font-size: 13px; color: var(--bark); margin-top: 4px; line-height: 1.8; }
+
+/* 日程 */
+.dates { margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.date { background: var(--white); border: 1.5px solid var(--sand); border-radius: 10px; padding: 10px 8px; text-align: center; }
+.date b { display: block; font-size: 17px; font-weight: 700; }
+.date span { font-size: 11px; color: var(--bark); }
+.date.wd span { color: var(--accent); }
+.slots { margin-top: 12px; font-size: 13px; color: var(--bark); }
+.slots b { color: var(--deep); }
+
+/* カメラマン */
+.me { margin-top: 18px; display: flex; gap: 16px; align-items: flex-start; background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.me .face { flex-shrink: 0; width: 84px; height: 84px; border-radius: 50%; background: var(--sand); overflow: hidden; }
+.me .face img { width: 100%; height: 100%; object-fit: cover; }
+.me h3 { font-size: 16px; font-weight: 700; }
+.me h3 small { font-size: 12px; color: var(--bark); font-weight: 500; margin-left: 6px; }
+.me p { font-size: 13.5px; margin-top: 6px; line-height: 1.85; }
+.me p + p { margin-top: 10px; }
+
+/* FAQ */
+.faq { margin-top: 18px; display: grid; gap: 8px; }
+details { background: var(--white); border-radius: 12px; padding: 0 16px; box-shadow: 0 2px 12px rgba(44,44,44,0.05); }
+summary { cursor: pointer; list-style: none; padding: 14px 0; font-size: 14.5px; font-weight: 700; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: '＋'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+details[open] summary::after { content: '－'; }
+details p { font-size: 13.5px; color: #444; padding: 0 0 14px; line-height: 1.85; }
+
+/* 最後のCTA */
+.final { margin-top: 56px; text-align: center; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 30px 20px; }
+.final h2 { font-size: 20px; }
+.final p { font-size: 14px; color: var(--bark); margin-top: 8px; }
+.final .btn { margin-top: 16px; }
+.final .sub { margin-top: 12px; font-size: 12.5px; }
+.final .sub a { color: var(--forest); }
+
+footer { text-align: center; padding: 28px 16px 44px; font-size: 12px; color: var(--bark); }
+footer a { color: var(--bark); }
+
+/* 固定の予約ボタン（スマホ） */
+.sticky-cta { position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 20; display: none; }
+.sticky-cta .btn { width: 100%; display: block; box-shadow: 0 8px 24px rgba(212,114,58,0.4); }
+@media (max-width: 640px) { .sticky-cta { display: block; } body { padding-bottom: 72px; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="./">おさんぽフォト</a>
+  <a class="header-cta" href="#reserve">空き日程を見る</a>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" style="margin-top:0">
+    <div class="hero-photo"><img referrerpolicy="no-referrer" src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w1600" alt="紅葉の下、晴れ着で歩く兄妹"></div>
+    <div class="eyebrow">七五三 ｜ 出張撮影 2026</div>
+    <h1>いつもの神社で、<br>いつもの笑顔を。</h1>
+    <p class="lead">スタジオではなく、ご家族がお参りする神社でそのまま撮影します。<strong>撮影料 ¥12,000（大きいデータ5枚込み）</strong>。かしこまらなくて大丈夫。走っても、泣いても、その日のぜんぶが思い出です。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#reserve">空き日程を見て予約する</a>
+      <a class="btn btn-ghost" href="#price">料金を見る</a>
+      <span class="cta-note">名古屋市内・瀬戸・春日井など出張費無料 ／ 10月25日〜11月23日の受付日</span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">PHOTOS</div>
+    <h2>撮らせていただいた一日</h2>
+    <p class="sec-text">ポーズをお願いするのは最初の数枚だけ。あとは、いちょうの葉を投げたり、きょうだいでふざけたり、お参りの順番を待ったり。そんな時間の中にある表情を追いかけます。</p>
+    <div class="photos">
+      <div class="ph wide"><img src="https://drive.google.com/thumbnail?id=1y4zwHJOQMyDehKz2LouEP1TMrQOxj_iq&sz=w1000" alt="いちょうの葉を見せ合って笑う兄妹" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=1TXt4qrmXs-3T2LtQFcQmzYDzGD_9_9KK&sz=w1000" alt="笑う女の子" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=13WikiQgT9Iho8NWAIINqfm1Zo-qdaO1m&sz=w1000" alt="いちょうの葉を見上げる男の子" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=1tRrHBzehOxrluoa0Iv6YrJ9LYbPTUQFc&sz=w1000" alt="黄色い落ち葉の上で手を広げる女の子" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=1jF5MDDTq_iJDsZzEWg5rJps49sPLHHLP&sz=w1000" alt="お賽銭箱をのぞく女の子" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=1F2fbbjgcZBpiZXoqUM2d4lNf4TeN79ME&sz=w1000" alt="紅葉の下でおどける兄妹" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=1fDXSH9PoSPxqmaY7qlh6k-lpkgIL0J00&sz=w1000" alt="落ち葉を投げる兄妹" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=1CtnTm6_kBNDlYzZpnfeYTBBWAJDJ4mGB&sz=w1000" alt="神社の前で家族写真" loading="lazy" referrerpolicy="no-referrer"></div>
+      <div class="ph "><img src="https://drive.google.com/thumbnail?id=1pN68TOfpRr8bU2FlTjMXyD0z1M_I-UxX&sz=w1000" alt="いちょうの葉を抱える男の子" loading="lazy" referrerpolicy="no-referrer"></div>
+    </div>
+  </section>
+
+  <section id="price">
+    <div class="sec-label">PRICE</div>
+    <h2>料金</h2>
+    <p class="sec-text">「とりあえず撮ってもらって、気に入った分だけ買う」ができる料金にしました。</p>
+    <div class="price-card">
+      <div class="price-main">
+        <div class="name">撮影料<small>60分・1家族 ／ 大きいデータ 5枚込み</small></div>
+        <div class="yen">¥12,000<small>税込</small></div>
+      </div>
+      <div class="price-rows">
+        <div class="price-row"><span>大きいデータ（印刷・引き伸ばし用）6枚目から</span><span>¥1,200／枚</span></div>
+        <div class="price-row"><span>スマホデータ（SNS・スマホ閲覧用）</span><span>¥400／枚</span></div>
+        <div class="price-row"><span>出張費（下記エリア内）</span><span>無料</span></div>
+        <div class="price-row"><span>出張費（上記以外の愛知県内・岐阜県東濃）</span><span>¥2,000</span></div>
+      </div>
+      <div class="price-cap">追加分の合計が <b>¥18,000</b> になったら、その日に撮った<b>全カット</b>（大きいデータ＋スマホデータ）をお渡しします。つまり、どれだけ選んでも <b>合計 ¥30,000</b> を超えることはありません。</div>
+      <p class="price-ex">例）<b>込みの5枚だけ</b> → 合計 ¥12,000 ／ <b>大5枚＋スマホ10枚</b> → 合計 ¥16,000 ／ <b>大15枚</b> → 合計 ¥24,000 ／ <b>全部ほしい</b> → 合計 ¥30,000</p>
+      <p class="compare">※ 撮影料はご予約後にお送りする決済リンクから、撮影日の3日前までにクレジットカードでお支払いください（お支払いをもって予約確定となります）。カードがご利用になれない場合は銀行振込も可能です（振込手数料はお客様負担）。<br>※ 写真は後日、ご家族専用のギャラリーからお選びいただきます。追加分はその場でカード決済できます。<br>※ 納品は20〜50カット程度。衣装・着付け・ヘアセットは含みません。</p>
+    </div>
+    <div class="area-box">
+      <h3>出張エリア</h3>
+      <p><b>出張費無料：</b>瀬戸市・尾張旭市・長久手市・日進市・春日井市・小牧市・名古屋市全域・多治見市・豊田市（市街地）</p>
+      <p><b>出張費 ¥2,000：</b>上記以外の愛知県内（犬山・一宮・岡崎・刈谷・安城・みよし など）、岐阜県東濃（土岐・瑞浪・可児）</p>
+      <p><b>それ以外：</b>公式LINEからご相談ください</p>
+      <p class="small">※ 遠方の神社の場合、移動時間の都合で前後の時間枠を調整させていただくことがあります。</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">FLOW</div>
+    <h2>予約から受け取りまで</h2>
+    <div class="steps">
+      <div class="step"><div class="no">1</div><div><h3>空き日程から予約する</h3><p>下の予約ページで日時を選び、お子さまの年齢・人数・ご希望の神社を入力してください。撮影の3日前まで受け付けます。</p></div></div>
+      <div class="step"><div class="no">2</div><div><h3>撮影料のお支払いで予約確定</h3><p>ご予約後に決済リンクをお送りします。撮影日の3日前までにクレジットカード（または銀行振込）でお支払いください。あわせて集合場所やご祈祷の予定、撮りたいカットをLINEかメールで確認します。</p></div></div>
+      <div class="step"><div class="no">3</div><div><h3>当日、神社で60分</h3><p>ご祈祷の前後どちらでも。お子さまのペースに合わせて、境内を歩きながら撮ります。</p></div></div>
+      <div class="step"><div class="no">4</div><div><h3>専用ギャラリーで選ぶ</h3><p>2週間ほどで、ご家族だけが見られるギャラリーのURLとパスワードをお送りします。込みの5枚はそこで選べます。</p></div></div>
+      <div class="step"><div class="no">5</div><div><h3>データのお届け</h3><p>選んだ写真のダウンロードリンクをメールでお送りします。追加分はその場でカード決済できます。</p></div></div>
+    </div>
+  </section>
+
+  <section id="dates">
+    <div class="sec-label">DATES</div>
+    <h2>受付日</h2>
+    <p class="sec-text">各日 <b>9:00 ／ 11:30 ／ 14:00</b> の3枠（1枠60分）。空き状況は予約ページでご確認ください。</p>
+    <div class="dates">
+      <div class="date wd"><b>10/25</b><span>土</span></div>
+      <div class="date"><b>10/29</b><span>木</span></div>
+      <div class="date"><b>10/30</b><span>金</span></div>
+      <div class="date wd"><b>10/31</b><span>土</span></div>
+      <div class="date wd"><b>11/3</b><span>火・祝</span></div>
+      <div class="date wd"><b>11/14</b><span>土</span></div>
+      <div class="date wd"><b>11/15</b><span>日</span></div>
+      <div class="date wd"><b>11/21</b><span>土</span></div>
+      <div class="date wd"><b>11/22</b><span>日</span></div>
+      <div class="date wd"><b>11/23</b><span>月・祝</span></div>
+    </div>
+    <p class="slots">※ 上記以外の日程をご希望の場合は、公式LINEからご相談ください。</p>
+  </section>
+
+  <section>
+    <div class="sec-label">ABOUT US</div>
+    <h2>園の行事を撮っている、子ども慣れしたカメラマンです</h2>
+    <div class="me" style="display:block">
+      <p>おさんぽフォトは、幼稚園・保育園の行事や自然体験の写真を撮っているチームです。撮影するカメラマンは全員、保育の現場で子どもと過ごしてきた経験があります。</p>
+      <p>七五三の撮影で大事にしているのは、「ちゃんと撮る」より「その子らしく撮る」こと。緊張している子に無理にカメラを向けることはしません。遊びながら、気づいたら撮れている。そんな60分にします。</p>
+      <p style="font-size:12.5px;color:var(--bark)">※ 担当カメラマンは予約確定後にお知らせします。ご指名のご希望があれば予約時にお書きください。</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">FAQ</div>
+    <h2>よくある質問</h2>
+    <div class="faq">
+      <details><summary>雨の日はどうなりますか？</summary><p>前日の午後までに判断して、無料で別の日に振り替えます。小雨なら、傘や軒先を使ってむしろ雰囲気のある写真になることもあります。</p></details>
+      <details><summary>着物の着付けやヘアセットはお願いできますか？</summary><p>撮影のみのサービスです。着付け・ヘアセットは呉服店や美容室でご準備ください。おすすめのお店はご相談いただければご案内します。</p></details>
+      <details><summary>きょうだいや祖父母も一緒に写れますか？</summary><p>もちろんです。追加料金はありません。ご家族全員のカットも、きょうだいだけのカットも撮ります。人数が多い場合は予約時にお知らせください。</p></details>
+      <details><summary>どの神社でも撮影できますか？</summary><p>名古屋市内・瀬戸・尾張旭・長久手・日進・春日井・小牧・多治見・豊田（市街地）は出張費無料、それ以外の愛知県内と岐阜県東濃は ¥2,000 で伺います。神社によっては境内での撮影に許可や料金が必要な場合があるので、事前に確認してお知らせします。</p></details>
+      <details><summary>ご祈祷の様子も撮ってもらえますか？</summary><p>神社の許可があれば撮影します。本殿内は撮影不可のところも多いので、その場合は祈祷前後の様子を中心に撮ります。</p></details>
+      <details><summary>子どもが人見知りで、泣いてしまいそうです。</summary><p>大丈夫です。泣いている写真も、あとで見返すといい思い出になります。無理にカメラを向けず、お子さまが慣れるまで待ちます。園で毎日見てきた景色なので、慣れています。</p></details>
+      <details><summary>写真はいつ、どうやって受け取れますか？</summary><p>撮影から2週間ほどで、ご家族専用ギャラリーのURLとパスワードをお送りします。スマホで写真を選んで、ダウンロードリンクをメールで受け取る形です。リンクの有効期限は7日間です。</p></details>
+      <details><summary>支払い方法は？</summary><p>撮影料はご予約後にお送りする決済リンクからクレジットカードでお支払いください（撮影日の3日前まで）。カードがご利用になれない場合は銀行振込でも承ります（振込手数料はお客様負担）。写真データの追加分は、ギャラリーでその場でカード決済できます。</p></details>
+      <details><summary>キャンセルはできますか？</summary><p>撮影の3日前まではキャンセル料はかかりません（お支払い済みの場合は全額返金します）。以降は撮影料の50%をお願いしています。お子さまの体調不良の場合は、できる限り振り替えで対応します。</p></details>
+    </div>
+  </section>
+
+  <section class="final" id="reserve">
+    <div class="sec-label">RESERVE</div>
+    <h2>空き日程を見て予約する</h2>
+    <p>予約ページ（Googleカレンダー）が開きます。<br>日時を選び、お子さまの年齢・人数・ご希望の神社を入力してください。</p>
+    <a class="btn btn-primary" href="https://calendar.google.com/calendar/appointments/schedules/AcZssZ19uwNM3_17AA92ZGkRYoq3-YFWAlN97OpGFc6b_5elUc9HkZB3B9H0MLO5A-gQ64a7V8dCNxjs" target="_blank" rel="noopener">予約ページを開く →</a>
+    <p class="sub">日程の相談・ご質問は <a href="https://lin.ee/Y2WBhzF" target="_blank" rel="noopener">公式LINE</a> からどうぞ</p>
+  </section>
+
+</main>
+
+<footer>
+  おさんぽフォト（おさんぽフォト株式会社）／ 愛知県春日井市<br>
+  <a href="./">写真ギャラリー</a> ・ <a href="album.html">写真の楽しみ方ガイド</a><br>
+  © おさんぽフォト ／ 掲載写真はご家族の許可を得て掲載しています。転載はご遠慮ください。
+</footer>
+
+<div class="sticky-cta"><a class="btn btn-primary" href="#reserve">空き日程を見て予約する</a></div>
+
+</body>
+</html>
