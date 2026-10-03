@@ -1602,6 +1602,9 @@ function clearCartStorage(eventId) {
 window.addEventListener('DOMContentLoaded', async () => {
   // ?paid=1 の場合は完了画面を表示
   const urlParams = new URLSearchParams(window.location.search);
+  // ?next=blog-xxx.html … ログイン後に PHOTO STORY（同じフォルダの blog-*.html のみ）へ戻る
+  const nextParam = urlParams.get('next') || '';
+  if (/^blog-[A-Za-z0-9_-]+\.html$/.test(nextParam)) state.afterLoginNext = nextParam;
   if (urlParams.get('paid') === '1') {
     // 購入完了後は、そのイベントで保存していたカートをクリアする（購入済み写真を次回に残さないため）
     try {
@@ -1624,6 +1627,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (s.expires > Date.now()) {
         state.session = s;
         state.selectedEventId = s.event.id;
+        if (state.afterLoginNext) { window.location.replace(state.afterLoginNext); return; }
         await enterGallery();
         return;
       }
@@ -1700,6 +1704,7 @@ async function doLogin() {
     const data = await api('login', { eventId: state.selectedEventId, password: pw });
     state.session = data;
     sessionStorage.setItem('osanpo_session', JSON.stringify(data));
+    if (state.afterLoginNext) { window.location.replace(state.afterLoginNext); return; }
     await enterGallery();
   } catch(e) {
     setError(e.message || 'ログインに失敗しました');
