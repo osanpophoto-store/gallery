@@ -963,7 +963,7 @@ Code.gs:
 - `forceLink`: v2.7 の `rcpt.all.some(isCarrierEmail)` に `|| /^753/.test(eventId)` を追加（大データは容量が大きく添付に向かないため常にリンク納品）
 - `listEvents`: ID が `753` で始まるイベントは一覧から除外する。`login` は ID 直指定なら従来どおり通す
 - metadata に `sizeLarge` の写真番号と `sizeSmall` の写真番号を分けて入れる（`photoNumbers` は大、`photoNumbersSmall` を追加）
-- 納品: 大は original から、スマホは thumbs から該当番号を取り、1つの共有フォルダ（または個別共有）にまとめる
+- 納品: 大は G列（original）から、スマホは **events シート L列「スマホデータフォルダURL」**（新設・七五三のみ使用）から該当番号を取る（thumbs は透かし入りなので使えない）。※下記 v2.8 実装記録のとおり実装済み
 
 index.html:
 - `?event=ID` があればイベント一覧を出さず、そのイベントのパスワード入力だけを表示する
@@ -985,3 +985,37 @@ index.html:
 - `index.html`: `?next=blog-xxx.html`（同じフォルダの `blog-*.html` のみ許可）を `state.afterLoginNext` に保持し、ログイン成功時・セッション復元時にその記事へ `location.replace` で戻す
 - 注意: 写真そのものは Drive の「リンクを知っている全員」サムネイルなので、守っているのはページ表示のみ（ギャラリー本体と同じ水準）。セッションはタブ単位（sessionStorage）なので、バナーからは同じタブで開くこと（現状 `target` なし＝同じタブ）
 - 確認: 両ファイルの JS 構文チェック・タグ開閉数一致。ヘッドレスブラウザでセッションなし→ゲート、該当クラスのセッションあり→本文、別イベントのセッション→ゲート、を確認
+## 2026/10/03（続き）Code.gs v2.8（七五三プラン）作成・index.html 七五三モード
+
+### Code.gs v2.7 → v2.8（Apps Script「おさんぽ販売用」に貼り替えて「新しいバージョン」でデプロイすること。リポジトリには置かない）
+
+- `GAS_CONFIG.PRICE_753 = { FREE_LARGE: 5, LARGE: 1200, SMALL: 400, CAP: 18000 }`、`is753Event(id)`（ID が `753` で始まる）
+- `calcPrice753(qtyLarge, qtySmall, usedFree)`: 込みの5枚は**家族（イベント）ごとの通算**。`getUsedFreeLarge753(eventId)` が purchase_log の M列メモ「七五三 大N/スマホM」から納品済みの大の枚数を数え、残りの込み枚数だけ ¥0 にする（5枚ずつ何度も ¥0 注文して全部無料で取る抜け道をふさぐ）。`extraLarge×1200 + small×400` が 18,000 以上なら `capped=true`（全カット）
+- `createPayment()`: 七五三イベントなら `createPayment753()` へ。引数に `photoNumbersSmall` を追加。**合計 ¥0 なら Stripe を通さず `processSession753()` をその場で実行**し、`{ free:true, paymentUrl: 署名付き完了URL }` を返す（フロントは有料時と同じく paymentUrl へ遷移→自己解決画面）
+- `processSession()`: `metadata.planType === '753'` なら `processSession753()` へ。常にリンク配信。大は G列、スマホは L列（`row[11]`）のフォルダから並び順で取り、1枚ずつ共有。`capped` のときは納品形式「フォルダ」で大・スマホ両フォルダに閲覧者追加（Gmail以外は管理者へ手動共有メール）。M列メモに「七五三 大N/スマホM（全カット）（¥0）」を残す
+- `listEvents()`: 七五三イベントは一覧に出さない。`eventInfo(eventId)` を新設（直リンク用・パスワード不要でイベント名/撮影日/枚数だけ返す）。`login()` は七五三のとき `event.is753 / freeLargeRemaining / hasSmall` を返す
+- `calcPrice753` API（eventId を渡すと通算込みで計算）。`orderFiles()` のフォルダ納品は複数フォルダ対応（`folderUrls`）
+- 確認: ローカルで GAS をモックした単体テスト（¥0注文→即納品・6大+3スマホ→¥1,200・20大→上限18,000で両フォルダ閲覧者追加・2回目の注文で込み枚数が減る・通常イベントの calcPrice(1)=¥140 不変）を通過
+- ⚠️ `resendLogRow()`（手動再送）の「リンク」再送はファイル名から番号を出すため、七五三では大とスマホの区別が付かない（URLは正しい）。必要になったら直す
+
+### index.html 七五三モード（v2.8）
+
+- `?event=ID`: 一覧を出さず、`eventInfo` でイベント名を取ってそのイベントのパスワード入力だけを表示（`loadDirectEvent`）
+- ログイン後 `event.is753` なら `body.mode-753`。丸ごとボタン・ガイドリンク・おすすめバナー・19枚制限を無効化し、上部に料金の説明（`#plan-753-note`、込みの残り枚数も表示）
+- 選択は `state.selected`＝大、`state.selectedSmall`＝スマホ。ライトボックスに「大きいデータ」「スマホデータ」の2ボタン（両方可）。グリッドの右下に「大」「スマホ」「大 + スマホ」バッジ。カート一覧は大・スマホを別エントリで表示・個別に外せる。localStorage のカート保存にも `small` を追加
+- ミニバーは「大n・スマホm枚 ¥合計」（`calcPrice753()`＝GASと同じ式、`freeLargeRemaining` を反映）。「購入へ進む」で受け取り方法モーダルを飛ばして `openPaymentModal753()`（内訳: 込み分 ¥0／追加 大／スマホ／上限）。¥0 ならボタンは「この内容で受け取る（¥0）」
+- `doCreatePayment753()`: `planType:'753'`、`photoNumbers`（大）・`photoNumbersSmall` を送り、返ってきた `paymentUrl` へ遷移（¥0 なら完了画面に直行）
+- 購入完了画面の「この画面からダウンロード」はフォルダが2つ（大・スマホ）のとき両方のボタンを出す
+- 確認: JS 構文・タグ開閉数、ヘッドレスブラウザで 直リンク→ログイン→大/スマホ選択→内訳 ¥4,400（大5・込み2・スマホ2）→createPayment のパラメータ、カート復元、通常イベントは従来どおり（モードOFF・丸ごとボタンあり・ボタン1つ）
+
+### 七五三イベントの登録手順（家族ごとに1行）
+
+1. Drive に3フォルダ: 透かし入りサムネ（F列）／大きいデータ＝フル解像度（G列）／スマホデータ＝長辺2000px程度（**L列**）。3つとも同じ枚数・同じ並び（ファイル名の番号）で書き出す。G・L は taiki.kurono@gmail.com と編集者で共有、F は「リンクを知っている全員が閲覧可」
+2. events シートに追加: A=`753-<家族名ローマ字>`（例 `753-sato`）、B=「七五三 ○○様」、D=撮影日、E=枚数、H=TRUE、I/J/K=公開・終了日、**L=スマホデータフォルダURL**
+3. passwords シートにパスワードを入れる
+4. 保護者に送るURL: `https://osanpophoto-store.github.io/gallery/?event=753-sato` ＋パスワード（一覧には出ないので、このURLでしか入れない）
+
+### 未対応
+- 予約URL（Googleカレンダー）をギャラリーのバナー・購入完了画面・購入メールに載せる（別途）
+- 七五三の予約ページ説明欄の文言見直し（撮影料は当日・データは専用ギャラリーで選択）
+- PHOTO STORY の写真IDがソースに載っている件は「ギャラリー本体と同じ水準」として現状維持（2026/10/03 taikiさん判断）。保護者から指摘があれば GAS 経由配信に変える
