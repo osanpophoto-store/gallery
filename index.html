@@ -540,6 +540,30 @@ body:not(.favorites-off) .fav-off-only { display: none !important; }
   align-items: center;
   justify-content: center;
 }
+/* ライトボックス内のカート表示（枚数と金額を常に見せて、そのままカートを開ける） */
+.lightbox-cart-chip {
+  position: absolute;
+  top: 18px;
+  left: 16px;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary, #5C7A67);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  white-space: nowrap;
+}
+.lightbox-cart-chip.visible { display: inline-flex; }
+.lightbox-cart-chip small { font-weight: 500; opacity: 0.9; }
+body:not(.favorites-off) .lightbox-cart-chip { left: 64px; }
 .lightbox-fav-btn {
   position: absolute;
   top: 16px;
@@ -1425,6 +1449,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   <div class="modal-box">
     <h3>カートの中身</h3>
     <p id="cart-view-count-text"></p>
+    <p id="cart-view-price-text" style="font-size:13px;color:var(--forest);background:#EDF3ED;border-radius:8px;padding:8px 10px;margin:6px 0 10px;line-height:1.6"></p>
     <div class="confirm-thumb-grid" id="cart-view-grid" style="max-height:280px;grid-template-columns:repeat(auto-fill, minmax(72px, 1fr))"></div>
     <p style="font-size:11px;color:var(--bark);margin-top:10px;margin-bottom:16px">写真をタップすると選択を外せます</p>
     <div class="modal-actions">
@@ -1524,6 +1549,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   <div class="lightbox-hint" id="lightbox-hint">👈👉 スワイプで前後の写真へ／写真をタップすると閉じます</div>
   <img id="lightbox-img" src="" alt="">
   <button class="lightbox-close" onclick="event.stopPropagation();closeLightbox()">✕</button>
+  <button class="lightbox-cart-chip" id="lb-cart-chip" onclick="event.stopPropagation();closeLightbox();openCartViewModal()" title="カートの中身を見る">🛒 0枚</button>
   <button class="lightbox-fav-btn" id="lb-fav-btn" onclick="event.stopPropagation();lbToggleFavorite()" title="お気に入り">♡</button>
   <button class="lightbox-nav prev" id="lb-prev" onclick="event.stopPropagation();lbNav(-1)" aria-label="前の写真">&#8249;</button>
   <button class="lightbox-nav next" id="lb-next" onclick="event.stopPropagation();lbNav(1)" aria-label="次の写真">&#8250;</button>
@@ -2040,6 +2066,7 @@ function renderCartView() {
     Array.from(state.selectedSmall).forEach(n => items.push({ n, size: 'S' }));
     items.sort((a, b) => Number(a.n) - Number(b.n) || (a.size === 'L' ? -1 : 1));
     countText.textContent = `大 ${state.selected.size}枚・スマホ ${state.selectedSmall.size}枚`;
+    updateCartViewPriceText();
     grid.innerHTML = items.map(it => {
       const photo = state.photos.find(p => p.number === it.n);
       const thumbUrl = photo && photo.fileId ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120' : '';
@@ -2052,6 +2079,7 @@ function renderCartView() {
   }
   const nums = Array.from(state.selected).sort((a, b) => Number(a) - Number(b));
   countText.textContent = `${nums.length}枚選択中`;
+  updateCartViewPriceText();
   grid.innerHTML = nums.map(n => {
     const photo = state.photos.find(p => p.number === n);
     const thumbUrl = photo && photo.fileId ? 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w120' : '';
@@ -2060,6 +2088,34 @@ function renderCartView() {
       <div class="confirm-thumb-num">✕ IMG-${n}</div>
     </div>`;
   }).join('');
+}
+// カートの中身モーダルに「今いくらか」を出す
+function updateCartViewPriceText() {
+  const el = document.getElementById('cart-view-price-text');
+  if (!el) return;
+  if (state.mode753) {
+    const p = calcPrice753(state.selected.size, state.selectedSmall.size, state.freeLargeRemaining);
+    el.textContent = p.capped ? `合計 ¥${p.total.toLocaleString()}（上限に達したので全カットお渡し）` : `合計 ¥${p.total.toLocaleString()}` + (p.freeLarge > 0 ? `（込みの大 ${p.freeLarge}枚は ¥0）` : '');
+    return;
+  }
+  const count = state.selected.size;
+  const price = calcPrice(count);
+  el.textContent = `合計 ¥${price.total.toLocaleString()}〜（スマホサイズの場合。A4・A3は受け取り方法で選べます）`;
+}
+// ライトボックス左上のカート表示（枚数と金額）
+function updateLbCartChip() {
+  const chip = document.getElementById('lb-cart-chip');
+  if (!chip) return;
+  const count = state.mode753 ? cart753Count() : state.selected.size;
+  if (count === 0) { chip.classList.remove('visible'); return; }
+  if (state.mode753) {
+    const p = calcPrice753(state.selected.size, state.selectedSmall.size, state.freeLargeRemaining);
+    chip.innerHTML = `🛒 大${state.selected.size}・スマホ${state.selectedSmall.size} <small>¥${p.total.toLocaleString()}</small>`;
+  } else {
+    const price = calcPrice(count);
+    chip.innerHTML = `🛒 ${count}枚 <small>¥${price.total.toLocaleString()}〜</small>`;
+  }
+  chip.classList.add('visible');
 }
 function removeFromCart(num, size) {
   if (state.mode753 && size === 'S') state.selectedSmall.delete(num); else state.selected.delete(num);
@@ -2195,6 +2251,7 @@ function updateCart() {
   const count = state.mode753 ? cart753Count() : state.selected.size;
   const panel = document.getElementById('cart-panel');
   const selInfo = document.getElementById('selection-info');
+  updateLbCartChip();
   if (count === 0) {
     panel.classList.remove('visible');
     selInfo.textContent = '';
@@ -2865,6 +2922,7 @@ function lbRender() {
   const idx = state.lightboxIndex;
   const photo = lbCurrentPhoto();
   if (idx === null || !photo) return;
+  updateLbCartChip();
   // 画像
   const img = document.getElementById('lightbox-img');
   img.src = 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w1200';
