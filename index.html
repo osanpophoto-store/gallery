@@ -466,6 +466,12 @@ body::before {
   justify-content: center;
 }
 .photo-fav-btn.active { background: rgba(212,58,120,0.85); }
+/* お気に入り機能OFF（CONFIG.FAVORITES_ENABLED=false）のときの表示切り替え */
+body.favorites-off .photo-fav-btn,
+body.favorites-off #lb-fav-btn,
+body.favorites-off #btn-fav-view,
+body.favorites-off .fav-only { display: none !important; }
+body:not(.favorites-off) .fav-off-only { display: none !important; }
 .photo-num {
   position: absolute;
   bottom: 8px;
@@ -1378,8 +1384,8 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     </div>
   </div>
   <div class="gallery-notice">
-    📌 写真をタップすると全体表示されます。気に入ったら「この写真を選ぶ」でカートに追加、左上のハートでお気に入りに保存できます。<br>
-    💾 選んだ写真とお気に入りは、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べて、きょうだいでクラスが違ってもそれぞれ残ります。
+    📌 写真をタップすると全体表示されます。気に入ったら「この写真を選ぶ」でカートに追加<span class="fav-only">、左上のハートでお気に入りに保存</span>できます。<br>
+    💾 選んだ写真<span class="fav-only">とお気に入り</span>は、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べて、きょうだいでクラスが違ってもそれぞれ残ります。
   </div>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
   <a class="event-blog-banner" id="event-blog-banner" href="#" style="display:none;align-items:center;gap:14px;margin:0 0 12px;padding:12px 14px;border-radius:14px;background:#FBF8F2;border:1.5px solid #E8E2D6;text-decoration:none;color:var(--deep);scroll-margin-top:90px;box-shadow:0 4px 18px rgba(44,44,44,0.06)"><img id="event-blog-thumb" alt="" referrerpolicy="no-referrer" style="width:84px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#E8E2D6"><span style="flex:1;min-width:0;line-height:1.5"><span style="display:block;font-size:11px;letter-spacing:0.12em;color:var(--accent);font-weight:700">PHOTO STORY</span><span id="event-blog-title" style="display:block;font-size:15px;font-weight:700"></span><span id="event-blog-lead" style="display:block;font-size:12px;color:var(--bark)"></span></span><span style="font-size:13px;font-weight:700;color:var(--forest);white-space:nowrap">読む →</span></a>
@@ -1548,13 +1554,13 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     <span>⏳ ダウンロードリンク有効期限: 7日間</span>
     <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
     <span>🚫 SNS転載・第三者配布禁止</span>
-    <span>💾 選んだ写真・お気に入りはこのスマホに保存。あとで続きから選べます</span>
+    <span class="fav-only">💾 選んだ写真・お気に入りはこのスマホに保存。あとで続きから選べます</span><span class="fav-off-only">💾 選んだ写真はこのスマホに保存。あとで続きから選べます</span>
     <span>📞 <a href="https://lin.ee/Y2WBhzF">LINEでお問い合わせ</a></span>
     <span>📥 写真は必ずダウンロード保存してください</span>
     <span>⏳ ダウンロードリンク有効期限: 7日間</span>
     <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
     <span>🚫 SNS転載・第三者配布禁止</span>
-    <span>💾 選んだ写真・お気に入りはこのスマホに保存。あとで続きから選べます</span>
+    <span class="fav-only">💾 選んだ写真・お気に入りはこのスマホに保存。あとで続きから選べます</span><span class="fav-off-only">💾 選んだ写真はこのスマホに保存。あとで続きから選べます</span>
     <span>📞 <a href="https://lin.ee/Y2WBhzF">LINEでお問い合わせ</a></span>
   </div>
 </div>
@@ -1566,6 +1572,9 @@ const CONFIG = {
   GAS_URL: 'https://script.google.com/macros/s/AKfycbwv49myiQNYGlFFJbMHLJVpybwXqu6Mz05gi9XrwWBA2hM_WZVU1xhUgJz06DRKkuxW/exec',
   WATERMARK_TEXT: 'おさんぽフォト サンプル',
   WATERMARK_OPACITY: 0.35,
+  // お気に入り（♡）機能。false で全ての表示（写真の♡・ライトボックスの♡・上部ボタン・案内文）を隠す。
+  // コードは残してあるので、戻したいときは true にするだけ（2026/10/05 taikiさん判断で OFF）
+  FAVORITES_ENABLED: false,
 };
 // ========================================
 // STATE
@@ -1656,6 +1665,7 @@ function loadFavoritesFromStorage(eventId) {
 // 初期化
 // ========================================
 window.addEventListener('DOMContentLoaded', async () => {
+  if (!CONFIG.FAVORITES_ENABLED) document.body.classList.add('favorites-off');
   // ?paid=1 の場合は完了画面を表示
   const urlParams = new URLSearchParams(window.location.search);
   // ?next=blog-xxx.html … ログイン後に PHOTO STORY（同じフォルダの blog-*.html のみ）へ戻る
@@ -1819,7 +1829,7 @@ async function enterGallery() {
   // カートは端末に保存されていれば復元する（一度選んだ写真を家族に見せてから購入できるように）
   state.selected = new Set(loadCartFromStorage(state.selectedEventId));
   state.selectedSmall = new Set(loadSmallCartFromStorage(state.selectedEventId));
-  state.favorites = new Set(loadFavoritesFromStorage(state.selectedEventId));
+  state.favorites = new Set(CONFIG.FAVORITES_ENABLED ? loadFavoritesFromStorage(state.selectedEventId) : []);
   updateFavCountBadge();
   const ev = state.session.event;
   // 七五三モード（v2.8）: 大／スマホの2種類を写真ごとに選ぶ。丸ごと・プリント系は出さない
