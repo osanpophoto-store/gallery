@@ -110,6 +110,7 @@ figcaption { font-size: 12.5px; color: var(--bark); margin-top: 6px; line-height
 .note-title { font-size: 12px; letter-spacing: 0.16em; color: var(--forest); font-weight: 700; }
 .note p { margin-top: 10px; font-size: 15px; }
 .note .sign { margin-top: 12px; text-align: right; font-size: 13px; color: var(--bark); }
+.sign-only { margin-top: 48px; text-align: right; font-size: 13px; color: var(--bark); }
 
 /* 写真を選ぶ導線 */
 .cta {
@@ -230,7 +231,7 @@ const BLOG = {
       ]
     }
   ],
-  note: '本番の撮影は、私ではなく別のカメラマンが伺いました。準備の日に「どこまで任せて、どこを手伝うか」を先生たちが考えながら作っていった時間があって、その先に本番があった。そのつながりが写真から伝わればと思います。',
+  note: '',
   sign: 'おさんぽフォト 黒野大樹（たいき先生）'
 };
 
@@ -291,6 +292,8 @@ function render() {
   });
   if (BLOG.note) {
     h += '<div class="note"><div class="note-title">カメラマンより</div><p>' + esc(BLOG.note) + '</p><div class="sign">' + esc(BLOG.sign) + '</div></div>';
+  } else if (BLOG.sign) {
+    h += '<div class="sign-only">' + esc(BLOG.sign) + '</div>';
   }
   h += '<div class="cta"><p>準備の日の写真は、ギャラリーから<br>1枚ずつ選んでお求めいただけます。</p>'
      + '<a class="cta-btn" href="./">写真を選ぶ →</a>'
