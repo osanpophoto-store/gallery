@@ -427,6 +427,26 @@ body::before {
   height: 100%;
   display: block;
 }
+/* 写真を大きく見るボタン（通常イベント: タップ＝カートに入れる、🔍＝拡大） */
+.photo-zoom-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 3;
+  background: rgba(0,0,0,0.45);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body:not(.favorites-off) .photo-zoom-btn { left: 42px; }
+body.mode-753 .photo-zoom-btn { display: none; }
 .photo-check {
   position: absolute;
   top: 10px;
@@ -1408,7 +1428,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     </div>
   </div>
   <div class="gallery-notice">
-    📌 写真をタップすると全体表示されます。気に入ったら「この写真を選ぶ」でカートに追加<span class="fav-only">、左上のハートでお気に入りに保存</span>できます。<br>
+    📌 写真をタップするとカートに入ります（もう一度タップで外せます）。🔍 を押すと大きく見られて、スワイプで前後の写真も確認できます。<span class="fav-only">ハートでお気に入りにも保存できます。</span><br>
     💾 選んだ写真<span class="fav-only">とお気に入り</span>は、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べて、きょうだいでクラスが違ってもそれぞれ残ります。
   </div>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
@@ -1945,7 +1965,7 @@ function renderGrid() {
     return;
   }
   grid.innerHTML = state.photos.map((p) => `
-    <div class="photo-item" id="item-${p.number}" onclick="openLightbox('${p.number}')">
+    <div class="photo-item" id="item-${p.number}" onclick="gridTap('${p.number}')">
       <div class="photo-skeleton" id="skel-${p.number}"></div>
       <img
         id="img-${p.number}"
@@ -1956,6 +1976,7 @@ function renderGrid() {
         onerror="(function(img,num){var retry=parseInt(img.dataset.retry||0);if(retry<3){img.dataset.retry=retry+1;setTimeout(function(){img.src='https://drive.google.com/thumbnail?id=${p.fileId}&sz=w400&t='+Date.now();},1000*Math.pow(2,retry));}else{document.getElementById('skel-'+num).style.background='var(--sand)';document.getElementById('skel-'+num).style.animation='none';}})(this,'${p.number}')"
       >
       <button class="photo-fav-btn${state.favorites.has(p.number) ? ' active' : ''}" id="fav-${p.number}" onclick="event.stopPropagation();toggleFavorite('${p.number}')" title="お気に入り">${state.favorites.has(p.number) ? '♥' : '♡'}</button>
+      <button class="photo-zoom-btn" onclick="event.stopPropagation();openLightbox('${p.number}')" title="大きく見る" aria-label="大きく見る">🔍</button>
       <div class="photo-check"></div>
       <span class="photo-num">IMG-${p.number}</span>
       <span class="photo-size-badge" id="size-${p.number}"></span>
@@ -2223,6 +2244,12 @@ function addAllFavoritesToCart() {
 // ========================================
 // 選択管理
 // ========================================
+// グリッドの写真をタップしたとき。通常イベントはそのままカートに入れる（拡大しない）。
+// 七五三は大／スマホの2種類を選ぶので、従来どおり拡大画面で選ぶ
+function gridTap(num) {
+  if (state.mode753) { openLightbox(num); return; }
+  toggleSelect(num);
+}
 function toggleSelect(num) {
   if (state.selected.has(num)) {
     state.selected.delete(num);
