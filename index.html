@@ -1628,6 +1628,26 @@ function clearCartStorage(eventId) {
   if (!eventId) return;
   localStorage.removeItem(cartStorageKey(eventId));
 }
+// お気に入り（♡）もイベントごとに端末へ保存する。兄弟姉妹でクラス（イベント）が違っても、
+// ログアウト・切り替え後にそれぞれのお気に入りが残るようにする。購入後も消さない（ブックマークなので）。
+function favStorageKey(eventId) {
+  return 'osanpo_fav_' + eventId;
+}
+function saveFavoritesToStorage() {
+  if (!state.selectedEventId) return;
+  const key = favStorageKey(state.selectedEventId);
+  try {
+    if (state.favorites.size === 0) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify({ photos: Array.from(state.favorites), ts: Date.now() }));
+  } catch(e) {}
+}
+function loadFavoritesFromStorage(eventId) {
+  if (!eventId) return [];
+  try {
+    const data = JSON.parse(localStorage.getItem(favStorageKey(eventId)) || 'null');
+    return data && Array.isArray(data.photos) ? data.photos.map(String) : [];
+  } catch(e) { return []; }
+}
 // ========================================
 // 初期化
 // ========================================
@@ -1795,7 +1815,7 @@ async function enterGallery() {
   // カートは端末に保存されていれば復元する（一度選んだ写真を家族に見せてから購入できるように）
   state.selected = new Set(loadCartFromStorage(state.selectedEventId));
   state.selectedSmall = new Set(loadSmallCartFromStorage(state.selectedEventId));
-  state.favorites.clear();
+  state.favorites = new Set(loadFavoritesFromStorage(state.selectedEventId));
   updateFavCountBadge();
   const ev = state.session.event;
   // 七五三モード（v2.8）: 大／スマホの2種類を写真ごとに選ぶ。丸ごと・プリント系は出さない
@@ -2050,6 +2070,7 @@ function toggleFavorite(num) {
     state.favorites.add(num);
     if (btn) { btn.classList.add('active'); btn.textContent = '♥'; }
   }
+  saveFavoritesToStorage();
   updateFavCountBadge();
   if (document.getElementById('fav-view-overlay')?.classList.contains('visible')) renderFavoritesModal();
 }
