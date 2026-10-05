@@ -3082,14 +3082,28 @@ async function api(action, params = {}) {
   const url = new URL(CONFIG.GAS_URL);
   url.searchParams.set('action', action);
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
-  const res = await fetch(url.toString(), {
-    method: 'GET',
-    redirect: 'follow'
-  });
-  if (!res.ok) throw new Error(`通信エラー: ${res.status}`);
-  const data = await res.json();
-  if (!data.ok) throw new Error(data.error || '不明なエラー');
-  return data;
+  // GAS は一時的に 404 / 5xx や応答なしを返すことがある（Google側の揺らぎ）。
+  // 保護者に「通信エラー」を見せる前に、少し待って最大2回まで自動でやり直す。
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await new Promise(r => setTimeout(r, 1200 * attempt));
+    try {
+      const res = await fetch(url.toString(), { method: 'GET', redirect: 'follow' });
+      if (!res.ok) {
+        lastErr = new Error(`通信エラー: ${res.status}`);
+        if (res.status === 404 || res.status >= 500) continue; // やり直す価値があるときだけ
+        throw lastErr;
+      }
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || '不明なエラー');
+      return data;
+    } catch (e) {
+      // 業務エラー（パスワード違い等）はそのまま返す。ネットワーク系だけやり直す
+      if (e && e.message && !/^通信エラー/.test(e.message) && !(e instanceof TypeError) && !(e.name === 'SyntaxError')) throw e;
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('通信エラー');
 }
 // ========================================
 // トースト通知
