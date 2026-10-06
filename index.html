@@ -1229,16 +1229,78 @@ body.cart-open .help-bar { bottom: 80px; }
 }
 .btn-back-top:hover { background: var(--sand); }
 /* ===== RESPONSIVE ===== */
-.gallery-notice {
+/* 使い方（1行＋「詳しく」） */
+.gallery-howto {
   max-width: 1200px;
-  margin: 0 auto 16px;
-  padding: 10px 40px;
+  margin: -16px auto 24px;
+  padding: 0 40px;
   font-size: 12px;
   color: var(--bark);
-  background: #F0F5F1;
-  border-left: 3px solid var(--forest);
-  border-radius: 0 8px 8px 0;
+  line-height: 1.7;
 }
+.gallery-howto > span { margin-right: 6px; }
+.gallery-howto button {
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: var(--forest); font-size: 12px; font-weight: 700; font-family: var(--sans); text-decoration: underline; text-underline-offset: 3px;
+}
+#howto-detail { margin-top: 10px; padding: 12px 14px; background: #F0F5F1; border-radius: 10px; line-height: 1.8; }
+/* LINE内ブラウザのときだけ出す注意 */
+.storage-warn-box {
+  max-width: 1200px; margin: 0 auto 20px; padding: 12px 16px; font-size: 12.5px; color: #555; line-height: 1.7;
+  background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 0 10px 10px 0;
+}
+.storage-warn-box a { display: inline-block; margin: 8px 8px 4px 0; padding: 8px 16px; background: var(--forest); color: #fff; border-radius: 999px; font-weight: 700; text-decoration: none; font-size: 13px; }
+/* 写真の途中に差し込む読みものカード */
+.story-card {
+  grid-column: 1 / -1;
+  display: flex; flex-direction: column;
+  margin: 8px 0;
+  border-radius: 18px; overflow: hidden;
+  background: #fff; text-decoration: none; color: var(--deep);
+  box-shadow: 0 6px 24px rgba(44,31,23,0.08);
+  scroll-margin-top: 90px;
+}
+.story-card-img { position: relative; aspect-ratio: 16 / 7; background: #E8E2D6; }
+.story-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.story-card-label { position: absolute; left: 14px; top: 12px; font-size: 11px; letter-spacing: 0.14em; font-weight: 700; color: #fff; background: rgba(44,31,23,0.55); padding: 4px 10px; border-radius: 999px; backdrop-filter: blur(4px); }
+.story-card-body { padding: 16px 18px 18px; line-height: 1.6; }
+.story-card-body strong { display: block; font-family: var(--serif); font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+.story-card-body span { display: block; font-size: 12.5px; color: var(--bark); }
+.story-card-body em { display: inline-block; margin-top: 10px; font-style: normal; font-size: 13px; font-weight: 700; color: var(--forest); }
+@media (min-width: 641px) { .story-card { flex-direction: row; } .story-card-img { flex: 0 0 46%; aspect-ratio: auto; min-height: 200px; } .story-card-body { flex: 1; padding: 24px 28px; align-self: center; } }
+/* 全写真の下「もっと楽しむ」 */
+.gallery-more { max-width: 1200px; margin: 56px auto 0; padding: 0 40px; }
+.gallery-more-head { margin-bottom: 18px; }
+.gallery-more-head span { display: block; font-size: 11px; letter-spacing: 0.18em; color: var(--accent); font-weight: 700; }
+.gallery-more-head h3 { font-family: var(--serif); font-size: 20px; font-weight: 500; margin-top: 2px; }
+.more-card {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px; margin-bottom: 14px;
+  border-radius: 16px; background: #fff; border: 1px solid #EDE7DC;
+  text-decoration: none; color: var(--deep);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.more-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(44,31,23,0.08); }
+.more-card img { width: 92px; height: 68px; object-fit: cover; border-radius: 10px; flex-shrink: 0; background: #E8E2D6; }
+.more-card-icon { width: 92px; height: 68px; border-radius: 10px; background: #F0F5F1; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+.more-card-text { flex: 1; min-width: 0; line-height: 1.55; }
+.more-card-label { display: block; font-size: 11px; letter-spacing: 0.12em; color: var(--accent); font-weight: 700; }
+.more-card-title { display: block; font-size: 14.5px; font-weight: 700; margin-top: 2px; }
+.more-card-sub { display: block; font-size: 11.5px; color: var(--bark); margin-top: 2px; }
+.more-card-cta { font-size: 13px; font-weight: 700; color: var(--forest); white-space: nowrap; }
+.trouble-box { margin-top: 28px; font-size: 12px; color: var(--bark); line-height: 1.8; }
+.trouble-box summary { cursor: pointer; color: var(--forest); font-weight: 700; list-style: none; }
+.trouble-box summary::-webkit-details-marker { display: none; }
+.trouble-box summary::after { content: ' ▾'; }
+.trouble-box[open] summary::after { content: ' ▴'; }
+.trouble-box > div { margin-top: 8px; padding: 12px 14px; background: #fff8e1; border-radius: 10px; }
+body.mode-753 .gallery-more, body.mode-753 .story-card { display: none !important; }
+/* ログイン画面のおしらせ */
+.login-news { margin-top: 48px; padding-top: 28px; border-top: 1px solid #EDE7DC; }
+.login-news-head { margin-bottom: 14px; }
+.login-news-head span { display: block; font-size: 11px; letter-spacing: 0.18em; color: var(--accent); font-weight: 700; }
+.login-news-head h3 { font-family: var(--serif); font-size: 18px; font-weight: 500; margin-top: 2px; }
+.login-news .more-card { margin-bottom: 12px; }
 .btn-mode.active {
   background: rgba(255,255,255,0.3);
   border-color: white;
@@ -1264,7 +1326,13 @@ body.cart-open .help-bar { bottom: 80px; }
   .modal-box { padding: 28px 20px; }
   .login-wrap { padding: 16px; }
   .login-hero h1 { font-size: 24px; }
-  .gallery-notice { padding: 10px 20px; }
+  .gallery-howto { padding: 0 20px; margin: -20px auto 20px; }
+  .storage-warn-box { margin: 0 20px 20px; }
+  .deadline-banner { margin: 0 20px 16px; padding: 10px 14px; }
+  .gallery-more { padding: 0 20px; margin-top: 44px; }
+  .more-card { padding: 14px; gap: 12px; }
+  .more-card img, .more-card-icon { width: 76px; height: 58px; }
+  .gallery-header { margin-bottom: 28px; }
 }
 /* ===== RECOMMEND BANNER ===== */
 .recommend-banner {
@@ -1434,11 +1502,20 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     <button class="btn-primary" id="btn-login" onclick="doLogin()" disabled>
       ギャラリーを開く
     </button>
-    <a class="promo-753-banner" id="promo-753-login" href="shichigosan.html" style="display:none">
-      <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
-      <span class="promo-753-text"><span class="promo-753-label">🍁 七五三 出張撮影 2026</span><span class="promo-753-title">ご希望の神社に伺います。撮影料 ¥12,000（大きいデータ5枚込み）</span><span class="promo-753-sub">10/25〜11/23 受付中 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
-      <span class="promo-753-cta">詳しく →</span>
-    </a>
+    <!-- お知らせ（クラス選択の邪魔にならないよう、間をあけて下に） -->
+    <div class="login-news" id="login-news">
+      <div class="login-news-head"><span>NEWS</span><h3>おしらせ</h3></div>
+      <a class="more-card" id="promo-753-login" href="shichigosan.html" style="display:none">
+        <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
+        <span class="more-card-text"><span class="more-card-label">🍁 七五三 出張撮影 2026</span><span class="more-card-title">ご希望の神社へ出張撮影 ¥12,000</span><span class="more-card-sub">大きいデータ5枚込み ・ 10/25〜11/23 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
+        <span class="more-card-cta">詳しく →</span>
+      </a>
+      <a class="more-card" href="album.html">
+        <span class="more-card-icon">📘</span>
+        <span class="more-card-text"><span class="more-card-label">GUIDE</span><span class="more-card-title">写真の楽しみ方ガイド</span><span class="more-card-sub">スマホでの保存のしかた、プリント・アルバムにする方法など</span></span>
+        <span class="more-card-cta">見る →</span>
+      </a>
+    </div>
   </div>
 </main>
 <!-- ========== ギャラリー画面 ========== -->
@@ -1453,39 +1530,68 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
       <button class="btn-fav-view" id="btn-fav-view" onclick="openFavoritesModal()">
         ♡ お気に入り<span id="fav-count-badge"></span>
       </button>
-      <a href="album.html" class="btn-guide">写真の楽しみ方ガイド →</a>
       <button class="btn-download-all" onclick="openPaymentModal(true)">
         📦 丸ごとダウンロード ¥2,000
       </button>
     </div>
   </div>
-  <div class="gallery-notice">
-    📌 写真をタップするとカートに入ります（もう一度タップで外せます）。🔍 を押すと大きく見られて、スワイプで前後の写真も確認できます。<span class="fav-only">ハートでお気に入りにも保存できます。</span><br>
-    💾 選んだ写真<span class="fav-only">とお気に入り</span>は、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べます。<br>
-    👨‍👩‍👧‍👦 きょうだいでクラスが違う場合は、カートの「＋ 別のクラスの写真も入れる」から別のクラスにログインして選ぶと、まとめて1回のお支払いにできます。
+  <!-- 使い方は1行だけ。「詳しく」で開く（写真が主役になるように） -->
+  <div class="gallery-howto">
+    <span>タップでカートに入ります ・ 🔍 で大きく見る ・ 選んだ写真はこのスマホに自動保存</span>
+    <button type="button" onclick="toggleHowto()" id="howto-toggle">詳しく</button>
+    <div id="howto-detail" style="display:none">
+      📌 写真をタップするとカートに入ります（もう一度タップで外せます）。🔍 を押すと大きく見られて、スワイプで前後の写真も確認できます。<span class="fav-only">ハートでお気に入りにも保存できます。</span><br>
+      💾 選んだ写真<span class="fav-only">とお気に入り</span>は、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べます。<br>
+      👨‍👩‍👧‍👦 きょうだいでクラスが違う場合は、カートの「＋ 別のクラスの写真も入れる」から別のクラスにログインして選ぶと、まとめて1回のお支払いにできます。
+    </div>
   </div>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
-  <a class="event-blog-banner" id="event-blog-banner" href="#" style="display:none;align-items:center;gap:14px;margin:0 0 12px;padding:12px 14px;border-radius:14px;background:#FBF8F2;border:1.5px solid #E8E2D6;text-decoration:none;color:var(--deep);scroll-margin-top:90px;box-shadow:0 4px 18px rgba(44,44,44,0.06)"><img id="event-blog-thumb" alt="" referrerpolicy="no-referrer" style="width:84px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#E8E2D6"><span style="flex:1;min-width:0;line-height:1.5"><span style="display:block;font-size:11px;letter-spacing:0.12em;color:var(--accent);font-weight:700">PHOTO STORY</span><span id="event-blog-title" style="display:block;font-size:15px;font-weight:700"></span><span id="event-blog-lead" style="display:block;font-size:12px;color:var(--bark)"></span></span><span style="font-size:13px;font-weight:700;color:var(--forest);white-space:nowrap">読む →</span></a>
-    <a class="promo-753-banner" id="promo-753-gallery" href="shichigosan.html" style="display:none">
-    <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
-    <span class="promo-753-text"><span class="promo-753-label">🍁 七五三 出張撮影 2026</span><span class="promo-753-title">ご希望の神社に伺います。撮影料 ¥12,000（大きいデータ5枚込み）</span><span class="promo-753-sub">10/25〜11/23 受付中 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
-    <span class="promo-753-cta">詳しく →</span>
-  </a>
   <div class="deadline-banner" id="deadline-banner" style="display:none"></div>
-  <div style="background:#fff8e1;border-left:4px solid #f9a825;padding:10px 16px;margin:0 0 8px;font-size:0.85rem;color:#555;line-height:1.6">
-    <span id="storage-warn" style="display:none">⚠️ <b>LINEなどアプリ内のブラウザで開いているため、画面を閉じると選んだ写真が消えることがあります。</b><br><a id="storage-warn-link" href="./?openExternalBrowser=1" style="display:inline-block;margin:6px 0 8px;padding:8px 16px;background:var(--forest);color:#fff;border-radius:999px;font-weight:700;text-decoration:none;font-size:0.9rem">📲 Safari / Chrome で開き直す</a>（開き直すと、選んだ写真が端末に保存されます）<br></span>
-    📱 写真が表示されない場合は以下をお試しください。<br>
-    ① ページをリロード（更新）する<br>
-    　・iPhone：画面を下に引っ張って放す<br>
-    　・Android：画面を下に引っ張って放す、または右上の「⋮」→「更新」<br>
-    ② LINEから開いている場合：右下の「・・・」→「ブラウザで開く」
-  </div>
+  <!-- LINEなどアプリ内ブラウザのときだけ出す注意 -->
+  <div class="storage-warn-box" id="storage-warn" style="display:none">⚠️ <b>LINEなどアプリ内のブラウザで開いているため、画面を閉じると選んだ写真が消えることがあります。</b><br><a id="storage-warn-link" href="./?openExternalBrowser=1">📲 Safari / Chrome で開き直す</a><span>（開き直すと、選んだ写真が端末に保存されます）</span></div>
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
       <div class="spinner"></div>
       <p>写真を読み込み中...</p>
     </div>
   </div>
+  <!-- 写真の途中に差し込む読みものカード（PHOTO STORY）。renderGrid() がグリッド内へ移動させる -->
+  <a class="story-card" id="event-blog-banner" href="#" style="display:none">
+    <div class="story-card-img"><img id="event-blog-thumb" alt="" referrerpolicy="no-referrer" loading="lazy"><span class="story-card-label">PHOTO STORY</span></div>
+    <div class="story-card-body">
+      <strong id="event-blog-title"></strong>
+      <span id="event-blog-lead"></span>
+      <em>読む →</em>
+    </div>
+  </a>
+  <!-- 全写真の下: もっと楽しむ -->
+  <section class="gallery-more" id="gallery-more">
+    <div class="gallery-more-head"><span>MORE</span><h3>もっと楽しむ</h3></div>
+    <a class="more-card" id="promo-753-gallery" href="shichigosan.html" style="display:none">
+      <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
+      <span class="more-card-text"><span class="more-card-label">🍁 七五三 出張撮影 2026</span><span class="more-card-title">ご希望の神社へ出張撮影 ¥12,000</span><span class="more-card-sub">大きいデータ5枚込み ・ 10/25〜11/23 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
+      <span class="more-card-cta">詳しく →</span>
+    </a>
+    <a class="more-card" id="more-blog" href="#" style="display:none">
+      <img id="more-blog-thumb" alt="" referrerpolicy="no-referrer" loading="lazy">
+      <span class="more-card-text"><span class="more-card-label">📖 PHOTO STORY</span><span class="more-card-title" id="more-blog-title"></span><span class="more-card-sub" id="more-blog-lead"></span></span>
+      <span class="more-card-cta">読む →</span>
+    </a>
+    <a class="more-card" href="album.html">
+      <span class="more-card-icon">📘</span>
+      <span class="more-card-text"><span class="more-card-label">GUIDE</span><span class="more-card-title">写真の楽しみ方ガイド</span><span class="more-card-sub">スマホでの保存のしかた、プリント・アルバムにする方法など</span></span>
+      <span class="more-card-cta">見る →</span>
+    </a>
+    <details class="trouble-box" id="trouble-box">
+      <summary>📱 写真が表示されないときは</summary>
+      <div>
+        ① ページをリロード（更新）する<br>
+        　・iPhone：画面を下に引っ張って放す<br>
+        　・Android：画面を下に引っ張って放す、または右上の「⋮」→「更新」<br>
+        ② LINEから開いている場合：右下の「・・・」→「ブラウザで開く」
+      </div>
+    </details>
+  </section>
 </main>
 <!-- ========== カートパネル（ミニバー） ========== -->
 <div class="cart-panel" id="cart-panel">
@@ -1850,7 +1956,7 @@ function loadFavoritesFromStorage(eventId) {
 window.addEventListener('DOMContentLoaded', async () => {
   if (!CONFIG.FAVORITES_ENABLED) document.body.classList.add('favorites-off');
   if (!isPersistentStorageAvailable()) {
-    const w = document.getElementById('storage-warn'); if (w) w.style.display = 'inline';
+    const w = document.getElementById('storage-warn'); if (w) w.style.display = 'block';
     // 今開いているURL（?event= など）を保ったまま外部ブラウザで開き直せるようにする
     const lk = document.getElementById('storage-warn-link');
     if (lk) { const u = new URL(location.href); u.searchParams.set('openExternalBrowser', '1'); lk.href = u.toString(); }
@@ -2052,7 +2158,7 @@ async function enterGallery() {
   document.getElementById('gallery-event-name').textContent = ev.name;
   document.getElementById('gallery-subtitle').textContent = state.mode753
     ? `${ev.count}枚 ｜ 写真をタップして「大」「スマホ」を選べます`
-    : `${ev.count}枚 ｜ 写真をタップすると全体表示できます`;
+    : `${ev.count}枚 ｜ ${formatDate(ev.date)} 撮影`;
   renderDeadlineBanner(ev);
   renderEventBlogBanner(ev);
   renderPromo753();
@@ -2104,8 +2210,7 @@ async function loadPhotos() {
     }
     if (state.photos.length > 0) {
       requestAnimationFrame(() => {
-        const blogBanner = document.getElementById('event-blog-banner');
-        (blogBanner && blogBanner.style.display !== 'none' ? blogBanner : grid).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     }
   } catch(e) {
@@ -2114,6 +2219,9 @@ async function loadPhotos() {
 }
 function renderGrid() {
   const grid = document.getElementById('photo-grid');
+  // 読みものカードがグリッド内にあると innerHTML で消えてしまうので、先に外へ退避
+  const storyCard = document.getElementById('event-blog-banner');
+  if (storyCard && storyCard.parentNode === grid) grid.parentNode.insertBefore(storyCard, grid.nextSibling);
   if (!state.photos.length) {
     grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--bark)">写真がありません</p>';
     return;
@@ -2136,6 +2244,7 @@ function renderGrid() {
       <span class="photo-size-badge" id="size-${p.number}"></span>
     </div>
   `).join('');
+  placeStoryCard();
   initLazyLoad();
   // 保存されていたカートの選択状態をグリッドの見た目に反映
   state.selected.forEach(num => {
@@ -3177,17 +3286,52 @@ function renderPromo753() {
 }
 function renderEventBlogBanner(ev) {
   const el = document.getElementById('event-blog-banner');
+  const more = document.getElementById('more-blog');
   if (!el) return;
   const id = String((ev && ev.id) || '');
   const blog = EVENT_BLOGS.find(b => id.indexOf(b.prefix) === 0);
-  if (!blog) { el.style.display = 'none'; return; }
+  state.currentBlog = blog || null;
+  if (!blog) { el.style.display = 'none'; if (more) more.style.display = 'none'; return; }
+  // 写真の途中に差し込む読みものカード（renderGrid() がグリッド内へ移動させる）
   el.href = blog.url;
   document.getElementById('event-blog-title').textContent = blog.title;
   document.getElementById('event-blog-lead').textContent = blog.lead;
   const img = document.getElementById('event-blog-thumb');
-  if (blog.thumb) img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(blog.thumb) + '&sz=w240';
+  if (blog.thumb) { img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(blog.thumb) + '&sz=w800'; img.style.display = ''; }
   else img.style.display = 'none';
   el.style.display = 'flex';
+  // 一番下の「もっと楽しむ」にも小さく出す（途中のカードを見逃した人向け）
+  if (more) {
+    more.href = blog.url;
+    document.getElementById('more-blog-title').textContent = blog.title;
+    document.getElementById('more-blog-lead').textContent = blog.lead;
+    const mi = document.getElementById('more-blog-thumb');
+    if (blog.thumb) mi.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(blog.thumb) + '&sz=w240';
+    more.style.display = 'flex';
+  }
+}
+// 使い方の「詳しく」
+function toggleHowto() {
+  const d = document.getElementById('howto-detail');
+  const b = document.getElementById('howto-toggle');
+  if (!d) return;
+  const open = d.style.display === 'none';
+  d.style.display = open ? 'block' : 'none';
+  if (b) b.textContent = open ? '閉じる' : '詳しく';
+}
+// 読みものカードを写真グリッドの途中（3段目の後）に差し込む。写真が少なければ最後に
+function placeStoryCard() {
+  const card = document.getElementById('event-blog-banner');
+  const grid = document.getElementById('photo-grid');
+  if (!card || !grid) return;
+  if (!state.currentBlog || state.mode753) { card.style.display = 'none'; grid.parentNode.insertBefore(card, grid.nextSibling); return; }
+  let cols = 2;
+  try { cols = getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length || 2; } catch(e) {}
+  const items = grid.querySelectorAll('.photo-item');
+  const after = cols * 3;
+  if (items.length > after + cols) grid.insertBefore(card, items[after]);
+  else grid.appendChild(card);
+  card.style.display = 'flex';
 }
 function showPaidScreen() {
   showScreen('paid');
