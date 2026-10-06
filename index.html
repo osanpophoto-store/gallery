@@ -447,6 +447,21 @@ body::before {
 }
 body:not(.favorites-off) .photo-zoom-btn { left: 42px; }
 body.mode-753 .photo-zoom-btn { display: none; }
+/* 七五三 特設ページへの案内バナー */
+.promo-753-banner {
+  display: flex; align-items: center; gap: 14px;
+  margin: 18px auto 0; max-width: 520px; padding: 12px 14px;
+  border-radius: 14px; background: #FFF6EC; border: 1.5px solid #F2D9BF;
+  text-decoration: none; color: var(--deep); box-shadow: 0 4px 18px rgba(44,44,44,0.06);
+}
+.promo-753-banner img { width: 84px; height: 62px; object-fit: cover; border-radius: 10px; flex-shrink: 0; background: #E8E2D6; }
+.promo-753-text { flex: 1; min-width: 0; line-height: 1.5; }
+.promo-753-label { display: block; font-size: 11px; letter-spacing: 0.12em; color: var(--accent, #D4723A); font-weight: 700; }
+.promo-753-title { display: block; font-size: 14px; font-weight: 700; }
+.promo-753-sub { display: block; font-size: 11.5px; color: var(--bark); }
+.promo-753-cta { font-size: 13px; font-weight: 700; color: var(--forest); white-space: nowrap; }
+#promo-753-gallery { max-width: none; margin: 0 0 12px; }
+body.mode-753 .promo-753-banner { display: none !important; }
 .photo-check {
   position: absolute;
   top: 10px;
@@ -1407,6 +1422,11 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     <button class="btn-primary" id="btn-login" onclick="doLogin()" disabled>
       ギャラリーを開く
     </button>
+    <a class="promo-753-banner" id="promo-753-login" href="shichigosan.html" style="display:none">
+      <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
+      <span class="promo-753-text"><span class="promo-753-label">🍁 七五三 出張撮影 2026</span><span class="promo-753-title">ご希望の神社に伺います。撮影料 ¥12,000（大きいデータ5枚込み）</span><span class="promo-753-sub">10/25〜11/23 受付中 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
+      <span class="promo-753-cta">詳しく →</span>
+    </a>
   </div>
 </main>
 <!-- ========== ギャラリー画面 ========== -->
@@ -1433,6 +1453,11 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   </div>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
   <a class="event-blog-banner" id="event-blog-banner" href="#" style="display:none;align-items:center;gap:14px;margin:0 0 12px;padding:12px 14px;border-radius:14px;background:#FBF8F2;border:1.5px solid #E8E2D6;text-decoration:none;color:var(--deep);scroll-margin-top:90px;box-shadow:0 4px 18px rgba(44,44,44,0.06)"><img id="event-blog-thumb" alt="" referrerpolicy="no-referrer" style="width:84px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#E8E2D6"><span style="flex:1;min-width:0;line-height:1.5"><span style="display:block;font-size:11px;letter-spacing:0.12em;color:var(--accent);font-weight:700">PHOTO STORY</span><span id="event-blog-title" style="display:block;font-size:15px;font-weight:700"></span><span id="event-blog-lead" style="display:block;font-size:12px;color:var(--bark)"></span></span><span style="font-size:13px;font-weight:700;color:var(--forest);white-space:nowrap">読む →</span></a>
+    <a class="promo-753-banner" id="promo-753-gallery" href="shichigosan.html" style="display:none">
+    <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
+    <span class="promo-753-text"><span class="promo-753-label">🍁 七五三 出張撮影 2026</span><span class="promo-753-title">ご希望の神社に伺います。撮影料 ¥12,000（大きいデータ5枚込み）</span><span class="promo-753-sub">10/25〜11/23 受付中 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
+    <span class="promo-753-cta">詳しく →</span>
+  </a>
   <div class="deadline-banner" id="deadline-banner" style="display:none"></div>
   <div style="background:#fff8e1;border-left:4px solid #f9a825;padding:10px 16px;margin:0 0 8px;font-size:0.85rem;color:#555;line-height:1.6">
     <span id="storage-warn" style="display:none">⚠️ <b>LINEなどアプリ内のブラウザで開いているため、画面を閉じると選んだ写真が消えることがあります。</b><br><a id="storage-warn-link" href="./?openExternalBrowser=1" style="display:inline-block;margin:6px 0 8px;padding:8px 16px;background:var(--forest);color:#fff;border-radius:999px;font-weight:700;text-decoration:none;font-size:0.9rem">📲 Safari / Chrome で開き直す</a>（開き直すと、選んだ写真が端末に保存されます）<br></span>
@@ -1622,6 +1647,8 @@ const CONFIG = {
   // お気に入り（♡）機能。false で全ての表示（写真の♡・ライトボックスの♡・上部ボタン・案内文）を隠す。
   // コードは残してあるので、戻したいときは true にするだけ（2026/10/05 taikiさん判断で OFF）
   FAVORITES_ENABLED: false,
+  // 七五三 特設ページへの案内バナー（ログイン画面とギャラリー上部）。until を過ぎると自動で消える
+  PROMO_753: { enabled: true, until: '2026-11-23' },
 };
 // ========================================
 // STATE
@@ -1750,6 +1777,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   // ?event=ID … 一覧に出さないイベント（七五三など）への直リンク。そのイベントのパスワード入力だけを出す
   const eventParam = (urlParams.get('event') || '').trim();
   if (/^[A-Za-z0-9_-]{1,64}$/.test(eventParam)) state.directEventId = eventParam;
+  renderPromo753();
   if (urlParams.get('paid') === '1') {
     // 購入完了後は、そのイベントで保存していたカートをクリアする（購入済み写真を次回に残さないため）
     try {
@@ -1933,6 +1961,7 @@ async function enterGallery() {
     : `${ev.count}枚 ｜ 写真をタップすると全体表示できます`;
   renderDeadlineBanner(ev);
   renderEventBlogBanner(ev);
+  renderPromo753();
   await loadPhotos();
 }
 // 閲覧・購入期限のカウントダウン表示
@@ -2894,6 +2923,13 @@ const EVENT_BLOGS = [
     thumb: '10i-b0Rldf9ivAL48Ye63DA2jfhxmo-mb'
   }
 ];
+// 七五三 特設ページの案内バナー。期間内かつ直リンク（?event=）以外のときだけ出す
+function renderPromo753() {
+  const c = CONFIG.PROMO_753 || {};
+  let show = !!c.enabled && !state.directEventId && !state.mode753;
+  if (show && c.until) { const d = new Date(c.until + 'T23:59:59+09:00'); if (!isNaN(d) && Date.now() > d.getTime()) show = false; }
+  ['promo-753-login', 'promo-753-gallery'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = show ? 'flex' : 'none'; });
+}
 function renderEventBlogBanner(ev) {
   const el = document.getElementById('event-blog-banner');
   if (!el) return;
