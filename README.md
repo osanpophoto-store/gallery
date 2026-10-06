@@ -912,7 +912,7 @@ taikiさんの承認（改修案C・自己解決ページ・1回のデプロイ�
 - 「おさんぽフォト 七五三出張撮影」を作成。10/25・10/29・10/30・10/31・11/3・11/14・11/15・11/21・11/22・11/23 の各日 9:00／11:30／14:00（60分）の計30枠。撮影日の3日前（72時間前）まで受付、「たいき仕事」カレンダーの予定と重なる枠は自動で非表示
 - 予約フォーム：姓・名・メール＋電話番号（必須）＋「お子さまの年齢・撮影に参加する人数・ご希望の神社」（必須）
 - 説明欄の料金：撮影料¥12,000（大きいデータ5枚込み）、追加 大きいデータ¥1,200／スマホデータ¥400、追加分は¥18,000で全カット（総額¥30,000上限）。※ギャラリー側の七五三料金実装はまだ（v2.8で予定）
-- 予約ページURL: https://calendar.google.com/calendar/appointments/schedules/AcZssZ19uwNM3_17AA92ZGkRYoq3-YFWAlN97OpGFc6b_5elUc9HkZB3B9H0MLO5A-gQ64a7V8dCNxjs
+- 予約ページURL: https://calendar.google.com/calendar/appointments/schedules/AcZssZ0ViYF_D6SeuOKHXho3UK_Y_uKH_KR_ihVin1j5RrQBL89QO2DSjExkLwhbkRajL5exNtYJAZR2
 
 ### おみせやさんごっこ準備（2026/9/18・9/25撮影）の販売登録
 - eventsシートに `omise-tanpopohimawari`（180枚）・`omise-yurisumireajisai`（275枚）を追加。公開 2026/10/10 〜 11/1 0:00（閲覧・購入とも）、パスワードは2クラス共通（passwordsシート参照）
@@ -1048,3 +1048,24 @@ index.html:
 ### 未対応
 - 予約URL・LPへの導線をギャラリー（index.html）のバナーや完了画面に載せる
 - 予約確認メール（Googleカレンダー）の説明欄を「撮影料は事前決済」に合わせて更新（taikiさん）
+
+## 2026/10/06 予約ページを会社アカウントへ移行・ギャラリー改修まとめ
+
+### 予約ページ（Googleカレンダー）
+- 旧: taiki.kurono@gmail.com の予約スケジュール → **新: taiki.kurono@osanpophoto.com（Google Workspace「おさんぽフォト株式会社」）** に作り直し。予約URL: https://calendar.google.com/calendar/appointments/schedules/AcZssZ0ViYF_D6SeuOKHXho3UK_Y_uKH_KR_ihVin1j5RrQBL89QO2DSjExkLwhbkRajL5exNtYJAZR2
+- 設定: 10/25・10/29・10/30・10/31・11/3・11/14・11/15・11/22・11/23（11/21 は taiki さんの予定で除外）、各日 9:00/11:30/14:00 の60分枠、受付は60日前〜72時間前。予約フォーム: 姓名・メール・電話（必須）・「お子さまの年齢・人数・ご希望の神社」（必須）・「ご祈祷の予定時刻・撮りたいカット・カメラマンのご指名など」（任意）
+- ⚠️ **空き判定の制約**: 予約ページが参照できるのは会社アカウント自身のカレンダーだけ（共有された「たいき仕事」は選べない）。共同主催者も「組織内ユーザーのみ」で gmail は不可。→ 当面は **撮影に入れない日時を会社アカウントのカレンダーにも「予定あり」で入れる** 運用。恒久対応は「たいき仕事」の予定を会社カレンダーへ同期する GAS（未着手）
+- 旧ページ（gmail側）は削除または非公開にする（二重受付防止）
+- Googleカレンダーの終日予定はデフォルト「予定なし」なので、枠を塞ぎたい日は「予定あり」にすること（11/21 の件で判明）
+
+### ギャラリー index.html（10/5〜10/6）
+- 通常イベント: 写真タップ＝カートに入れる（拡大しない）、🔍ボタンで拡大。七五三は従来どおりタップで拡大
+- ライトボックス左上に「🛒 n枚 ¥〜」チップ（タップでカートの中身へ）。カートの中身モーダルに合計金額
+- お気に入り（♡）は `CONFIG.FAVORITES_ENABLED=false` で非表示（コードは残置。イベントごとの localStorage 保存も実装済み）
+- カート保存は localStorage → sessionStorage → メモリの3段フォールバック。localStorage が使えないアプリ内ブラウザでは上部に注意＋「Safari / Chrome で開き直す」ボタン（`?openExternalBrowser=1`）
+- `api()` は 404/5xx/ネットワークエラー時に最大2回自動リトライ
+- 七五三 特設ページへの案内バナー（ログイン画面・ギャラリー上部、`CONFIG.PROMO_753`、11/23 まで、`?event=` 直リンクでは非表示）
+- events シート I5/I6（おみせやさんごっこ 公開開始日）を 10/5 に前倒しして公開済み
+
+### LINE
+- リッチメニュー・配信のURLは末尾に `?openExternalBrowser=1`（`?event=` がある場合は `&openExternalBrowser=1`）を付けて外部ブラウザで開かせる
