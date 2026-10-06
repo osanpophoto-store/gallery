@@ -1069,3 +1069,33 @@ index.html:
 
 ### LINE
 - リッチメニュー・配信のURLは末尾に `?openExternalBrowser=1`（`?event=` がある場合は `&openExternalBrowser=1`）を付けて外部ブラウザで開かせる
+
+## 2026/10/06 きょうだい（複数クラス）まとめ決済（GAS v2.9）
+
+### できること
+- 保護者が「たんぽぽ・ひまわり」で写真を選び、カートの「＋ 別のクラスの写真も入れる」→「ゆり・すみれ・あじさい」にログインして選ぶと、**2クラス分を1回の Stripe 決済**で購入できる（スマホサイズのみ。丸ごと¥2,000 も含められる）
+- 金額はクラスごとに今までの料金表で計算して合算（例: 3枚 ¥420 ＋ 10枚 ¥900 ＝ ¥1,320）。Stripe の明細もクラスごとに1行
+- 納品は今までどおりクラスごと（メールはクラスごとに1通ずつ。7枚以下は添付、8枚以上はリンク、丸ごとはフォルダ）
+- A4/A3データ・プリント系は従来どおり1クラスずつ（別決済）。七五三（753〜）は対象外
+
+### フロント（index.html）
+- ログイン時にクラス情報を端末に保存: `osanpo_ev_<eventId>`（名前・枚数・トークン・期限・**パスワード**）、`osanpo_ev_index`（ログインしたクラスの一覧）、`osanpo_photos_<eventId>`（番号→fileId。他クラスのサムネイル表示用）
+  - パスワードを残すのは、決済時にそのクラスのトークン（2時間）が切れていたら自動でログインし直すため（`ensureEventToken`）。保護者自身が入力したクラス共通パスワードなので許容
+- `getOtherCarts()`: 今見ているクラス以外で `osanpo_cart_<eventId>` に写真が入っているクラス一覧
+- ミニバー: 「10枚 ＋他クラス3枚 / ¥1,320〜」。このクラスが0枚でも他クラス分があれば「他クラス 3枚」で表示し「購入へ進む」で決済へ
+- カートの中身モーダル: 下に「他のクラスのカート」（サムネイル・枚数・金額・「このクラスを開く」「外す」）と「＋ 別のクラスの写真も入れる」（カートを残したままクラス選択へ戻る）
+- 購入確認モーダル（スマホサイズ）: 他クラス分があればクラスごとの小計＋合計、「クラスごとにメールでお届け」
+- `doCreatePayment`: 他クラス分があれば `createPaymentMulti`（items JSON）、なければ従来の `createPayment`。決済前に `osanpo_last_order_events` に対象クラスを控え、`?paid=1` 戻りで全クラスのカートを空にする
+- 自己解決ページ: `orderStatus.parts[]`（クラスごとの状況）と `orderFiles.groups[]`（クラスごとのDL）に対応
+
+### GAS（Code.gs v2.9）
+- `createPaymentMulti(items, email)`: 各クラスのトークンを検証 → クラスごとに `calcPrice()` → Price をクラスごとに作成 → 1つの PaymentLink（line_items 複数）。metadata: `multi='true'`, `n`, `e1/e1p/e1a/e1q`…, `eventId`（先頭クラス。ポーリングの判定用）, `orderRef`, `customerEmail`
+- `processSession()`: `multi='true'` なら `processSessionMulti()` → クラスごとに擬似セッション（id = `決済ID#イベントID`）を作って従来の `processSession()` を呼ぶ。purchase_log はクラスごとに1行（注文参照ID P列は共通）。1クラス失敗しても他は続行し管理者へ通知
+- `getProcessedSessionIds()`: `#` より前の決済IDでも処理済み判定（二重処理防止）
+- `orderStatus / resendOrder / orderFiles`: 同じ注文参照IDの全行を対象に。1行なら従来の形で返す
+- 1クラスだけの items は従来の `createPayment` に委譲（挙動を変えない）
+
+### 運用メモ
+- purchase_log で A列が `cs_xxx#omise-...` になっている行がまとめ決済。Stripe 側は1件の決済
+- 手動再送メニューは行単位なので今までどおり使える
+- テストは `osanpo-test` 系の¥0イベントでは不可（Stripe に出すため）。実イベント2クラスで少額（1枚¥140×2クラス）で通し確認 → Stripe で返金
