@@ -1435,7 +1435,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   <a class="event-blog-banner" id="event-blog-banner" href="#" style="display:none;align-items:center;gap:14px;margin:0 0 12px;padding:12px 14px;border-radius:14px;background:#FBF8F2;border:1.5px solid #E8E2D6;text-decoration:none;color:var(--deep);scroll-margin-top:90px;box-shadow:0 4px 18px rgba(44,44,44,0.06)"><img id="event-blog-thumb" alt="" referrerpolicy="no-referrer" style="width:84px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#E8E2D6"><span style="flex:1;min-width:0;line-height:1.5"><span style="display:block;font-size:11px;letter-spacing:0.12em;color:var(--accent);font-weight:700">PHOTO STORY</span><span id="event-blog-title" style="display:block;font-size:15px;font-weight:700"></span><span id="event-blog-lead" style="display:block;font-size:12px;color:var(--bark)"></span></span><span style="font-size:13px;font-weight:700;color:var(--forest);white-space:nowrap">読む →</span></a>
   <div class="deadline-banner" id="deadline-banner" style="display:none"></div>
   <div style="background:#fff8e1;border-left:4px solid #f9a825;padding:10px 16px;margin:0 0 8px;font-size:0.85rem;color:#555;line-height:1.6">
-    <span id="storage-warn" style="display:none">⚠️ <b>LINEなどアプリ内のブラウザで開いているため、画面を閉じると選んだ写真が消えることがあります。</b>右下の「・・・」→「ブラウザで開く」で開き直すと保存されます。<br></span>
+    <span id="storage-warn" style="display:none">⚠️ <b>LINEなどアプリ内のブラウザで開いているため、画面を閉じると選んだ写真が消えることがあります。</b><br><a id="storage-warn-link" href="./?openExternalBrowser=1" style="display:inline-block;margin:6px 0 8px;padding:8px 16px;background:var(--forest);color:#fff;border-radius:999px;font-weight:700;text-decoration:none;font-size:0.9rem">📲 Safari / Chrome で開き直す</a>（開き直すと、選んだ写真が端末に保存されます）<br></span>
     📱 写真が表示されない場合は以下をお試しください。<br>
     ① ページをリロード（更新）する<br>
     　・iPhone：画面を下に引っ張って放す<br>
@@ -1736,7 +1736,12 @@ function loadFavoritesFromStorage(eventId) {
 // ========================================
 window.addEventListener('DOMContentLoaded', async () => {
   if (!CONFIG.FAVORITES_ENABLED) document.body.classList.add('favorites-off');
-  if (!isPersistentStorageAvailable()) { const w = document.getElementById('storage-warn'); if (w) w.style.display = 'inline'; }
+  if (!isPersistentStorageAvailable()) {
+    const w = document.getElementById('storage-warn'); if (w) w.style.display = 'inline';
+    // 今開いているURL（?event= など）を保ったまま外部ブラウザで開き直せるようにする
+    const lk = document.getElementById('storage-warn-link');
+    if (lk) { const u = new URL(location.href); u.searchParams.set('openExternalBrowser', '1'); lk.href = u.toString(); }
+  }
   // ?paid=1 の場合は完了画面を表示
   const urlParams = new URLSearchParams(window.location.search);
   // ?next=blog-xxx.html … ログイン後に PHOTO STORY（同じフォルダの blog-*.html のみ）へ戻る
