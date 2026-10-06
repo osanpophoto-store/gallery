@@ -462,6 +462,18 @@ body.mode-753 .photo-zoom-btn { display: none; }
 .promo-753-cta { font-size: 13px; font-weight: 700; color: var(--forest); white-space: nowrap; }
 #promo-753-gallery { max-width: none; margin: 0 0 12px; }
 body.mode-753 .promo-753-banner { display: none !important; }
+/* きょうだい（複数クラス）まとめ決済: カートの中身モーダルの「他のクラスのカート」 */
+.other-cart-title { font-size: 12.5px; font-weight: 700; color: var(--deep); margin: 4px 0 8px; }
+.other-cart { border: 1.5px solid var(--sand); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; background: #FBF8F2; text-align: left; }
+.other-cart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; margin-bottom: 8px; }
+.other-cart-head span { color: var(--forest); font-weight: 700; white-space: nowrap; }
+.other-cart-thumbs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.other-cart-actions { display: flex; gap: 8px; }
+.other-cart-actions button { flex: 1; padding: 8px 10px; border-radius: 8px; border: 1.5px solid var(--forest); background: #fff; color: var(--forest); font-size: 12px; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+.other-cart-actions button.danger { border-color: #D9C4C4; color: #A14B4B; flex: 0 0 auto; }
+.btn-add-class { display: block; width: 100%; margin-top: 6px; padding: 11px 12px; border-radius: 10px; border: 1.5px dashed var(--forest); background: #fff; color: var(--forest); font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--sans); }
+.multi-part-row { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; padding: 6px 0; border-bottom: 1px dashed var(--sand); }
+.multi-part-row small { color: var(--bark); font-weight: 400; }
 .photo-check {
   position: absolute;
   top: 10px;
@@ -1449,7 +1461,8 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   </div>
   <div class="gallery-notice">
     📌 写真をタップするとカートに入ります（もう一度タップで外せます）。🔍 を押すと大きく見られて、スワイプで前後の写真も確認できます。<span class="fav-only">ハートでお気に入りにも保存できます。</span><br>
-    💾 選んだ写真<span class="fav-only">とお気に入り</span>は、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べて、きょうだいでクラスが違ってもそれぞれ残ります。
+    💾 選んだ写真<span class="fav-only">とお気に入り</span>は、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べます。<br>
+    👨‍👩‍👧‍👦 きょうだいでクラスが違う場合は、カートの「＋ 別のクラスの写真も入れる」から別のクラスにログインして選ぶと、まとめて1回のお支払いにできます。
   </div>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
   <a class="event-blog-banner" id="event-blog-banner" href="#" style="display:none;align-items:center;gap:14px;margin:0 0 12px;padding:12px 14px;border-radius:14px;background:#FBF8F2;border:1.5px solid #E8E2D6;text-decoration:none;color:var(--deep);scroll-margin-top:90px;box-shadow:0 4px 18px rgba(44,44,44,0.06)"><img id="event-blog-thumb" alt="" referrerpolicy="no-referrer" style="width:84px;height:62px;object-fit:cover;border-radius:10px;flex-shrink:0;background:#E8E2D6"><span style="flex:1;min-width:0;line-height:1.5"><span style="display:block;font-size:11px;letter-spacing:0.12em;color:var(--accent);font-weight:700">PHOTO STORY</span><span id="event-blog-title" style="display:block;font-size:15px;font-weight:700"></span><span id="event-blog-lead" style="display:block;font-size:12px;color:var(--bark)"></span></span><span style="font-size:13px;font-weight:700;color:var(--forest);white-space:nowrap">読む →</span></a>
@@ -1497,8 +1510,9 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     <p id="cart-view-count-text"></p>
     <p id="cart-view-price-text" style="font-size:13px;color:var(--forest);background:#EDF3ED;border-radius:8px;padding:8px 10px;margin:6px 0 10px;line-height:1.6"></p>
     <div class="confirm-thumb-grid" id="cart-view-grid" style="max-height:280px;grid-template-columns:repeat(auto-fill, minmax(72px, 1fr))"></div>
-    <p style="font-size:11px;color:var(--bark);margin-top:10px;margin-bottom:16px">写真をタップすると選択を外せます</p>
-    <div class="modal-actions">
+    <p style="font-size:11px;color:var(--bark);margin-top:10px;margin-bottom:12px">写真をタップすると選択を外せます</p>
+    <div id="cart-view-others"></div>
+    <div class="modal-actions" style="margin-top:16px">
       <button class="btn-cancel" onclick="closeCartViewModal()">閉じる</button>
       <button class="btn-stripe" onclick="closeCartViewModal();openCartOptionsModal();">受け取り方法を選ぶ →</button>
     </div>
@@ -1558,7 +1572,8 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     <h2>ご購入ありがとうございます</h2>
     <p>
       ご登録のメールアドレスに写真をお送りします。<br>
-      通常<strong>1分以内</strong>に届きます。
+      通常<strong>1分以内</strong>に届きます。<br>
+      <span style="font-size:12px;color:var(--bark)">※ 複数クラスをまとめてご購入の場合は、クラスごとに1通ずつ届きます</span>
     </p>
     <div class="paid-info-box">
       <h4>ご確認ください</h4>
@@ -1738,6 +1753,77 @@ function clearCartStorage(eventId) {
   if (!eventId) return;
   storeRemove(cartStorageKey(eventId));
 }
+// ========================================
+// きょうだい（複数クラス）まとめ決済（v2.9）
+// ログインしたクラスの情報（名前・トークン・パスワード・写真一覧）を端末に残しておき、
+// 別のクラスに入ったときも「他のクラスのカート」を合算して1回の決済にまとめられるようにする。
+// ※ パスワードはクラス共通のもの（保護者自身が入力したもの）で、決済時にログインが切れていたら
+//    自動でログインし直すためだけに使う。七五三（753〜）は対象外。
+// ========================================
+const EV_INDEX_KEY = 'osanpo_ev_index';
+function evStorageKey(eventId) { return 'osanpo_ev_' + eventId; }
+function photosStorageKey(eventId) { return 'osanpo_photos_' + eventId; }
+function loadEventIndex() {
+  try { const a = JSON.parse(storeGet(EV_INDEX_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch(e) { return []; }
+}
+function saveEventMeta(eventId, meta) {
+  if (!eventId) return;
+  try {
+    const cur = loadEventMeta(eventId) || {};
+    storeSet(evStorageKey(eventId), JSON.stringify(Object.assign(cur, meta)));
+    const idx = loadEventIndex();
+    if (!idx.includes(eventId)) { idx.push(eventId); storeSet(EV_INDEX_KEY, JSON.stringify(idx)); }
+  } catch(e) {}
+}
+function loadEventMeta(eventId) {
+  try { const m = JSON.parse(storeGet(evStorageKey(eventId)) || 'null'); return m && typeof m === 'object' ? m : null; } catch(e) { return null; }
+}
+function savePhotosToStorage(eventId, photos) {
+  if (!eventId || !Array.isArray(photos)) return;
+  try { storeSet(photosStorageKey(eventId), JSON.stringify(photos.map(p => ({ number: p.number, fileId: p.fileId })))); } catch(e) {}
+}
+function loadPhotosFromStorage(eventId) {
+  try { const a = JSON.parse(storeGet(photosStorageKey(eventId)) || '[]'); return Array.isArray(a) ? a : []; } catch(e) { return []; }
+}
+// 今見ているクラス以外で、カートに写真が入っているクラスの一覧（スマホサイズ購入のまとめ決済用）
+function getOtherCarts() {
+  const out = [];
+  loadEventIndex().forEach(id => {
+    if (!id || id === state.selectedEventId) return;
+    if (/^753/.test(String(id))) return;
+    const nums = loadCartFromStorage(id);
+    if (!nums.length) return;
+    const meta = loadEventMeta(id) || {};
+    out.push({ eventId: id, name: meta.name || id, nums: nums.slice().sort((a, b) => Number(a) - Number(b)), count: nums.length, total: calcPrice(nums.length).total });
+  });
+  return out;
+}
+function otherCartsCount() { return getOtherCarts().reduce((s, c) => s + c.count, 0); }
+function otherCartsTotal() { return getOtherCarts().reduce((s, c) => s + c.total, 0); }
+// 別のクラスのカートを空にする（カートの中身モーダルの「外す」）
+function clearOtherCart(eventId) {
+  clearCartStorage(eventId);
+  updateCart();
+  renderCartView();
+  showToast('そのクラスの写真をカートから外しました');
+}
+// 「＋ 別のクラスの写真も入れる」: カートは端末に残したまま、クラス選択（パスワード入力）へ戻る
+function switchClassKeepCart() {
+  closeCartViewModal();
+  closeCartOptionsModal();
+  closeModal();
+  logout();
+  showToast('選んだ写真は保存されています。別のクラスを選んでパスワードを入力してください');
+}
+// まとめ決済の前に、各クラスのログイン（トークン）が有効か確かめ、切れていれば保存したパスワードでログインし直す
+async function ensureEventToken(eventId) {
+  const meta = loadEventMeta(eventId) || {};
+  if (meta.token && meta.expires && (meta.expires - Date.now()) > 5 * 60 * 1000) return meta.token;
+  if (!meta.pw) throw new Error('「' + (meta.name || eventId) + '」のログインが切れています。そのクラスにもう一度ログインしてください');
+  const data = await api('login', { eventId: eventId, password: meta.pw });
+  saveEventMeta(eventId, { token: data.token, expires: data.expires, name: data.event && data.event.name || meta.name });
+  return data.token;
+}
 // お気に入り（♡）もイベントごとに端末へ保存する。兄弟姉妹でクラス（イベント）が違っても、
 // ログアウト・切り替え後にそれぞれのお気に入りが残るようにする。購入後も消さない（ブックマークなので）。
 function favStorageKey(eventId) {
@@ -1786,6 +1872,10 @@ window.addEventListener('DOMContentLoaded', async () => {
         const sForPaid = JSON.parse(savedForPaid);
         if (sForPaid.event && sForPaid.event.id) clearCartStorage(sForPaid.event.id);
       }
+      // まとめ決済（v2.9）: 一緒に購入した他クラスのカートも空にする
+      const lastEvents = JSON.parse(sessionStorage.getItem('osanpo_last_order_events') || '[]');
+      if (Array.isArray(lastEvents)) lastEvents.forEach(id => clearCartStorage(id));
+      sessionStorage.removeItem('osanpo_last_order_events');
     } catch(e) {}
     showPaidScreen();
     // URLをきれいにする
@@ -1891,6 +1981,10 @@ async function doLogin() {
     const data = await api('login', { eventId: state.selectedEventId, password: pw });
     state.session = data;
     sessionStorage.setItem('osanpo_session', JSON.stringify(data));
+    // まとめ決済用にクラス情報を端末へ残す（七五三は対象外）
+    if (!(data.event && data.event.is753) && !/^753/.test(String(state.selectedEventId))) {
+      saveEventMeta(state.selectedEventId, { name: data.event && data.event.name, count: data.event && data.event.count, token: data.token, expires: data.expires, pw: pw });
+    }
     if (state.afterLoginNext) { window.location.replace(state.afterLoginNext); return; }
     await enterGallery();
   } catch(e) {
@@ -1995,6 +2089,7 @@ async function loadPhotos() {
       token: state.session.token
     });
     state.photos = data.photos || [];
+    if (!state.mode753) savePhotosToStorage(state.selectedEventId, state.photos); // 他クラスのカート表示（サムネイル）用
     renderGrid();
     updateCart(); // 保存されていたカートがあればカートバーを復元表示
     // パスワード入力画面から切り替わった直後は、上の通知類に隠れて写真が見えないことがあるため
@@ -2105,7 +2200,11 @@ function onPayClick() {
 // ========================================
 function openCartOptionsModal() {
   if (state.mode753) { if (cart753Count() > 0) openPaymentModal753(); return; }
-  if (state.selected.size === 0) return;
+  if (state.selected.size === 0) {
+    // このクラスは0枚で、他クラスのカートだけがある → スマホサイズのまとめ決済へ
+    if (otherCartsCount() > 0) { state.selectMode = 'normal'; openPaymentModal(false); }
+    return;
+  }
   if (state.selectMode) {
     // すでに方法を選択済みなら直接購入確認へ進む
     if (state.selectMode === 'normal') openPaymentModal(false); else openPrintModal(state.selectMode);
@@ -2129,7 +2228,7 @@ document.getElementById('cart-options-overlay')?.addEventListener('click', funct
 // カートの中身モーダル（ミニバーの枚数・金額タップで展開）
 // ========================================
 function openCartViewModal() {
-  if (state.mode753 ? cart753Count() === 0 : state.selected.size === 0) return;
+  if (state.mode753 ? cart753Count() === 0 : (state.selected.size === 0 && otherCartsCount() === 0)) return;
   renderCartView();
   document.getElementById('cart-view-overlay').classList.add('visible');
 }
@@ -2158,7 +2257,11 @@ function renderCartView() {
     return;
   }
   const nums = Array.from(state.selected).sort((a, b) => Number(a) - Number(b));
-  countText.textContent = `${nums.length}枚選択中`;
+  const others = getOtherCarts();
+  const evName = (state.session && state.session.event && state.session.event.name) || '';
+  countText.textContent = others.length
+    ? `${evName}: ${nums.length}枚 ＋ 他クラス ${others.reduce((s, c) => s + c.count, 0)}枚`
+    : `${nums.length}枚選択中`;
   updateCartViewPriceText();
   grid.innerHTML = nums.map(n => {
     const photo = state.photos.find(p => p.number === n);
@@ -2167,7 +2270,58 @@ function renderCartView() {
       ${thumbUrl ? `<img src="${thumbUrl}">` : ''}
       <div class="confirm-thumb-num">✕ IMG-${n}</div>
     </div>`;
-  }).join('');
+  }).join('') || '<p style="grid-column:1/-1;font-size:12px;color:var(--bark);text-align:center;margin:4px 0">このクラスではまだ写真を選んでいません</p>';
+  renderOtherCarts();
+}
+// カートの中身モーダル: 他のクラスのカート（まとめ決済）と「別のクラスの写真も入れる」
+function renderOtherCarts() {
+  const box = document.getElementById('cart-view-others');
+  if (!box) return;
+  if (state.mode753) { box.innerHTML = ''; return; }
+  const others = getOtherCarts();
+  let html = '';
+  others.forEach(c => {
+    const photos = loadPhotosFromStorage(c.eventId);
+    const thumbs = c.nums.slice(0, 8).map(n => {
+      const p = photos.find(x => x.number === n);
+      return p && p.fileId
+        ? `<img src="https://drive.google.com/thumbnail?id=${p.fileId}&sz=w120" referrerpolicy="no-referrer" style="width:44px;height:44px;object-fit:cover;border-radius:6px;background:#E8E2D6">`
+        : `<span style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:6px;background:#E8E2D6;font-size:10px;color:var(--bark)">${escHtml(n)}</span>`;
+    }).join('') + (c.nums.length > 8 ? `<span style="font-size:11px;color:var(--bark);align-self:center">＋${c.nums.length - 8}</span>` : '');
+    html += `<div class="other-cart">
+      <div class="other-cart-head"><strong>${escHtml(c.name)}</strong><span>${c.count}枚 ¥${c.total.toLocaleString()}〜</span></div>
+      <div class="other-cart-thumbs">${thumbs}</div>
+      <div class="other-cart-actions">
+        <button type="button" onclick="openOtherClass('${escHtml(c.eventId)}')">このクラスを開く</button>
+        <button type="button" class="danger" onclick="clearOtherCart('${escHtml(c.eventId)}')">外す</button>
+      </div>
+    </div>`;
+  });
+  if (others.length) {
+    html = `<div class="other-cart-title">👨‍👩‍👧‍👦 他のクラスのカート（まとめて1回でお支払いできます）</div>` + html;
+  }
+  html += `<button type="button" class="btn-add-class" onclick="switchClassKeepCart()">＋ 別のクラスの写真も入れる</button>
+    <p style="font-size:11px;color:var(--bark);margin:6px 0 0;line-height:1.6">きょうだいでクラスが違う場合は、別のクラスにログインして写真を選ぶと、ここにまとまって1回のお支払いにできます（スマホサイズのみ）。</p>`;
+  box.innerHTML = html;
+}
+// 他のクラスのカートの「このクラスを開く」: 保存したパスワードでそのクラスにログインし直す
+async function openOtherClass(eventId) {
+  const meta = loadEventMeta(eventId) || {};
+  closeCartViewModal();
+  if (!meta.pw) { switchClassKeepCart(); return; }
+  try {
+    showToast('「' + (meta.name || eventId) + '」を開いています…');
+    const data = await api('login', { eventId: eventId, password: meta.pw });
+    state.mode753 = false; state.selectedSmall.clear(); document.body.classList.remove('mode-753');
+    state.session = data;
+    state.selectedEventId = eventId;
+    sessionStorage.setItem('osanpo_session', JSON.stringify(data));
+    saveEventMeta(eventId, { token: data.token, expires: data.expires, name: data.event && data.event.name });
+    await enterGallery();
+  } catch(e) {
+    showToast('開けませんでした: ' + e.message, 'error');
+    switchClassKeepCart();
+  }
 }
 // カートの中身モーダルに「今いくらか」を出す
 function updateCartViewPriceText() {
@@ -2180,6 +2334,13 @@ function updateCartViewPriceText() {
   }
   const count = state.selected.size;
   const price = calcPrice(count);
+  const others = getOtherCarts();
+  if (others.length) {
+    const evName = (state.session && state.session.event && state.session.event.name) || 'このクラス';
+    const lines = [`${evName} ${count}枚 ¥${price.total.toLocaleString()}`].concat(others.map(c => `${c.name} ${c.count}枚 ¥${c.total.toLocaleString()}`));
+    el.textContent = lines.join(' ／ ') + ` ＝ 合計 ¥${(price.total + others.reduce((s, c) => s + c.total, 0)).toLocaleString()}〜（スマホサイズでまとめてお支払いの場合）`;
+    return;
+  }
   el.textContent = `合計 ¥${price.total.toLocaleString()}〜（スマホサイズの場合。A4・A3は受け取り方法で選べます）`;
 }
 // ライトボックス左上のカート表示（枚数と金額）
@@ -2202,7 +2363,7 @@ function removeFromCart(num, size) {
   if (state.mode753) refreshSizeBadge(num); else document.getElementById('item-' + num)?.classList.remove('selected');
   updateCart();
   saveCartToStorage();
-  if ((state.mode753 ? cart753Count() : state.selected.size) === 0) { closeCartViewModal(); return; }
+  if ((state.mode753 ? cart753Count() : state.selected.size + otherCartsCount()) === 0) { closeCartViewModal(); return; }
   renderCartView();
 }
 document.getElementById('cart-view-overlay')?.addEventListener('click', function(e) {
@@ -2338,6 +2499,22 @@ function updateCart() {
   const panel = document.getElementById('cart-panel');
   const selInfo = document.getElementById('selection-info');
   updateLbCartChip();
+  // 他のクラスのカート（まとめ決済）。このクラスが0枚でも、他クラス分があればミニバーは出す
+  const others = state.mode753 ? [] : getOtherCarts();
+  const otherCount = others.reduce((s, c) => s + c.count, 0);
+  const otherTotal = others.reduce((s, c) => s + c.total, 0);
+  if (count === 0 && otherCount > 0) {
+    panel.classList.add('visible');
+    selInfo.textContent = '';
+    state.selectMode = null;
+    document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
+    document.getElementById('cart-count').innerHTML = `他クラス ${otherCount}<span>枚</span>`;
+    document.getElementById('cart-total').innerHTML = `¥${otherTotal.toLocaleString()}<small>〜</small>`;
+    const btnNextO = document.getElementById('btn-cart-next');
+    if (btnNextO) btnNextO.textContent = '購入へ進む →';
+    document.getElementById('recommend-banner')?.classList.remove('visible', 'limit-mode');
+    return;
+  }
   if (count === 0) {
     panel.classList.remove('visible');
     selInfo.textContent = '';
@@ -2360,10 +2537,10 @@ function updateCart() {
     return;
   }
   selInfo.textContent = `${count}枚選択中`;
-  document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>`;
+  document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>` + (otherCount > 0 ? `<small style="font-size:11px;font-weight:400;margin-left:4px">＋他クラス${otherCount}枚</small>` : '');
   // ミニバーの金額はスマホサイズ基準の目安（実際の金額は受け取り方法選択後に確定）
   const price = calcPrice(count);
-  document.getElementById('cart-total').innerHTML = `¥${price.total.toLocaleString()}<small>〜</small>`;
+  document.getElementById('cart-total').innerHTML = `¥${(price.total + otherTotal).toLocaleString()}<small>〜</small>`;
   const btnNext = document.getElementById('btn-cart-next');
   if (btnNext) btnNext.textContent = state.selectMode ? '購入へ進む →' : '受け取り方法を選ぶ →';
   const countText = document.getElementById('cart-options-count-text');
@@ -2530,18 +2707,30 @@ function openPaymentModal(isAll) {
   state.downloadAll = isAll;
   const count = isAll ? state.session?.event?.count : state.selected.size;
   const price = isAll ? { total: 2000, pack10: 0, pack5: 0, single: 0 } : calcPrice(count);
+  // きょうだい（複数クラス）まとめ決済: 他のクラスのカートがあれば一緒に1回の決済にする
+  const others = getOtherCarts();
+  const othersTotal = others.reduce((s, c) => s + c.total, 0);
+  const othersCount = others.reduce((s, c) => s + c.count, 0);
+  const evName = state.session?.event?.name || 'このクラス';
   // 納品方法の判定
   const deliveryLabel = isAll
     ? '📂 フォルダリンク（全データ）'
     : count <= 7
       ? '📎 メール添付'
       : '🔗 ダウンロードリンク';
+  const hasOwn = isAll || count > 0;
   document.getElementById('modal-title').textContent =
-    isAll ? '丸ごとダウンロード' : `${count}枚を購入`;
+    others.length
+      ? (others.length + (hasOwn ? 1 : 0) === 1 ? `${others[0].name} ${others[0].count}枚を購入` : `${others.length + (hasOwn ? 1 : 0)}クラス分をまとめて購入`)
+      : (isAll ? '丸ごとダウンロード' : `${count}枚を購入`);
   document.getElementById('modal-desc').textContent =
-    isAll
-      ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。`
-      : `選択した${count}枚の高画質データをダウンロードできます。`;
+    others.length
+      ? (hasOwn
+          ? `${evName}${isAll ? '（全写真）' : ' ' + count + '枚'}と、他のクラス ${othersCount}枚を1回のお支払いでご購入いただけます。写真はクラスごとにメールでお届けします。`
+          : `別のクラスで選んだ ${othersCount}枚をご購入いただけます。写真はクラスごとにメールでお届けします。`)
+      : isAll
+        ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。`
+        : `選択した${count}枚の高画質データをダウンロードできます。`;
   // 選択写真サムネイル＋番号タグ
   const selectedNums = isAll ? [] : Array.from(state.selected).sort((a,b) => Number(a)-Number(b));
   const photoListHtml = isAll
@@ -2565,13 +2754,22 @@ function openPaymentModal(isAll) {
   if (price.pack5)  priceRows += `<div class="price-row"><span>5枚セット × ${price.pack5}</span><span>¥${(price.pack5*500).toLocaleString()}</span></div>`;
   if (price.single) priceRows += `<div class="price-row"><span>単品 × ${price.single}枚</span><span>¥${(price.single*140).toLocaleString()}</span></div>`;
   if (isAll)        priceRows += `<div class="price-row"><span>全データ一括</span><span>¥2,000</span></div>`;
-  priceRows += `<div class="price-row total"><span>合計</span><span>¥${price.total.toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
+  if (others.length) {
+    // クラスごとの小計を並べて、最後に合算
+    priceRows = (count > 0 || isAll) ? `<div class="price-row"><span>${escHtml(evName)}${isAll ? '（全写真）' : ' ' + count + '枚'}</span><span>¥${price.total.toLocaleString()}</span></div>` : '';
+    others.forEach(c => { priceRows += `<div class="price-row"><span>${escHtml(c.name)} ${c.count}枚</span><span>¥${c.total.toLocaleString()}</span></div>`; });
+    priceRows += `<div class="price-row total"><span>合計</span><span>¥${((count > 0 || isAll ? price.total : 0) + othersTotal).toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
+  } else {
+    priceRows += `<div class="price-row total"><span>合計</span><span>¥${price.total.toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
+  }
+  const othersHtml = others.map(c => `<div class="multi-part-row"><span>${escHtml(c.name)} <small>IMG-${c.nums.join(', ')}</small></span><span>${c.count}枚</span></div>`).join('');
   const html = `
     <!-- 選択写真 -->
     <div class="confirm-section">
-      <h4>選択した写真</h4>
-      ${photoListHtml}
+      <h4>${others.length ? escHtml(evName) + ' の写真' : '選択した写真'}</h4>
+      ${(count > 0 || isAll) ? photoListHtml : '<div class="confirm-delivery">（このクラスの写真はなし）</div>'}
     </div>
+    ${others.length ? `<div class="confirm-section"><h4>他のクラスの写真</h4>${othersHtml}<div style="font-size:11px;color:var(--bark);margin-top:6px">内容を変えるときは「戻る」→ カートの中身から外せます</div></div>` : ''}
     <!-- 金額内訳 -->
     <div class="price-breakdown" style="margin-bottom:12px">
       ${priceRows}
@@ -2579,13 +2777,15 @@ function openPaymentModal(isAll) {
     <!-- 納品方法 -->
     <div class="confirm-section">
       <h4>納品方法</h4>
-      <div class="confirm-delivery">${deliveryLabel}</div>
+      <div class="confirm-delivery">${others.length ? '📧 クラスごとにメールでお届け' : deliveryLabel}</div>
       <div style="font-size:11px;color:var(--bark);margin-top:6px">
-        ${isAll
-          ? '全写真へのフォルダリンクをメールでお送りします（有効期限: 7日間）'
-          : count <= 7
-            ? 'お支払い完了後、写真データをメールに直接添付してお送りします'
-            : 'お支払い完了後、ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
+        ${others.length
+          ? 'お支払い完了後、クラスごとに1通ずつメールをお送りします（7枚以下は添付、8枚以上はダウンロードリンク・有効期限7日間）'
+          : isAll
+            ? '全写真へのフォルダリンクをメールでお送りします（有効期限: 7日間）'
+            : count <= 7
+              ? 'お支払い完了後、写真データをメールに直接添付してお送りします'
+              : 'お支払い完了後、ダウンロードリンクをメールでお送りします（有効期限: 7日間）'}
       </div>
     </div>
     <!-- アップセル -->
@@ -2686,14 +2886,34 @@ async function doCreatePayment(isAll, planType) {
     const plan = planType || 'normal';
     const photoNumbers = isAll ? [] : Array.from(state.selected);
     const qty = isAll ? state.session?.event?.count : state.selected.size;
-    const data = await api('createPayment', {
-      eventId: state.selectedEventId,
-      token: state.session.token,
-      photoNumbers: photoNumbers.join(','),
-      qty: String(qty),
-      email: email,
-      planType: plan
-    });
+    const others = plan === 'normal' && !state.mode753 ? getOtherCarts() : [];
+    let data;
+    if (others.length) {
+      // きょうだい（複数クラス）まとめ決済: 各クラスのログインを確かめてから1つの決済リンクを作る
+      btnStripe.textContent = '各クラスの確認中...';
+      const items = [];
+      if (isAll || photoNumbers.length > 0) {
+        items.push({ eventId: state.selectedEventId, token: state.session.token, photoNumbers: photoNumbers.join(','), qty: String(qty), isAll: isAll ? 'true' : 'false' });
+      }
+      for (const c of others) {
+        const token = await ensureEventToken(c.eventId);
+        items.push({ eventId: c.eventId, token: token, photoNumbers: c.nums.join(','), qty: String(c.count), isAll: 'false' });
+      }
+      btnStripe.textContent = '決済ページを準備中...';
+      data = await api('createPaymentMulti', { items: JSON.stringify(items), email: email });
+      // 決済完了後に全クラスのカートを空にできるよう、対象クラスを控えておく
+      try { sessionStorage.setItem('osanpo_last_order_events', JSON.stringify(items.map(i => i.eventId))); } catch(e) {}
+    } else {
+      data = await api('createPayment', {
+        eventId: state.selectedEventId,
+        token: state.session.token,
+        photoNumbers: photoNumbers.join(','),
+        qty: String(qty),
+        email: email,
+        planType: plan
+      });
+      try { sessionStorage.setItem('osanpo_last_order_events', JSON.stringify([state.selectedEventId])); } catch(e) {}
+    }
     state.buyerEmail = email;
     state.lastQty = qty;
     state.lastIsAll = isAll;
@@ -2851,9 +3071,18 @@ async function openSelfHelp() {
     }
     selfHelpRetry = 0;
     let html = '<div style="font-size:13px;line-height:1.9;text-align:left">';
-    html += '<div><strong>' + selfHelpEsc(d.eventName) + '</strong>（' + selfHelpEsc(d.qty) + '枚・' + selfHelpEsc(d.delivery) + '）</div>';
+    if (d.multi && Array.isArray(d.parts)) {
+      // まとめ決済（v2.9）: クラスごとの状況
+      html += '<div><strong>' + d.parts.length + 'クラス分のご注文</strong>（合計 ' + selfHelpEsc(d.qty) + '枚）</div>';
+      d.parts.forEach(p => {
+        const mark = p.status === '完了' ? '✅' : p.status === 'エラー' ? '⚠️' : '⏳';
+        html += '<div style="padding-left:6px">' + mark + ' ' + selfHelpEsc(p.eventName) + '（' + selfHelpEsc(p.qty) + '枚・' + selfHelpEsc(p.delivery) + '）' + (p.sentAt ? ' ' + selfHelpEsc(p.sentAt) + ' 送信' : '') + '</div>';
+      });
+    } else {
+      html += '<div><strong>' + selfHelpEsc(d.eventName) + '</strong>（' + selfHelpEsc(d.qty) + '枚・' + selfHelpEsc(d.delivery) + '）</div>';
+    }
     html += '<div>送信先: ' + (d.emailsMasked || []).map(selfHelpEsc).join(' / ') + '</div>';
-    if (d.sentAt) html += '<div>送信日時: ' + selfHelpEsc(d.sentAt) + '</div>';
+    if (d.sentAt && !d.multi) html += '<div>送信日時: ' + selfHelpEsc(d.sentAt) + '</div>';
     if (d.status === 'エラー') html += '<div style="color:var(--danger,#c0392b)">送信でエラーが発生しています。下のボタンからもう一度お送りできます。</div>';
     html += '<p style="font-size:12px;margin:8px 0 0;color:#2d5a3d;background:#EDF3ED;border-radius:6px;padding:8px 10px">📌 迷惑メールフォルダもご確認ください。キャリアメールの方は <strong>@osanpophoto-store.com</strong> からの受信を許可してから「もう一度送る」を押してください。</p>';
     html += '</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">';
@@ -2888,6 +3117,27 @@ async function selfHelpFiles(btn) {
   try {
     const d = await api('orderFiles', o);
     let html = '<div style="margin-top:10px;text-align:left">';
+    if (d.mode === 'multi' && Array.isArray(d.groups)) {
+      // まとめ決済（v2.9）: クラスごとに表示
+      d.groups.forEach(g => {
+        html += '<div style="font-size:13px;font-weight:bold;margin:10px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--sand,#E8E8E8)">' + selfHelpEsc(g.eventName) + '</div>';
+        if (!g.ok) { html += '<p style="font-size:12px;color:var(--danger,#c0392b)">' + selfHelpEsc(g.error || '準備できませんでした') + '</p>'; return; }
+        html += selfHelpFilesGroupHtml(g);
+      });
+      html += '</div>';
+      out.innerHTML = html;
+      return;
+    }
+    html += selfHelpFilesGroupHtml(d) + '</div>';
+    out.innerHTML = html;
+  } catch (e) {
+    out.innerHTML = '<p style="font-size:13px;line-height:1.8;margin-top:10px;color:var(--danger,#c0392b)">' + selfHelpEsc(e.message) + '</p>';
+    btn.disabled = false;
+  }
+}
+// orderFiles の1件分（フォルダ or ファイル一覧）のHTML
+function selfHelpFilesGroupHtml(d) {
+    let html = '';
     if (d.mode === 'folder') {
       const urls = (d.folderUrls && d.folderUrls.length) ? d.folderUrls : [d.folderUrl];
       urls.forEach((u, i) => {
@@ -2903,12 +3153,7 @@ async function selfHelpFiles(btn) {
       });
       html += '<p style="font-size:12px;line-height:1.7;margin-top:6px">リンク先の画面で「ダウンロード」（↓アイコン）を押すと保存できます。' + (d.expiresAt ? '（' + selfHelpEsc(d.expiresAt) + 'まで有効）' : '') + '</p>';
     }
-    html += '</div>';
-    out.innerHTML = html;
-  } catch (e) {
-    out.innerHTML = '<p style="font-size:13px;line-height:1.8;margin-top:10px;color:var(--danger,#c0392b)">' + selfHelpEsc(e.message) + '</p>';
-    btn.disabled = false;
-  }
+    return html;
 }
 // ============================================================
 // イベントのブログ記事（PHOTO STORY）へのバナー
