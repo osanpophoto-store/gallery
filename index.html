@@ -3065,8 +3065,10 @@ function openPrintModal(planType) {
   const shippingNote = config.shipping && total < 5000 ? '+ 送料¥635' : config.shipping ? '送料無料' : '';
   const selectedNums = Array.from(state.selected).sort((a,b) => Number(a)-Number(b));
   document.getElementById('modal-title').textContent = config.label + 'で購入';
+  const otherN = state.mode753 ? 0 : otherCartsCount();
   document.getElementById('modal-desc').textContent =
-    `選択した${count}枚を${config.label}（¥${config.unit.toLocaleString()}/枚）でご注文します。`;
+    `選択した${count}枚を${config.label}（¥${config.unit.toLocaleString()}/枚）でご注文します。`
+    + (otherN > 0 ? `※ 他のクラスの写真（${otherN}枚）はこのご注文には含まれません（まとめて1回のお支払いはスマホサイズのみ）。` : '');
   const thumbsHtml = `<div class="confirm-thumb-grid">${selectedNums.map(n => {
     const photo = state.photos.find(p => p.number === n);
     const thumbUrl = photo && photo.fileId
