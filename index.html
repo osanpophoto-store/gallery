@@ -1295,6 +1295,13 @@ body.cart-open .help-bar { bottom: 80px; }
 .trouble-box[open] summary::after { content: ' ▴'; }
 .trouble-box > div { margin-top: 8px; padding: 12px 14px; background: #fff8e1; border-radius: 10px; }
 body.mode-753 .gallery-more, body.mode-753 .story-card { display: none !important; }
+/* 七五三の帯（ギャラリー上部・1行） */
+.promo-ribbon { max-width: 1200px; margin: 0 auto 20px; padding: 0 40px; display: flex; text-decoration: none; }
+.promo-ribbon > span { display: flex; }
+.promo-ribbon-text { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px 0 0 999px; background: #FFF6EC; border: 1px solid #F2D9BF; border-right: none; color: var(--deep); font-size: 12.5px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.promo-ribbon-text strong { color: var(--accent); font-weight: 700; }
+.promo-ribbon-cta { display: flex; align-items: center; padding: 9px 14px; border-radius: 0 999px 999px 0; background: #FFF6EC; border: 1px solid #F2D9BF; border-left: none; font-size: 12.5px; font-weight: 700; color: var(--forest); white-space: nowrap; }
+body.mode-753 .promo-ribbon { display: none !important; }
 /* ログイン画面のおしらせ */
 .login-news { margin-top: 48px; padding-top: 28px; border-top: 1px solid #EDE7DC; }
 .login-news-head { margin-bottom: 14px; }
@@ -1331,6 +1338,9 @@ body.mode-753 .gallery-more, body.mode-753 .story-card { display: none !importan
   .deadline-banner { margin: 0 20px 16px; padding: 10px 14px; }
   .gallery-more { padding: 0 20px; margin-top: 44px; }
   .story-top { padding: 0 20px; }
+  .promo-ribbon { padding: 0 20px; margin-bottom: 18px; }
+  .promo-ribbon-text { padding: 8px 12px; font-size: 12px; }
+  .promo-ribbon-more { display: none; }
   .more-card { padding: 14px; gap: 12px; }
   .more-card img, .more-card-icon { width: 76px; height: 58px; }
   .gallery-header { margin-bottom: 28px; }
@@ -1546,6 +1556,8 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
       👨‍👩‍👧‍👦 きょうだいでクラスが違う場合は、カートの「＋ 別のクラスの写真も入れる」から別のクラスにログインして選ぶと、まとめて1回のお支払いにできます。
     </div>
   </div>
+  <!-- 七五三の案内（1行の帯。カードは一番下の「もっと楽しむ」にもある） -->
+  <a class="promo-ribbon" id="promo-753-ribbon" href="shichigosan.html" style="display:none"><span class="promo-ribbon-text">🍁 <strong>七五三 出張撮影 受付中</strong> 10/25〜11/23<span class="promo-ribbon-more"> ・ ご希望の神社へ ¥12,000</span></span><span class="promo-ribbon-cta">詳しく →</span></a>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
   <div class="deadline-banner" id="deadline-banner" style="display:none"></div>
   <!-- LINEなどアプリ内ブラウザのときだけ出す注意 -->
@@ -3276,7 +3288,7 @@ function renderPromo753() {
   const c = CONFIG.PROMO_753 || {};
   let show = !!c.enabled && !state.directEventId && !state.mode753;
   if (show && c.until) { const d = new Date(c.until + 'T23:59:59+09:00'); if (!isNaN(d) && Date.now() > d.getTime()) show = false; }
-  ['promo-753-login', 'promo-753-gallery'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = show ? 'flex' : 'none'; });
+  ['promo-753-login', 'promo-753-gallery', 'promo-753-ribbon'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = show ? 'flex' : 'none'; });
 }
 function renderEventBlogBanner(ev) {
   const el = document.getElementById('event-blog-banner');
