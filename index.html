@@ -1302,6 +1302,9 @@ body.mode-753 .gallery-more, body.mode-753 .story-card { display: none !importan
 .promo-ribbon-text strong { color: var(--accent); font-weight: 700; }
 .promo-ribbon-cta { display: flex; align-items: center; padding: 9px 14px; border-radius: 0 999px 999px 0; background: #FFF6EC; border: 1px solid #F2D9BF; border-left: none; font-size: 12.5px; font-weight: 700; color: var(--forest); white-space: nowrap; }
 body.mode-753 .promo-ribbon { display: none !important; }
+/* 一度ログインしたクラス（パスワード保存済み） */
+.event-card.remembered { border-color: var(--forest); }
+.event-remembered { color: var(--forest); font-weight: 700; font-size: 12px; }
 /* ログイン画面のおしらせ */
 .login-news { margin-top: 48px; padding-top: 28px; border-top: 1px solid #EDE7DC; }
 .login-news-head { margin-bottom: 14px; }
@@ -1485,7 +1488,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   <div class="login-wrap">
     <div class="login-hero">
       <h1>写真を<br>選んでください</h1>
-      <p>撮影イベントを選択し、<br>お知らせしたパスワードを入力してください</p>
+      <p>撮影イベントを選択し、<br>お知らせしたパスワードを入力してください<br><span style="font-size:11px;color:var(--bark)">一度入力すると、このスマホでは次回からパスワードなしで開けます</span></p>
     </div>
     <!-- イベント一覧 -->
     <div class="event-cards" id="event-list">
@@ -2056,14 +2059,22 @@ function renderEventList() {
     return;
   }
   el.innerHTML = state.events.map(ev => `
-    <div class="event-card" id="card-${ev.id}" onclick="selectEvent('${ev.id}')">
+    <div class="event-card${hasSavedPassword(ev.id) ? ' remembered' : ''}" id="card-${ev.id}" onclick="selectEvent('${ev.id}')">
       <div class="event-info">
         <h3>${escHtml(ev.name)}</h3>
-        <p>${formatDate(ev.date)}</p>
+        <p>${formatDate(ev.date)}${hasSavedPassword(ev.id) ? ' <span class="event-remembered">🔓 タップで開く（パスワード入力済み）</span>' : ''}</p>
       </div>
       <span class="event-badge">${ev.count}枚</span>
     </div>
   `).join('');
+}
+// このスマホで一度ログインしたクラスは、保存したパスワードでそのまま入れる（PASSWORD_REMEMBER_DAYS 日間）
+const PASSWORD_REMEMBER_DAYS = 30;
+function hasSavedPassword(eventId) {
+  const m = loadEventMeta(eventId);
+  if (!m || !m.pw) return false;
+  if (m.pwAt && (Date.now() - m.pwAt) > PASSWORD_REMEMBER_DAYS * 24 * 60 * 60 * 1000) return false;
+  return true;
 }
 function selectEvent(id) {
   state.selectedEventId = id;
@@ -2076,6 +2087,13 @@ function selectEvent(id) {
   input.classList.remove('error');
   document.getElementById('error-msg').classList.remove('visible');
   document.getElementById('btn-login').disabled = false;
+  if (hasSavedPassword(id) && !state.autoLoginTried) {
+    // 保存したパスワードで自動ログイン（失敗したら通常どおり入力してもらう）
+    state.autoLoginTried = true;
+    input.value = loadEventMeta(id).pw;
+    doLogin().finally(() => { state.autoLoginTried = false; });
+    return;
+  }
   input.focus();
 }
 // ========================================
@@ -2099,13 +2117,21 @@ async function doLogin() {
     sessionStorage.setItem('osanpo_session', JSON.stringify(data));
     // まとめ決済用にクラス情報を端末へ残す（七五三は対象外）
     if (!(data.event && data.event.is753) && !/^753/.test(String(state.selectedEventId))) {
-      saveEventMeta(state.selectedEventId, { name: data.event && data.event.name, count: data.event && data.event.count, token: data.token, expires: data.expires, pw: pw });
+      saveEventMeta(state.selectedEventId, { name: data.event && data.event.name, count: data.event && data.event.count, token: data.token, expires: data.expires, pw: pw, pwAt: Date.now() });
     }
     if (state.afterLoginNext) { window.location.replace(state.afterLoginNext); return; }
     await enterGallery();
   } catch(e) {
     setError(e.message || 'ログインに失敗しました');
     document.getElementById('pw-input').classList.add('error');
+    // 保存していたパスワードが通らなくなった（変更された等）ときは保存を消して、入力し直してもらう
+    if (/パスワード/.test(String(e.message || ''))) {
+      saveEventMeta(state.selectedEventId, { pw: '', pwAt: 0 });
+      document.getElementById('pw-input').value = '';
+      renderEventList();
+      document.getElementById('card-' + state.selectedEventId)?.classList.add('selected');
+      document.getElementById('pw-input').focus();
+    }
   } finally {
     btn.disabled = false;
     btn.classList.remove('loading');
