@@ -1244,6 +1244,8 @@ body.cart-open .help-bar { bottom: 80px; }
   color: var(--forest); font-size: 12px; font-weight: 700; font-family: var(--sans); text-decoration: underline; text-underline-offset: 3px;
 }
 #howto-detail { margin-top: 10px; padding: 12px 14px; background: #F0F5F1; border-radius: 10px; line-height: 1.8; }
+/* 園名（?en=園コード のとき） */
+.login-en { display:inline-block; margin-bottom: 12px; padding: 5px 12px; background: #fff; border: 1px solid #E3DCCF; border-radius: 999px; font-size: 12px; letter-spacing: 0.08em; color: var(--forest); font-weight: 700; }
 /* LINE内ブラウザのときだけ出す注意 */
 .thumb-retry-bar { position:sticky; z-index:50; box-shadow:0 4px 14px rgba(0,0,0,.08); max-width:1200px; margin:0 auto 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding: 10px 14px; background:#FFF6E5; border:1px solid #F0D9A8; border-radius:12px; font-size:13px; color:var(--bark); }
 .thumb-retry-btns { display:flex; gap:8px; flex-wrap:wrap; }
@@ -1492,6 +1494,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
 <main class="screen active" id="screen-login">
   <div class="login-wrap">
     <div class="login-hero">
+      <div class="login-en" id="login-en" style="display:none"></div>
       <h1>写真を<br>選んでください</h1>
       <p>撮影イベントを選択し、<br>お知らせしたパスワードを入力してください<br><span style="font-size:11px;color:var(--bark)">一度入力すると、このスマホでは次回からパスワードなしで開けます</span></p>
     </div>
@@ -1800,6 +1803,8 @@ const CONFIG = {
 // STATE
 // ========================================
 const state = {
+  en: '',            // 園コード（?en=）
+  photoNameById: {}, // fileId → ファイル名（R2 配信のURL用）
   events: [],
   selectedEventId: null,
   session: null,
@@ -1991,6 +1996,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   // ?next=blog-xxx.html … ログイン後に PHOTO STORY（同じフォルダの blog-*.html のみ）へ戻る
   const nextParam = urlParams.get('next') || '';
   if (/^blog-[A-Za-z0-9_-]+\.html$/.test(nextParam)) state.afterLoginNext = nextParam;
+  // ?en=園コード … その園のイベントだけを一覧に出す（園ごとにギャラリーURLを分ける）。一度開いたらこの端末に覚える
+  const enParam = (urlParams.get('en') || '').trim().toLowerCase();
+  if (/^[a-z0-9-]{1,32}$/.test(enParam)) { state.en = enParam; try { localStorage.setItem('osanpo_en', enParam); } catch(e) {} }
+  else { try { state.en = localStorage.getItem('osanpo_en') || ''; } catch(e) { state.en = ''; } }
   // ?event=ID … 一覧に出さないイベント（七五三など）への直リンク。そのイベントのパスワード入力だけを出す
   const eventParam = (urlParams.get('event') || '').trim();
   if (/^[A-Za-z0-9_-]{1,64}$/.test(eventParam)) state.directEventId = eventParam;
@@ -2009,8 +2018,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       sessionStorage.removeItem('osanpo_last_order_events');
     } catch(e) {}
     showPaidScreen();
-    // URLをきれいにする
-    history.replaceState({}, '', window.location.pathname);
+    // URLをきれいにする（園コードは残す）
+    history.replaceState({}, '', window.location.pathname + (state.en ? '?en=' + state.en : ''));
     return;
   }
   // セッション復元
@@ -2042,8 +2051,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ========================================
 async function loadEvents() {
   try {
-    const data = await api('listEvents');
+    const data = await api('listEvents', state.en ? { en: state.en } : {});
     state.events = data.events || [];
+    const enEl = document.getElementById('login-en');
+    if (enEl) {
+      if (data.enName) { enEl.textContent = data.enName; enEl.style.display = ''; }
+      else enEl.style.display = 'none';
+    }
     renderEventList();
   } catch(e) {
     document.getElementById('event-list').innerHTML =
@@ -2243,6 +2257,8 @@ async function loadPhotos() {
       token: state.session.token
     });
     state.photos = data.photos || [];
+    state.photoNameById = {};
+    state.photos.forEach(p => { if (p.fileId && p.name) state.photoNameById[p.fileId] = p.name; });
     if (!state.mode753) savePhotosToStorage(state.selectedEventId, state.photos); // 他クラスのカート表示（サムネイル）用
     renderGrid();
     updateCart(); // 保存されていたカートがあればカートバーを復元表示
@@ -3643,6 +3659,14 @@ function showToast(msg, type = 'success') {
 // サムネイルURL。attempt 偶数 = drive.google.com/thumbnail（lh3へリダイレクト）、
 // 奇数 = lh3.googleusercontent.com 直接。片方が通らない端末・回線でももう片方で拾う
 function thumbUrl(fileId, w, attempt) {
+  // R2 配信（v2.10）: イベントが R2 対応なら最初は Worker から取る（署名トークン付き・2時間有効）。
+  // ダメなら従来どおり Google ドライブ → lh3 の順で取り直す
+  const r2 = state.session && state.session.event && state.session.event.r2;
+  const name = state.photoNameById ? state.photoNameById[fileId] : '';
+  if (r2 && r2.base && r2.k && name) {
+    if (attempt === 0) return r2.base + '/g/' + encodeURIComponent(state.selectedEventId) + '/w' + (w >= 1200 ? 1200 : 400) + '/' + encodeURIComponent(String(name).normalize('NFC')) + '?k=' + encodeURIComponent(r2.k);
+    attempt = attempt - 1;
+  }
   const bust = attempt ? '&t=' + Date.now() : '';
   if (attempt % 2 === 1) return 'https://lh3.googleusercontent.com/d/' + fileId + '=w' + w + (bust ? '?t=' + Date.now() : '');
   return 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w' + w + bust;
