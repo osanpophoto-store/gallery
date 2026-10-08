@@ -1245,6 +1245,8 @@ body.cart-open .help-bar { bottom: 80px; }
 }
 #howto-detail { margin-top: 10px; padding: 12px 14px; background: #F0F5F1; border-radius: 10px; line-height: 1.8; }
 /* LINE内ブラウザのときだけ出す注意 */
+.thumb-retry-bar { position:sticky; z-index:50; box-shadow:0 4px 14px rgba(0,0,0,.08); max-width:1200px; margin:0 auto 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding: 10px 14px; background:#FFF6E5; border:1px solid #F0D9A8; border-radius:12px; font-size:13px; color:var(--bark); }
+.thumb-retry-bar button { padding: 8px 14px; background: var(--forest); color:#fff; border:0; border-radius:999px; font-weight:700; font-size:13px; cursor:pointer; }
 .storage-warn-box {
   max-width: 1200px; margin: 0 auto 20px; padding: 12px 16px; font-size: 12.5px; color: #555; line-height: 1.7;
   background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 0 10px 10px 0;
@@ -1338,6 +1340,7 @@ body.mode-753 .promo-ribbon { display: none !important; }
   .login-hero h1 { font-size: 24px; }
   .gallery-howto { padding: 0 20px; margin: -20px auto 20px; }
   .storage-warn-box { margin: 0 20px 20px; }
+  .thumb-retry-bar { margin: 0 20px 14px; }
   .deadline-banner { margin: 0 20px 16px; padding: 10px 14px; }
   .gallery-more { padding: 0 20px; margin-top: 44px; }
   .story-top { padding: 0 20px; }
@@ -1575,6 +1578,10 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
         <em>読む →</em>
       </div>
     </a>
+  </div>
+  <div class="thumb-retry-bar" id="thumb-retry-bar" style="display:none">
+    <span>⚠️ 読み込めなかった写真が <b id="thumb-retry-count">0</b> 枚あります</span>
+    <button type="button" onclick="retryFailedThumbs()">🔄 写真を読み込み直す</button>
   </div>
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
@@ -2265,10 +2272,11 @@ function renderGrid() {
       <img
         id="img-${p.number}"
         src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-        data-src="${p.fileId ? 'https://drive.google.com/thumbnail?id=' + p.fileId + '&sz=w400' : ''}"
+        data-src="${p.fileId ? thumbUrl(p.fileId, 400, 0) : ''}"
+        data-fid="${p.fileId || ''}"
         style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0"
-        onload="this.style.display='block';document.getElementById('skel-${p.number}').style.display='none'"
-        onerror="(function(img,num){var retry=parseInt(img.dataset.retry||0);if(retry<3){img.dataset.retry=retry+1;setTimeout(function(){img.src='https://drive.google.com/thumbnail?id=${p.fileId}&sz=w400&t='+Date.now();},1000*Math.pow(2,retry));}else{document.getElementById('skel-'+num).style.background='var(--sand)';document.getElementById('skel-'+num).style.animation='none';}})(this,'${p.number}')"
+        onload="thumbLoaded(this,'${p.number}')"
+        onerror="thumbError(this,'${p.number}')"
       >
       <button class="photo-fav-btn${state.favorites.has(p.number) ? ' active' : ''}" id="fav-${p.number}" onclick="event.stopPropagation();toggleFavorite('${p.number}')" title="お気に入り">${state.favorites.has(p.number) ? '♥' : '♡'}</button>
       <button class="photo-zoom-btn" onclick="event.stopPropagation();openLightbox('${p.number}')" title="大きく見る" aria-label="大きく見る">🔍</button>
@@ -3418,7 +3426,14 @@ function lbRender() {
   updateLbCartChip();
   // 画像
   const img = document.getElementById('lightbox-img');
-  img.src = 'https://drive.google.com/thumbnail?id=' + photo.fileId + '&sz=w1200';
+  img.onerror = function() {
+    // drive.google.com 経由で失敗したら lh3.googleusercontent.com 直接で1回だけ再試行
+    if (img.dataset.alt === photo.fileId) return;
+    img.dataset.alt = photo.fileId;
+    img.src = thumbUrl(photo.fileId, 1200, 1);
+  };
+  img.dataset.alt = '';
+  img.src = thumbUrl(photo.fileId, 1200, 0);
   // 写真番号
   document.getElementById('lightbox-num').textContent =
     'IMG-' + photo.number + '  (' + (idx + 1) + ' / ' + state.lightboxNums.length + ')';
@@ -3611,21 +3626,98 @@ function showToast(msg, type = 'success') {
 // ========================================
 // Lazy Load（Intersection Observer）
 // ========================================
+// サムネイルURL。attempt 偶数 = drive.google.com/thumbnail（lh3へリダイレクト）、
+// 奇数 = lh3.googleusercontent.com 直接。片方が通らない端末・回線でももう片方で拾う
+function thumbUrl(fileId, w, attempt) {
+  const bust = attempt ? '&t=' + Date.now() : '';
+  if (attempt % 2 === 1) return 'https://lh3.googleusercontent.com/d/' + fileId + '=w' + w + (bust ? '?t=' + Date.now() : '');
+  return 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w' + w + bust;
+}
+// 同時に取りに行く枚数を絞る（Google側に「大量アクセス」と見なされにくくする）
+const THUMB_MAX_CONCURRENT = 6;
+const THUMB_RETRY_DELAYS = [1000, 2000, 4000, 8000, 15000, 30000]; // 計 約60秒まで粘る
+const thumbQueue = { active: 0, waiting: [] };
+function thumbStart(img) {
+  if (thumbQueue.active >= THUMB_MAX_CONCURRENT) { thumbQueue.waiting.push(img); return; }
+  const src = img.getAttribute('data-src');
+  if (!src) return;
+  thumbQueue.active++;
+  img.dataset.loading = '1';
+  img.removeAttribute('data-src');
+  img.src = src;
+}
+function thumbRelease(img) {
+  if (img.dataset.loading !== '1') return;
+  delete img.dataset.loading;
+  thumbQueue.active = Math.max(0, thumbQueue.active - 1);
+  const next = thumbQueue.waiting.shift();
+  if (next) thumbStart(next);
+}
+function thumbLoaded(img, num) {
+  if (!img.src || img.src.startsWith('data:')) return; // 初期のダミーgifは無視
+  img.style.display = 'block';
+  const sk = document.getElementById('skel-' + num);
+  if (sk) sk.style.display = 'none';
+  delete img.dataset.failed;
+  thumbRelease(img);
+  updateThumbRetryBar();
+}
+function thumbError(img, num) {
+  if (!img.src || img.src.startsWith('data:')) return; // 初期のダミーgifは無視
+  thumbRelease(img);
+  const fid = img.dataset.fid;
+  const retry = parseInt(img.dataset.retry || 0);
+  if (fid && retry < THUMB_RETRY_DELAYS.length) {
+    img.dataset.retry = retry + 1;
+    setTimeout(() => { if (document.body.contains(img)) img.src = thumbUrl(fid, 400, retry + 1); }, THUMB_RETRY_DELAYS[retry]);
+    return;
+  }
+  img.dataset.failed = '1';
+  const sk = document.getElementById('skel-' + num);
+  if (sk) { sk.style.background = 'var(--sand)'; sk.style.animation = 'none'; }
+  updateThumbRetryBar();
+}
+// 読み込めなかった写真があれば「写真を読み込み直す」ボタンを出す
+function updateThumbRetryBar() {
+  const bar = document.getElementById('thumb-retry-bar');
+  if (!bar) return;
+  const failed = document.querySelectorAll('#photo-grid img[data-failed]').length;
+  const wasHidden = bar.style.display === 'none';
+  bar.style.display = failed ? 'flex' : 'none';
+  // 固定ヘッダーの下に貼り付く（スクロール中でも見えるように）
+  const hd = document.querySelector('.site-header');
+  bar.style.top = ((hd ? hd.offsetHeight : 70) + 8) + 'px';
+  if (failed && wasHidden) showToast('読み込めなかった写真があります。「写真を読み込み直す」を押してください');
+  const c = document.getElementById('thumb-retry-count');
+  if (c) c.textContent = failed;
+}
+function retryFailedThumbs() {
+  const imgs = document.querySelectorAll('#photo-grid img[data-failed]');
+  imgs.forEach(img => {
+    delete img.dataset.failed;
+    img.dataset.retry = '0';
+    const num = (img.id || '').replace('img-', '');
+    const sk = document.getElementById('skel-' + num);
+    if (sk) { sk.style.background = ''; sk.style.animation = ''; }
+    if (img.dataset.fid) { img.setAttribute('data-src', thumbUrl(img.dataset.fid, 400, 1)); thumbStart(img); }
+  });
+  updateThumbRetryBar();
+  showToast('写真を読み込み直しています…');
+}
 function initLazyLoad() {
+  thumbQueue.active = 0; thumbQueue.waiting = [];
+  updateThumbRetryBar();
+  // img は読み込み前 display:none（サイズ0）で交差判定できないため、親の .photo-item を監視する
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const img = entry.target;
-        const dataSrc = img.getAttribute('data-src');
-        if (dataSrc) {
-          img.src = dataSrc;
-          img.removeAttribute('data-src');
-        }
-        observer.unobserve(img);
+        const img = entry.target.querySelector('img[data-src]');
+        if (img) thumbStart(img);
+        observer.unobserve(entry.target);
       }
     });
   }, { rootMargin: '200px' });
-  document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
+  document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img.parentElement));
 }
 // ========================================
 // ユーティリティ
