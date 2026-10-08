@@ -1246,6 +1246,8 @@ body.cart-open .help-bar { bottom: 80px; }
 #howto-detail { margin-top: 10px; padding: 12px 14px; background: #F0F5F1; border-radius: 10px; line-height: 1.8; }
 /* LINE内ブラウザのときだけ出す注意 */
 .thumb-retry-bar { position:sticky; z-index:50; box-shadow:0 4px 14px rgba(0,0,0,.08); max-width:1200px; margin:0 auto 14px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding: 10px 14px; background:#FFF6E5; border:1px solid #F0D9A8; border-radius:12px; font-size:13px; color:var(--bark); }
+.thumb-retry-btns { display:flex; gap:8px; flex-wrap:wrap; }
+.thumb-retry-bar button.alt { background:#fff; color:var(--forest); border:1.5px solid var(--forest); }
 .thumb-retry-bar button { padding: 8px 14px; background: var(--forest); color:#fff; border:0; border-radius:999px; font-weight:700; font-size:13px; cursor:pointer; }
 .storage-warn-box {
   max-width: 1200px; margin: 0 auto 20px; padding: 12px 16px; font-size: 12.5px; color: #555; line-height: 1.7;
@@ -1581,7 +1583,10 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   </div>
   <div class="thumb-retry-bar" id="thumb-retry-bar" style="display:none">
     <span>⚠️ 読み込めなかった写真が <b id="thumb-retry-count">0</b> 枚あります</span>
-    <button type="button" onclick="retryFailedThumbs()">🔄 写真を読み込み直す</button>
+    <span class="thumb-retry-btns">
+      <button type="button" onclick="retryFailedThumbs()">🔄 写真を読み込み直す</button>
+      <button type="button" class="alt" onclick="startLiteThumbs()">📡 別の方法で読み込む</button>
+    </span>
   </div>
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
@@ -3433,7 +3438,16 @@ function lbRender() {
     img.src = thumbUrl(photo.fileId, 1200, 1);
   };
   img.dataset.alt = '';
-  img.src = thumbUrl(photo.fileId, 1200, 0);
+  if (state.liteThumbs) {
+    // 予備ルート: GAS経由で大きめ（1200px）を1枚取る。取れなければ通常ルートにフォールバック
+    const grid = document.getElementById('img-' + photo.number);
+    img.src = (grid && grid.src && !grid.src.startsWith(THUMB_DUMMY_PREFIX)) ? grid.src : '';
+    api('getThumbs', { eventId: state.selectedEventId, token: state.session.token, fileIds: photo.fileId, size: 1200 })
+      .then(d => { const u = d.thumbs && d.thumbs[photo.fileId]; if (u && lbCurrentPhoto() === photo) img.src = u; })
+      .catch(() => { if (lbCurrentPhoto() === photo && !img.src) img.src = thumbUrl(photo.fileId, 1200, 0); });
+  } else {
+    img.src = thumbUrl(photo.fileId, 1200, 0);
+  }
   // 写真番号
   document.getElementById('lightbox-num').textContent =
     'IMG-' + photo.number + '  (' + (idx + 1) + ' / ' + state.lightboxNums.length + ')';
@@ -3638,6 +3652,7 @@ const THUMB_MAX_CONCURRENT = 6;
 const THUMB_RETRY_DELAYS = [1000, 2000, 4000, 8000, 15000, 30000]; // 計 約60秒まで粘る
 const thumbQueue = { active: 0, waiting: [] };
 function thumbStart(img) {
+  if (state.liteThumbs) { liteEnqueue(img); return; } // 予備ルート（GAS経由）モード中
   if (thumbQueue.active >= THUMB_MAX_CONCURRENT) { thumbQueue.waiting.push(img); return; }
   const src = img.getAttribute('data-src');
   if (!src) return;
@@ -3653,8 +3668,9 @@ function thumbRelease(img) {
   const next = thumbQueue.waiting.shift();
   if (next) thumbStart(next);
 }
+const THUMB_DUMMY_PREFIX = 'data:image/gif;base64,R0lGODlhAQAB';
 function thumbLoaded(img, num) {
-  if (!img.src || img.src.startsWith('data:')) return; // 初期のダミーgifは無視
+  if (!img.src || img.src.startsWith(THUMB_DUMMY_PREFIX)) return; // 初期のダミーgifは無視
   img.style.display = 'block';
   const sk = document.getElementById('skel-' + num);
   if (sk) sk.style.display = 'none';
@@ -3663,8 +3679,9 @@ function thumbLoaded(img, num) {
   updateThumbRetryBar();
 }
 function thumbError(img, num) {
-  if (!img.src || img.src.startsWith('data:')) return; // 初期のダミーgifは無視
+  if (!img.src || img.src.startsWith(THUMB_DUMMY_PREFIX)) return; // 初期のダミーgifは無視
   thumbRelease(img);
+  if (img.dataset.lite === '1') { img.dataset.failed = '1'; updateThumbRetryBar(); return; } // 予備ルートで失敗したものはそのまま
   const fid = img.dataset.fid;
   const retry = parseInt(img.dataset.retry || 0);
   if (fid && retry < THUMB_RETRY_DELAYS.length) {
@@ -3687,7 +3704,7 @@ function updateThumbRetryBar() {
   // 固定ヘッダーの下に貼り付く（スクロール中でも見えるように）
   const hd = document.querySelector('.site-header');
   bar.style.top = ((hd ? hd.offsetHeight : 70) + 8) + 'px';
-  if (failed && wasHidden) showToast('読み込めなかった写真があります。「写真を読み込み直す」を押してください');
+  if (failed && wasHidden) showToast('読み込めなかった写真があります。上のボタンで読み込み直してください');
   const c = document.getElementById('thumb-retry-count');
   if (c) c.textContent = failed;
 }
@@ -3699,13 +3716,70 @@ function retryFailedThumbs() {
     const num = (img.id || '').replace('img-', '');
     const sk = document.getElementById('skel-' + num);
     if (sk) { sk.style.background = ''; sk.style.animation = ''; }
-    if (img.dataset.fid) { img.setAttribute('data-src', thumbUrl(img.dataset.fid, 400, 1)); thumbStart(img); }
+    if (!img.dataset.fid) return;
+    if (state.liteThumbs) { liteEnqueue(img); return; }
+    img.setAttribute('data-src', thumbUrl(img.dataset.fid, 400, 1)); thumbStart(img);
   });
   updateThumbRetryBar();
   showToast('写真を読み込み直しています…');
 }
+// ---- 予備ルート（GAS経由）: Googleの画像サーバーに届かない端末向け ----
+// 「別の方法で読み込む」を押すと、以後このクラスのサムネイルは GAS の getThumbs で
+// data:URL として受け取る（写真一覧と同じ script.google.com 経由なので、一覧が見えていれば届く）
+const LITE_BATCH = 5;          // 1回のGAS呼び出しで取る枚数（GASは応答が大きいほど極端に遅くなるので小さめ）
+const LITE_CONCURRENT = 3;     // 同時に投げるGAS呼び出し数
+const lite = { pending: [], timer: null, active: 0, done: 0, total: 0 };
+function liteEnqueue(img) {
+  img.removeAttribute('data-src');
+  img.dataset.lite = '1';
+  delete img.dataset.failed;
+  if (lite.pending.indexOf(img) < 0) lite.pending.push(img);
+  clearTimeout(lite.timer);
+  lite.timer = setTimeout(liteFlush, 250);
+}
+function liteFlush() {
+  while (lite.active < LITE_CONCURRENT && lite.pending.length && state.session) {
+    // 画面に近いものから
+    lite.pending.sort((a, b) => Math.abs(a.getBoundingClientRect().top) - Math.abs(b.getBoundingClientRect().top));
+    const batch = lite.pending.splice(0, LITE_BATCH).filter(img => document.body.contains(img));
+    if (!batch.length) continue;
+    lite.active++;
+    liteFetch(batch).finally(() => { lite.active--; liteFlush(); });
+  }
+}
+async function liteFetch(batch) {
+  const ids = batch.map(img => img.dataset.fid).filter(Boolean);
+  try {
+    const data = await api('getThumbs', { eventId: state.selectedEventId, token: state.session.token, fileIds: ids.join(','), size: 400 });
+    batch.forEach(img => {
+      const d = data.thumbs && data.thumbs[img.dataset.fid];
+      if (d) { img.src = d; }
+      else { img.dataset.failed = '1'; }
+    });
+    lite.done += batch.length;
+    if (lite.total && lite.done < lite.total) showToast('別の方法で読み込み中… ' + lite.done + ' / ' + lite.total);
+  } catch (e) {
+    batch.forEach(img => { img.dataset.failed = '1'; });
+    showToast('読み込みに失敗しました: ' + (e.message || ''));
+  }
+  updateThumbRetryBar();
+}
+function startLiteThumbs() {
+  state.liteThumbs = true;
+  thumbQueue.waiting = [];
+  const imgs = [...document.querySelectorAll('#photo-grid img')].filter(img => img.style.display !== 'block');
+  lite.done = 0; lite.total = imgs.length;
+  imgs.forEach(img => {
+    const num = (img.id || '').replace('img-', '');
+    const sk = document.getElementById('skel-' + num);
+    if (sk) { sk.style.background = ''; sk.style.animation = ''; }
+    if (img.dataset.fid) liteEnqueue(img);
+  });
+  showToast('別の方法で読み込みます（少し時間がかかります）');
+}
 function initLazyLoad() {
   thumbQueue.active = 0; thumbQueue.waiting = [];
+  state.liteThumbs = false; lite.pending = []; lite.active = 0; lite.done = 0; lite.total = 0;
   updateThumbRetryBar();
   // img は読み込み前 display:none（サイズ0）で交差判定できないため、親の .photo-item を監視する
   const observer = new IntersectionObserver((entries) => {
