@@ -3767,7 +3767,9 @@ async function liteFetch(batch) {
 function startLiteThumbs() {
   state.liteThumbs = true;
   thumbQueue.waiting = [];
-  const imgs = [...document.querySelectorAll('#photo-grid img')].filter(img => img.style.display !== 'block');
+  // 画面に出ていて読み込めていないもの（失敗・再試行中）だけ先に取る。
+  // まだ画面に来ていない写真はスクロールに合わせて取る（GASの UrlFetch 回数を無駄に使わない）
+  const imgs = [...document.querySelectorAll('#photo-grid img')].filter(img => img.style.display !== 'block' && !img.getAttribute('data-src'));
   lite.done = 0; lite.total = imgs.length;
   imgs.forEach(img => {
     const num = (img.id || '').replace('img-', '');
