@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>お知らせメール登録 | おさんぽフォト</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --cream:#FFFFFF; --sand:#E8E8E8; --bark:#7A7A7A; --deep:#2C2C2C; --forest:#4A7A5A; --danger:#C0392B; --sans:'Zen Maru Gothic',sans-serif; }
+* { box-sizing:border-box; }
+body { margin:0; background:#F6F6F4; color:var(--deep); font-family:var(--sans); line-height:1.7; }
+.wrap { max-width:460px; margin:0 auto; padding:32px 16px 48px; }
+.card { background:var(--cream); border-radius:14px; padding:24px 20px; box-shadow:0 2px 10px rgba(0,0,0,.05); }
+h1 { font-size:18px; margin:0 0 6px; }
+.sub { font-size:13px; color:var(--bark); margin:0 0 18px; }
+label { display:block; font-size:12px; color:var(--bark); margin-bottom:6px; }
+input[type=email] { width:100%; padding:12px 14px; border:1.5px solid var(--sand); border-radius:8px; font-size:15px; font-family:var(--sans); background:var(--cream); color:var(--deep); outline:none; }
+input[type=email]:focus { border-color:var(--forest); }
+button { width:100%; margin-top:14px; padding:13px; border:0; border-radius:10px; background:var(--forest); color:#fff; font-size:15px; font-family:var(--sans); font-weight:700; cursor:pointer; }
+button:disabled { opacity:.5; cursor:default; }
+.note { font-size:12px; color:var(--bark); margin-top:14px; }
+.note li { margin-bottom:4px; }
+.msg { margin-top:14px; padding:12px 14px; border-radius:8px; font-size:14px; display:none; }
+.msg.ok { display:block; background:#EDF3ED; color:#2d5a3d; }
+.msg.ng { display:block; background:#FBEDEB; color:var(--danger); }
+.back { display:block; text-align:center; margin-top:20px; font-size:13px; color:var(--forest); }
+.en { display:inline-block; font-size:12px; background:#EDF3ED; color:#2d5a3d; border-radius:999px; padding:2px 10px; margin-bottom:12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" id="card-sub">
+    <h1>📩 お知らせメール登録</h1>
+    <p class="sub">写真の公開日と販売締切を、メールでお知らせします。</p>
+    <span class="en" id="en-chip" style="display:none"></span>
+    <label for="email">メールアドレス</label>
+    <input type="email" id="email" placeholder="example@gmail.com" autocomplete="email" inputmode="email">
+    <button id="btn" disabled>登録する</button>
+    <div class="msg" id="msg"></div>
+    <ul class="note">
+      <li>届くのは「写真を公開しました」と「締切が近づいています」の2種類だけです（月1〜2通）。</li>
+      <li>メール末尾のリンクから、いつでも配信を停止できます。</li>
+      <li>メールアドレスはお知らせ配信以外には使いません。</li>
+    </ul>
+  </div>
+  <div class="card" id="card-unsub" style="display:none">
+    <h1>配信停止</h1>
+    <p class="sub" id="unsub-text">手続き中です…</p>
+    <div class="msg" id="unsub-msg"></div>
+  </div>
+  <a class="back" id="back" href="./">ギャラリーへ戻る</a>
+</div>
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwv49myiQNYGlFFJbMHLJVpybwXqu6Mz05gi9XrwWBA2hM_WZVU1xhUgJz06DRKkuxW/exec';
+const q = new URLSearchParams(location.search);
+const EN_RE = /^[a-z0-9-]{1,32}$/;
+let en = (q.get('en') || '').trim().toLowerCase();
+if (!EN_RE.test(en)) { try { en = localStorage.getItem('osanpo_en') || ''; } catch(e) { en = ''; } }
+if (!EN_RE.test(en)) en = '';
+if (en) document.getElementById('back').href = './?en=' + en;
+
+async function api(action, params) {
+  const url = new URL(GAS_URL);
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  const res = await fetch(url.toString(), { method: 'GET', redirect: 'follow' });
+  if (!res.ok) throw new Error('通信エラー: ' + res.status);
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error || 'エラーが発生しました');
+  return data;
+}
+function show(id, cls, text) { const m = document.getElementById(id); m.className = 'msg ' + cls; m.textContent = text; }
+
+// 配信停止（メール末尾のリンク: ?u=<メール>&s=<署名>）
+if (q.get('u') && q.get('s')) {
+  document.getElementById('card-sub').style.display = 'none';
+  document.getElementById('card-unsub').style.display = 'block';
+  api('unsubscribe', { email: q.get('u'), sig: q.get('s') })
+    .then(() => { document.getElementById('unsub-text').textContent = q.get('u'); show('unsub-msg', 'ok', '配信を停止しました。今後お知らせメールは届きません。'); })
+    .catch(e => { document.getElementById('unsub-text').textContent = ''; show('unsub-msg', 'ng', e.message + '。お手数ですが、メールに返信して「配信停止」とお伝えください。'); });
+} else {
+  if (en) { const c = document.getElementById('en-chip'); c.textContent = '園コード: ' + en; c.style.display = 'inline-block'; }
+  const input = document.getElementById('email'), btn = document.getElementById('btn');
+  const valid = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+  input.addEventListener('input', () => { btn.disabled = !valid(input.value); });
+  btn.addEventListener('click', async () => {
+    if (!valid(input.value)) return;
+    btn.disabled = true; btn.textContent = '登録中…';
+    try {
+      const p = { email: input.value.trim(), source: 'form' };
+      if (en) p.en = en;
+      await api('subscribe', p);
+      show('msg', 'ok', '登録しました。次回の写真公開のときにメールでお知らせします。');
+      btn.textContent = '登録済み';
+    } catch(e) {
+      show('msg', 'ng', e.message);
+      btn.disabled = false; btn.textContent = '登録する';
+    }
+  });
+}
+</script>
+</body>
+</html>
