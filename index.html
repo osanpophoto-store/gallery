@@ -2811,6 +2811,7 @@ function openPaymentModal753() {
       <div class="consent-item"><input type="checkbox" id="c1" onchange="updatePayBtn()"><label for="c1">SNSや外部サイトへの転載・第三者への配布はしません</label></div>
       <div class="consent-item"><input type="checkbox" id="c2" onchange="updatePayBtn()"><label for="c2">ダウンロードリンクの有効期限（7日間）を確認しました</label></div>
       <div class="consent-item"><input type="checkbox" id="c3" onchange="updatePayBtn()"><label for="c3">購入後のデータ保存は自己責任で行います</label></div>
+      <div class="consent-item" style="opacity:.9"><input type="checkbox" id="c-optin"><label for="c-optin">次回の写真公開・締切のお知らせをメールで受け取る（任意・月1〜2通、いつでも停止できます）</label></div>
     </div>`;
   document.getElementById('price-breakdown').innerHTML = html;
   const btn = document.getElementById('btn-stripe');
@@ -2835,6 +2836,7 @@ async function doCreatePayment753() {
     showToast('すべての項目に同意してください', 'error');
     return;
   }
+  submitOptinIfChecked(email);
   const btn = document.getElementById('btn-stripe');
   const label = btn.textContent;
   btn.textContent = '準備中...';
@@ -2993,6 +2995,10 @@ function openPaymentModal(isAll) {
         <input type="checkbox" id="c3" onchange="updatePayBtn()">
         <label for="c3">購入後のデータ保存は自己責任で行います</label>
       </div>
+      <div class="consent-item" style="opacity:.9">
+        <input type="checkbox" id="c-optin">
+        <label for="c-optin">次回の写真公開・締切のお知らせをメールで受け取る（任意・月1〜2通、いつでも停止できます）</label>
+      </div>
     </div>
   `;
   document.getElementById('price-breakdown').innerHTML = html;
@@ -3019,6 +3025,15 @@ function updatePayBtn() {
   if (!btn) return;
   btn.style.opacity = valid ? '1' : '0.5';
   btn.style.pointerEvents = valid ? 'auto' : 'none';
+}
+// お知らせ配信の任意チェック（v2.11）: チェックされていれば決済とは別に登録だけ送る（失敗しても決済は止めない）
+function submitOptinIfChecked(email) {
+  try {
+    if (!document.getElementById('c-optin')?.checked) return;
+    const p = { email: email, source: 'purchase', eventId: state.selectedEventId || '' };
+    if (state.en) p.en = state.en;
+    api('subscribe', p).catch(() => {});
+  } catch(e) {}
 }
 // キャリアメール（docomo/au/softbank）宛の場合、リンク配信になる旨を案内表示する
 const CARRIER_EMAIL_DOMAINS = ['docomo.ne.jp', 'ezweb.ne.jp', 'au.com', 'softbank.ne.jp', 'i.softbank.jp'];
@@ -3048,6 +3063,7 @@ async function doCreatePayment(isAll, planType) {
     showToast('すべての項目に同意してください', 'error');
     return;
   }
+  submitOptinIfChecked(email);
   const btnStripe = document.getElementById('btn-stripe');
   btnStripe.textContent = '決済ページを準備中...';
   btnStripe.style.opacity = '0.7';
@@ -3174,6 +3190,10 @@ function openPrintModal(planType) {
       <div class="consent-item">
         <input type="checkbox" id="c3" onchange="updatePayBtn()">
         <label for="c3">購入後のキャンセル・返品はできないことを確認しました</label>
+      </div>
+      <div class="consent-item" style="opacity:.9">
+        <input type="checkbox" id="c-optin">
+        <label for="c-optin">次回の写真公開・締切のお知らせをメールで受け取る（任意・月1〜2通、いつでも停止できます）</label>
       </div>
     </div>
   `;
