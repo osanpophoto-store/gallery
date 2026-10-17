@@ -145,7 +145,11 @@ figure.wide { grid-column: 1 / -1; }
 /* レイアウトブロック（章ごとに組み方を変える） */
 .blocks { margin-top: 20px; display: grid; gap: 16px; }
 .blk { display: grid; gap: 10px; }
-.blk-pair { grid-template-columns: 1fr 1fr; align-items: start; }
+.blk-pair { grid-template-columns: 1fr 1fr; align-items: stretch; }
+/* fill: 隣の写真の高さに合わせて埋める（余白を作らない） */
+figure.fill { position: relative; min-height: 100%; }
+figure.fill .photo-link { position: absolute; inset: 0; }
+figure.fill .photo-link img { height: 100%; aspect-ratio: auto; }
 .blk-pair.s75 { grid-template-columns: 7fr 5fr; }
 .blk-pair.s57 { grid-template-columns: 5fr 7fr; }
 .blk-mosaic { grid-template-columns: 2fr 1fr; align-items: stretch; }
@@ -168,6 +172,7 @@ figure.ar-45 .photo-link img { aspect-ratio: 4 / 5; }
 @media (max-width: 560px) {
   .blk-pair, .blk-pair.s75, .blk-pair.s57 { grid-template-columns: 1fr 1fr; }
   .blk-pair figure .photo-link img { aspect-ratio: 1 / 1; }
+  .blk-pair figure.fill .photo-link img { aspect-ratio: auto; }
   .blk-offset { grid-template-columns: 1fr; }
   .blk-offset figure:last-child { margin-top: 0; width: 72%; justify-self: end; }
   .blk-mosaic, .blk-mosaic.left { grid-template-columns: 1fr; }
@@ -215,10 +220,9 @@ const BLOG = {
       ],
       blocks: [
         { t: 'wide', p: { ev: 'u', no: '170', id: '1OLxcAEAdZbPpO_7zBWwoTuDVJlgC7BKd' } },
-        { t: 'cap', text: '見つめる先にあるのは、青さんの障害物リレー、そしてかけっこ。' },
-        { t: 'offset',
+        { t: 'pair', split: '75',
           a: { ev: 'u', no: '025', id: '1lM6OzyqWvZh4mpOejlbHD4yavH243WF_', ar: '32' },
-          b: { ev: 'u', no: '016', id: '11sOHW2Xac4Cei52XEhCxDrt88pVXdnJj', ar: '45', pos: '55% 35%' } },
+          b: { ev: 'u', no: '016', id: '11sOHW2Xac4Cei52XEhCxDrt88pVXdnJj', fill: true, pos: '55% 35%' } },
         { t: 'mosaic',
           big: { ev: 'u', no: '144', id: '1xzwTaXTd_PIQlrif9mj7ctG6qSDsEnlq', ar: '43' },
           small: [
@@ -227,7 +231,7 @@ const BLOG = {
           ] },
         { t: 'pair', split: '57',
           a: { ev: 'u', no: '150', id: '1YwIqgoUjvdcu8JUs5fwCUdPuDqwODDD_', ar: '11', pos: '45% 45%' },
-          b: { ev: 'u', no: '051', id: '1ByVCejn5CXL0Ben1Ll-1TE4XLLBJ8C41', ar: '32', pos: '38% 50%' } }
+          b: { ev: 'u', no: '051', id: '1ByVCejn5CXL0Ben1Ll-1TE4XLLBJ8C41', fill: true, pos: '38% 50%' } }
       ]
     },
     {
@@ -240,7 +244,7 @@ const BLOG = {
         { t: 'wide', p: { ev: 'u', no: '079', id: '1KFu929jwkxWpJ8MLvPNBR5yK4qy9Ig5y' } },
         { t: 'pair', split: '75',
           a: { ev: 'u', no: '134', id: '12YHrItDa8anWuLVOLFJzbwQMMEaaEi8w', ar: '32' },
-          b: { ev: 'u', no: '201', id: '17irtykcb7zyA6LOHBhLvnrqJnErmsU2r', ar: '45', pos: '50% 40%' } },
+          b: { ev: 'u', no: '201', id: '17irtykcb7zyA6LOHBhLvnrqJnErmsU2r', fill: true, pos: '50% 40%' } },
         { t: 'mosaic', side: 'left',
           big: { ev: 'u', no: '213', id: '1IRY_RBxwCqPTAm0jnjweC0CNXHhBlntj', ar: '43' },
           small: [
@@ -257,9 +261,9 @@ const BLOG = {
       ],
       blocks: [
         { t: 'bleed', p: { ev: 'u', no: '298', id: '1P_qY9mrjtGKGaFqvf10HEeYsePAnX4p6' } },
-        { t: 'offset',
-          a: { ev: 'u', no: '269', id: '18H1xUkufoHGoauHyvmUHHJqXyb4t18EW', ar: '32' },
-          b: { ev: 'u', no: '231', id: '1wjWzgCvWtjM2sxrGeaAFju2l-WcDHAEw', ar: '45', pos: '50% 45%' } },
+        { t: 'pair', split: '57',
+          a: { ev: 'u', no: '231', id: '1wjWzgCvWtjM2sxrGeaAFju2l-WcDHAEw', fill: true, pos: '50% 45%' },
+          b: { ev: 'u', no: '269', id: '18H1xUkufoHGoauHyvmUHHJqXyb4t18EW', ar: '32' } },
         { t: 'mosaic', side: 'left',
           big: { ev: 'u', no: '246', id: '1zoXUrw-nbGaxk0caq3etdJ4CwSNYNSXl', ar: '43' },
           small: [
@@ -307,7 +311,7 @@ function photoHtml(p, w) {
 }
 // 写真ブロック: wide / bleed / pair(split 75|57) / mosaic(side) / offset / strip / cap
 function fig(p, w, extra) {
-  return '<figure class="' + (extra || '') + (p.ar ? ' ar-' + p.ar : '') + '">' + photoHtml(p, w) + '</figure>';
+  return '<figure class="' + (extra || '') + (p.ar ? ' ar-' + p.ar : '') + (p.fill ? ' fill' : '') + '">' + photoHtml(p, w) + '</figure>';
 }
 function renderBlocks(blocks) {
   let h = '<div class="blocks">';
