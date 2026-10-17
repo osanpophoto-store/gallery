@@ -141,6 +141,40 @@ figure.wide { grid-column: 1 / -1; }
 @media (max-width: 480px) {
   .photos.cols-3 { grid-template-columns: 1fr 1fr; }
 }
+
+/* レイアウトブロック（章ごとに組み方を変える） */
+.blocks { margin-top: 20px; display: grid; gap: 16px; }
+.blk { display: grid; gap: 10px; }
+.blk-pair { grid-template-columns: 1fr 1fr; align-items: start; }
+.blk-pair.s75 { grid-template-columns: 7fr 5fr; }
+.blk-pair.s57 { grid-template-columns: 5fr 7fr; }
+.blk-mosaic { grid-template-columns: 2fr 1fr; align-items: stretch; }
+.blk-mosaic.left { grid-template-columns: 1fr 2fr; }
+.blk-mosaic.left .big { order: 2; }
+.blk-mosaic .small { display: grid; gap: 10px; grid-template-rows: 1fr 1fr; }
+.blk-mosaic .small .photo-link, .blk-mosaic .small figure { height: 100%; }
+.blk-mosaic .small .photo-link img { height: 100%; aspect-ratio: auto; }
+.blk-offset { grid-template-columns: 58fr 42fr; align-items: start; }
+.blk-offset figure:last-child { margin-top: 22%; }
+.blk-strip { grid-template-columns: repeat(3, 1fr); }
+.blk-bleed { width: min(100vw - 24px, 820px); margin-left: calc(50% - min(100vw - 24px, 820px) / 2); }
+.cap { font-size: 12.5px; color: var(--bark); letter-spacing: 0.04em; line-height: 1.7; margin-top: -4px; }
+.cap::before { content: '— '; color: var(--accent); }
+figure.ar-32 .photo-link img { aspect-ratio: 3 / 2; }
+figure.ar-43 .photo-link img { aspect-ratio: 4 / 3; }
+figure.ar-11 .photo-link img { aspect-ratio: 1 / 1; }
+figure.ar-34 .photo-link img { aspect-ratio: 3 / 4; }
+figure.ar-45 .photo-link img { aspect-ratio: 4 / 5; }
+@media (max-width: 560px) {
+  .blk-pair, .blk-pair.s75, .blk-pair.s57 { grid-template-columns: 1fr 1fr; }
+  .blk-pair figure .photo-link img { aspect-ratio: 1 / 1; }
+  .blk-offset { grid-template-columns: 1fr; }
+  .blk-offset figure:last-child { margin-top: 0; width: 72%; justify-self: end; }
+  .blk-mosaic, .blk-mosaic.left { grid-template-columns: 1fr; }
+  .blk-mosaic.left .big { order: 0; }
+  .blk-mosaic .small { grid-template-rows: none; grid-template-columns: 1fr 1fr; }
+  .blk-mosaic .small .photo-link img { height: auto; aspect-ratio: 1 / 1; }
+}
 </style>
 </head>
 <body>
@@ -179,9 +213,21 @@ const BLOG = {
         '青さんの障害物リレーや、きいろさん、あかさんのダンスを見つめている子どもたちの眼差しこそが、運動会の熱量を生んでいます。',
         '他学年への憧れや、小さい子への可愛さを、お互いに見ることで、いつの間にか園全体が運動会ムードになっていく。子どもたちの眼差しが運動会を形作っています。'
       ],
-      cols: 1,
-      photos: [
-        { ev: 'u', no: '170', id: '1OLxcAEAdZbPpO_7zBWwoTuDVJlgC7BKd', wide: true }
+      blocks: [
+        { t: 'wide', p: { ev: 'u', no: '170', id: '1OLxcAEAdZbPpO_7zBWwoTuDVJlgC7BKd' } },
+        { t: 'cap', text: '見つめる先にあるのは、青さんの障害物リレー、そしてかけっこ。' },
+        { t: 'offset',
+          a: { ev: 'u', no: '025', id: '1lM6OzyqWvZh4mpOejlbHD4yavH243WF_', ar: '32' },
+          b: { ev: 'u', no: '016', id: '11sOHW2Xac4Cei52XEhCxDrt88pVXdnJj', ar: '45', pos: '55% 35%' } },
+        { t: 'mosaic',
+          big: { ev: 'u', no: '144', id: '1xzwTaXTd_PIQlrif9mj7ctG6qSDsEnlq', ar: '43' },
+          small: [
+            { ev: 'u', no: '157', id: '1QkcBuskkZwaMfiBCwzvewl4G_dfOqNJn', pos: '30% 50%' },
+            { ev: 'u', no: '164', id: '1WjaOwf3NRcBQ-AaMnfS_n1n4Jogff4EJ', pos: '62% 40%' }
+          ] },
+        { t: 'pair', split: '57',
+          a: { ev: 'u', no: '150', id: '1YwIqgoUjvdcu8JUs5fwCUdPuDqwODDD_', ar: '11', pos: '45% 45%' },
+          b: { ev: 'u', no: '051', id: '1ByVCejn5CXL0Ben1Ll-1TE4XLLBJ8C41', ar: '32', pos: '38% 50%' } }
       ]
     },
     {
@@ -190,14 +236,17 @@ const BLOG = {
         '当日のダンスの完成度、リレーの勝敗、親子競技の面白さ。それとは別のところで、当日までに子どもたちの熱量をどう生んでいくのか。ここに先生たちの個性が光っています。',
         '一人ずつにも、クラスにも、学年にも、先生たちは運動会に向けて働きかけています。練習して「上手になったね」だけではなく、むしろ練習を通して「楽しい」「うまくいかない」「勝った、負けた」など、さまざまな気持ちを汲み、励まし、勇気づけながら、一年に一度の運動会の雰囲気を味わってもらいたい。合図を出す手や、一緒に踊る背中に、そういう先生たちの思いが見えました。'
       ],
-      cols: 3,
-      photos: [
-        { ev: 'u', no: '079', id: '1KFu929jwkxWpJ8MLvPNBR5yK4qy9Ig5y', wide: true },
-        { ev: 'u', no: '201', id: '17irtykcb7zyA6LOHBhLvnrqJnErmsU2r' },
-        { ev: 'u', no: '213', id: '1IRY_RBxwCqPTAm0jnjweC0CNXHhBlntj' },
-        { ev: 'u', no: '134', id: '12YHrItDa8anWuLVOLFJzbwQMMEaaEi8w' },
-        { ev: 'u', no: '215', id: '10P0CV7mc87DUhnttGl1g_HMUHRa4cpLu' },
-        { ev: 'u', no: '198', id: '1MsDWwxCFgRvFl2gHGulWV8JqNDKg_gTe' }
+      blocks: [
+        { t: 'wide', p: { ev: 'u', no: '079', id: '1KFu929jwkxWpJ8MLvPNBR5yK4qy9Ig5y' } },
+        { t: 'pair', split: '75',
+          a: { ev: 'u', no: '134', id: '12YHrItDa8anWuLVOLFJzbwQMMEaaEi8w', ar: '32' },
+          b: { ev: 'u', no: '201', id: '17irtykcb7zyA6LOHBhLvnrqJnErmsU2r', ar: '45', pos: '50% 40%' } },
+        { t: 'mosaic', side: 'left',
+          big: { ev: 'u', no: '213', id: '1IRY_RBxwCqPTAm0jnjweC0CNXHhBlntj', ar: '43' },
+          small: [
+            { ev: 'u', no: '215', id: '10P0CV7mc87DUhnttGl1g_HMUHRa4cpLu', pos: '50% 40%' },
+            { ev: 'u', no: '198', id: '1MsDWwxCFgRvFl2gHGulWV8JqNDKg_gTe', pos: '50% 40%' }
+          ] }
       ]
     },
     {
@@ -206,11 +255,11 @@ const BLOG = {
         '運動会当日に向けて、あと1週間を切りました。',
         '運動会前にこの雰囲気を皆様にも一緒に感じていただき、子どもたち、先生たち、そして保護者の皆様で、素敵な運動会を迎えられたらと思います。'
       ],
-      cols: 2,
-      photos: [
-        { ev: 'u', no: '298', id: '1P_qY9mrjtGKGaFqvf10HEeYsePAnX4p6', wide: true },
-        { ev: 'u', no: '269', id: '18H1xUkufoHGoauHyvmUHHJqXyb4t18EW' },
-        { ev: 'u', no: '302', id: '1VVdpU90IvRn-WJccbThRuaHqLKZ5IvCO' }
+      blocks: [
+        { t: 'bleed', p: { ev: 'u', no: '298', id: '1P_qY9mrjtGKGaFqvf10HEeYsePAnX4p6' } },
+        { t: 'offset',
+          a: { ev: 'u', no: '269', id: '18H1xUkufoHGoauHyvmUHHJqXyb4t18EW', ar: '32' },
+          b: { ev: 'u', no: '302', id: '1VVdpU90IvRn-WJccbThRuaHqLKZ5IvCO', ar: '45', pos: '45% 45%' } }
       ]
     }
   ],
@@ -240,13 +289,33 @@ function photoHtml(p, w) {
   if (!p.id) return '<div class="photo-link"><div class="placeholder">写真（準備中）</div></div>';
   const ev = EVENTS[p.ev] || {};
   const label = (ev.label ? ev.label + ' ' : '') + 'No.' + Number(p.no);
-  const inner = '<img src="' + imgUrl(p.id, w) + '" alt="運動会練習の写真（' + esc(label) + '）" loading="lazy" referrerpolicy="no-referrer">'
+  const style = p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '';
+  const inner = '<img src="' + imgUrl(p.id, w) + '" alt="運動会練習の写真（' + esc(label) + '）" loading="lazy" referrerpolicy="no-referrer"' + style + '>'
     + '<span class="photo-no">' + esc(label) + '</span>';
   // ログイン中のクラスの写真なら、タップでギャラリーのその写真を開く
   if (ev.id && ev.id === CURRENT) {
     return '<a class="photo-link" href="./#photo-' + esc(p.no) + '" aria-label="この写真をギャラリーで見る">' + inner + '</a>';
   }
   return '<div class="photo-link">' + inner + '</div>';
+}
+// 写真ブロック: wide / bleed / pair(split 75|57) / mosaic(side) / offset / strip / cap
+function fig(p, w, extra) {
+  return '<figure class="' + (extra || '') + (p.ar ? ' ar-' + p.ar : '') + '">' + photoHtml(p, w) + '</figure>';
+}
+function renderBlocks(blocks) {
+  let h = '<div class="blocks">';
+  blocks.forEach(b => {
+    switch (b.t) {
+      case 'wide':   h += '<div class="blk blk-wide">' + fig(Object.assign({ ar: '32' }, b.p), 1400) + '</div>'; break;
+      case 'bleed':  h += '<div class="blk blk-bleed">' + fig(Object.assign({ ar: '32' }, b.p), 1600) + '</div>'; break;
+      case 'pair':   h += '<div class="blk blk-pair' + (b.split ? ' s' + b.split : '') + '">' + fig(b.a, 900) + fig(b.b, 900) + '</div>'; break;
+      case 'offset': h += '<div class="blk blk-offset">' + fig(b.a, 1000) + fig(b.b, 800) + '</div>'; break;
+      case 'mosaic': h += '<div class="blk blk-mosaic' + (b.side === 'left' ? ' left' : '') + '">' + fig(b.big, 1100, 'big') + '<div class="small">' + b.small.map(p => fig(Object.assign({ ar: '11' }, p), 700)).join('') + '</div></div>'; break;
+      case 'strip':  h += '<div class="blk blk-strip">' + b.items.map(p => fig(Object.assign({ ar: '11' }, p), 700)).join('') + '</div>'; break;
+      case 'cap':    h += '<div class="cap">' + esc(b.text) + '</div>'; break;
+    }
+  });
+  return h + '</div>';
 }
 function paras(t, cls) {
   return (Array.isArray(t) ? t : [t]).filter(Boolean).map(x => '<p' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(x) + '</p>').join('');
@@ -263,6 +332,7 @@ function render() {
     h += '<section class="chapter">';
     h += '<h2><span class="no">' + String(i + 1).padStart(2, '0') + '</span>' + esc(c.heading) + '</h2>';
     h += paras(c.text);
+    if (c.blocks && c.blocks.length) h += renderBlocks(c.blocks);
     if (c.photos && c.photos.length) {
       h += '<div class="photos cols-' + (c.cols || 1) + '">';
       c.photos.forEach(p => {
