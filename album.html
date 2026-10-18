@@ -583,6 +583,8 @@ footer {
 .howto-faq div { background: var(--forest-light); border-radius: 12px; padding: 16px 18px; font-size: 13px; line-height: 1.8; }
 .howto-faq strong { display: block; font-size: 13px; color: var(--forest); margin-bottom: 4px; }
 .howto-faq a { color: var(--forest); font-weight: 700; }
+.howto-shot { display: block; width: 100%; max-width: 360px; border-radius: 10px; margin: 10px 0 4px; border: 1px solid var(--border); }
+.howto-sub { font-size: 12px; color: var(--muted); line-height: 1.7; margin-top: 8px; }
 @media (max-width: 640px) {
   .howto { padding: 44px 20px; }
   .howto-case { padding: 20px 18px 16px; }
@@ -624,12 +626,26 @@ footer {
     </div>
     <div class="howto-devices">
       <div class="howto-device">
-        <div class="howto-device-name">🍎 iPhone（メール／Gmailアプリ）</div>
+        <div class="howto-device-name">🍎 iPhone（Gmailアプリ）</div>
         <ol class="howto-steps">
-          <li>メールの中の写真を<b>タップ</b>して大きく表示</li>
-          <li>左下の<b>共有ボタン（□↑）</b>をタップ（Gmailアプリは右上の <b>↓</b> か <b>…</b>）</li>
-          <li><b>画像を保存</b>を選ぶ → 「写真」アプリに入ります</li>
+          <li>メールの下にある写真を<b>タップ</b>して大きく表示</li>
+          <li>画面下の <b>写真</b> をタップ</li>
+          <li>そのまま「写真」アプリに保存されます（<b>ダウンロード</b> は「ファイル」アプリ行きなので注意）</li>
         </ol>
+        <svg class="howto-shot" viewBox="0 0 720 137" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gmailアプリで写真を開いたときの下のボタン（ダウンロード・写真・ドライブ・共有）">
+          <rect width="720" height="137" rx="12" fill="#000"/>
+          <g fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M90 36v34M76 58l14 14 14-14M72 84h36"/>
+            <path d="M270 32v38M251 51h38M258 40l24 22M282 40l-24 22"/>
+            <path d="M450 36l-20 34h40zM432 70l-8 14h52l-8-14"/>
+            <path d="M630 72V36M618 48l12-12 12 12M612 66v18h36V66"/>
+          </g>
+          <g fill="#fff" font-family="-apple-system, 'Hiragino Sans', sans-serif" font-size="19" text-anchor="middle">
+            <text x="90" y="118">ダウンロード</text><text x="270" y="118" font-weight="700">写真</text><text x="450" y="118">ドライブ</text><text x="630" y="118">共有</text>
+          </g>
+          <rect x="222" y="18" width="96" height="112" rx="10" fill="none" stroke="#7AAD8A" stroke-width="3"/>
+        </svg>
+        <p class="howto-sub">iPhone標準の「メール」アプリの場合：写真を<b>長押し</b> → <b>画像を保存</b></p>
       </div>
       <div class="howto-device">
         <div class="howto-device-name">🤖 Android（Gmailアプリなど）</div>
