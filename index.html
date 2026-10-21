@@ -1529,7 +1529,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
       <div class="login-news-head"><span>NEWS</span><h3>おしらせ</h3></div>
       <a class="more-card" id="promo-753-login" href="shichigosan.html" style="display:none">
         <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
-        <span class="more-card-text"><span class="more-card-label">🍁 七五三 出張撮影 2026</span><span class="more-card-title">ご希望の神社へ出張撮影 ¥12,000</span><span class="more-card-sub">大きいデータ5枚込み ・ 10/25〜11/23 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
+        <span class="more-card-text"><span class="more-card-label">🍁 七五三 出張撮影 2026</span><span class="more-card-title">ご希望の神社へ出張撮影 ¥12,000</span><span class="more-card-sub">大きいデータ5枚込み ・ 11/3〜11/23 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
         <span class="more-card-cta">詳しく →</span>
       </a>
       <a class="more-card" href="album.html">
@@ -1564,11 +1564,11 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     <div id="howto-detail" style="display:none">
       📌 写真をタップするとカートに入ります（もう一度タップで外せます）。🔍 を押すと大きく見られて、スワイプで前後の写真も確認できます。<span class="fav-only">ハートでお気に入りにも保存できます。</span><br>
       💾 選んだ写真<span class="fav-only">とお気に入り</span>は、このスマホ（同じブラウザ）に保存されます。一度閉じても続きから選べます。<br>
-      👨‍👩‍👧‍👦 きょうだいでクラスが違う場合は、カートの「＋ 別のクラスの写真も入れる」から別のクラスにログインして選ぶと、まとめて1回のお支払いにできます。
+      🎁 別のイベントやきょうだいのクラスの写真もまとめて買えます。カートの「＋ 別のイベント・クラスの写真も入れる」から選ぶと、枚数が合算されて1回のお支払いになり、お得です。
     </div>
   </div>
   <!-- 七五三の案内（1行の帯。カードは一番下の「もっと楽しむ」にもある） -->
-  <a class="promo-ribbon" id="promo-753-ribbon" href="shichigosan.html" style="display:none"><span class="promo-ribbon-text">🍁 <strong>七五三 出張撮影 受付中</strong> 10/25〜11/23<span class="promo-ribbon-more"> ・ ご希望の神社へ ¥12,000</span></span><span class="promo-ribbon-cta">詳しく →</span></a>
+  <a class="promo-ribbon" id="promo-753-ribbon" href="shichigosan.html" style="display:none"><span class="promo-ribbon-text">🍁 <strong>七五三 出張撮影 受付中</strong> 11/3〜11/23<span class="promo-ribbon-more"> ・ ご希望の神社へ ¥12,000</span></span><span class="promo-ribbon-cta">詳しく →</span></a>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
   <div class="deadline-banner" id="deadline-banner" style="display:none"></div>
   <!-- LINEなどアプリ内ブラウザのときだけ出す注意 -->
@@ -1602,7 +1602,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
     <div class="gallery-more-head"><span>MORE</span><h3>もっと楽しむ</h3></div>
     <a class="more-card" id="promo-753-gallery" href="shichigosan.html" style="display:none">
       <img src="https://drive.google.com/thumbnail?id=15Bpjs4GpTiH19Z3cnDq6CHJ2E0kRMEdE&sz=w240" alt="" referrerpolicy="no-referrer" loading="lazy">
-      <span class="more-card-text"><span class="more-card-label">🍁 七五三 出張撮影 2026</span><span class="more-card-title">ご希望の神社へ出張撮影 ¥12,000</span><span class="more-card-sub">大きいデータ5枚込み ・ 10/25〜11/23 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
+      <span class="more-card-text"><span class="more-card-label">🍁 七五三 出張撮影 2026</span><span class="more-card-title">ご希望の神社へ出張撮影 ¥12,000</span><span class="more-card-sub">大きいデータ5枚込み ・ 11/3〜11/23 ・ 名古屋・瀬戸・春日井など出張費無料</span></span>
       <span class="more-card-cta">詳しく →</span>
     </a>
     <a class="more-card" href="album.html">
@@ -1936,6 +1936,22 @@ function getOtherCarts() {
 }
 function otherCartsCount() { return getOtherCarts().reduce((s, c) => s + c.count, 0); }
 function otherCartsTotal() { return getOtherCarts().reduce((s, c) => s + c.total, 0); }
+// まとめ買い料金（v2.12a）: 写真データの通常購入を複数イベント・クラス合わせて買うときは、
+// 合計枚数で料金表を当てはめる（19枚まで）。20枚以上・丸ごとを含む場合はクラスごとの料金の合計。
+// GAS側 calcMultiTotal() と同じ式。parts: [{ qty, isAll, total }]
+function calcMultiTotal(parts) {
+  const sep = parts.reduce((s, p) => s + (p.total || 0), 0);
+  const normal = parts.filter(p => !p.isAll && p.qty > 0);
+  if (normal.length < 2) return sep;
+  const nQty = normal.reduce((s, p) => s + p.qty, 0);
+  if (nQty > 19) return sep;
+  const allSum = parts.filter(p => p.isAll).reduce((s, p) => s + (p.total || 0), 0);
+  return Math.min(sep, allSum + calcPrice(nQty).total);
+}
+function multiParts(ownCount, ownIsAll, ownTotal, others) {
+  const parts = (ownIsAll || ownCount > 0) ? [{ qty: ownCount, isAll: !!ownIsAll, total: ownTotal }] : [];
+  return parts.concat(others.map(c => ({ qty: c.count, isAll: false, total: c.total })));
+}
 // 別のクラスのカートを空にする（カートの中身モーダルの「外す」）
 function clearOtherCart(eventId) {
   clearCartStorage(eventId);
@@ -1949,7 +1965,7 @@ function switchClassKeepCart() {
   closeCartOptionsModal();
   closeModal();
   logout();
-  showToast('選んだ写真は保存されています。別のクラスを選んでパスワードを入力してください');
+  showToast('選んだ写真は保存されています。ほかのイベント・クラスを選んでパスワードを入力してください');
 }
 // まとめ決済の前に、各クラスのログイン（トークン）が有効か確かめ、切れていれば保存したパスワードでログインし直す
 async function ensureEventToken(eventId) {
@@ -2468,10 +2484,10 @@ function renderOtherCarts() {
     </div>`;
   });
   if (others.length) {
-    html = `<div class="other-cart-title">👨‍👩‍👧‍👦 他のクラスのカート（まとめて1回でお支払いできます）</div>` + html;
+    html = `<div class="other-cart-title">🎁 ほかのイベント・クラスのカート（枚数を合算して1回でお支払いできます）</div>` + html;
   }
-  html += `<button type="button" class="btn-add-class" onclick="switchClassKeepCart()">＋ 別のクラスの写真も入れる</button>
-    <p style="font-size:11px;color:var(--bark);margin:6px 0 0;line-height:1.6">きょうだいでクラスが違う場合は、別のクラスにログインして写真を選ぶと、ここにまとまって1回のお支払いにできます（スマホサイズのみ）。</p>`;
+  html += `<button type="button" class="btn-add-class" onclick="switchClassKeepCart()">＋ 別のイベント・クラスの写真も入れる</button>
+    <p style="font-size:11px;color:var(--bark);margin:6px 0 0;line-height:1.6">ほかのイベントやきょうだいのクラスの写真も、ここにまとめると枚数が合算されて1回のお支払いになります（例: 3枚＋3枚＝6枚で ¥640。写真データのみ）。</p>`;
   box.innerHTML = html;
 }
 // 他のクラスのカートの「このクラスを開く」: 保存したパスワードでそのクラスにログインし直す
@@ -2508,7 +2524,9 @@ function updateCartViewPriceText() {
   if (others.length) {
     const evName = (state.session && state.session.event && state.session.event.name) || 'このクラス';
     const lines = [`${evName} ${count}枚 ¥${price.total.toLocaleString()}`].concat(others.map(c => `${c.name} ${c.count}枚 ¥${c.total.toLocaleString()}`));
-    el.textContent = lines.join(' ／ ') + ` ＝ 合計 ¥${(price.total + others.reduce((s, c) => s + c.total, 0)).toLocaleString()}〜（スマホサイズでまとめてお支払いの場合）`;
+    const parts = multiParts(count, false, price.total, others);
+    const sep = parts.reduce((s, p) => s + p.total, 0), grand = calcMultiTotal(parts);
+    el.textContent = lines.join(' ／ ') + ` ＝ 合計 ¥${grand.toLocaleString()}〜` + (grand < sep ? `（まとめ買いで ¥${(sep - grand).toLocaleString()} おトク）` : '（まとめて1回でお支払いの場合）');
     return;
   }
   el.textContent = `合計 ¥${price.total.toLocaleString()}〜（スマホサイズの場合。A4・A3は受け取り方法で選べます）`;
@@ -2672,7 +2690,7 @@ function updateCart() {
   // 他のクラスのカート（まとめ決済）。このクラスが0枚でも、他クラス分があればミニバーは出す
   const others = state.mode753 ? [] : getOtherCarts();
   const otherCount = others.reduce((s, c) => s + c.count, 0);
-  const otherTotal = others.reduce((s, c) => s + c.total, 0);
+  const otherTotal = calcMultiTotal(multiParts(0, false, 0, others));
   if (count === 0 && otherCount > 0) {
     panel.classList.add('visible');
     selInfo.textContent = '';
@@ -2710,7 +2728,7 @@ function updateCart() {
   document.getElementById('cart-count').innerHTML = `${count}<span>枚</span>` + (otherCount > 0 ? `<small style="font-size:11px;font-weight:400;margin-left:4px">＋他クラス${otherCount}枚</small>` : '');
   // ミニバーの金額はスマホサイズ基準の目安（実際の金額は受け取り方法選択後に確定）
   const price = calcPrice(count);
-  document.getElementById('cart-total').innerHTML = `¥${(price.total + otherTotal).toLocaleString()}<small>〜</small>`;
+  document.getElementById('cart-total').innerHTML = `¥${(otherCount > 0 ? calcMultiTotal(multiParts(count, false, price.total, others)) : price.total).toLocaleString()}<small>〜</small>`;
   const btnNext = document.getElementById('btn-cart-next');
   if (btnNext) btnNext.textContent = state.selectMode ? '購入へ進む →' : '受け取り方法を選ぶ →';
   const countText = document.getElementById('cart-options-count-text');
@@ -2883,6 +2901,8 @@ function openPaymentModal(isAll) {
   const others = getOtherCarts();
   const othersTotal = others.reduce((s, c) => s + c.total, 0);
   const othersCount = others.reduce((s, c) => s + c.count, 0);
+  const multiSep = ((isAll || count > 0) ? price.total : 0) + othersTotal;
+  const multiGrand = others.length ? calcMultiTotal(multiParts(count, isAll, price.total, others)) : multiSep;
   const evName = state.session?.event?.name || 'このクラス';
   // 納品方法の判定
   const deliveryLabel = isAll
@@ -2898,7 +2918,7 @@ function openPaymentModal(isAll) {
   document.getElementById('modal-desc').textContent =
     others.length
       ? (hasOwn
-          ? `${evName}${isAll ? '（全写真）' : ' ' + count + '枚'}と、他のクラス ${othersCount}枚を1回のお支払いでご購入いただけます。写真はクラスごとにメールでお届けします。`
+          ? `${evName}${isAll ? '（全写真）' : ' ' + count + '枚'}と、ほかのイベント・クラス ${othersCount}枚を1回のお支払いでご購入いただけます。写真はイベント・クラスごとにメールでお届けします。`
           : `別のクラスで選んだ ${othersCount}枚をご購入いただけます。写真はクラスごとにメールでお届けします。`)
       : isAll
         ? `イベントの全写真（${count}枚）を高画質データでダウンロードできます。`
@@ -2930,18 +2950,22 @@ function openPaymentModal(isAll) {
     // クラスごとの小計を並べて、最後に合算
     priceRows = (count > 0 || isAll) ? `<div class="price-row"><span>${escHtml(evName)}${isAll ? '（全写真）' : ' ' + count + '枚'}</span><span>¥${price.total.toLocaleString()}</span></div>` : '';
     others.forEach(c => { priceRows += `<div class="price-row"><span>${escHtml(c.name)} ${c.count}枚</span><span>¥${c.total.toLocaleString()}</span></div>`; });
-    priceRows += `<div class="price-row total"><span>合計</span><span>¥${((count > 0 || isAll ? price.total : 0) + othersTotal).toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
+    if (multiGrand < multiSep) priceRows += `<div class="price-row" style="color:var(--forest);font-weight:700"><span>🎁 まとめ買い割引（合計${(isAll ? 0 : count) + othersCount}枚の料金）</span><span>−¥${(multiSep - multiGrand).toLocaleString()}</span></div>`;
+    priceRows += `<div class="price-row total"><span>合計</span><span>¥${multiGrand.toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
   } else {
     priceRows += `<div class="price-row total"><span>合計</span><span>¥${price.total.toLocaleString()} <small style="font-size:12px;font-weight:400">(税込)</small></span></div>`;
   }
+  // まだカートに入っていない公開中の別イベント・クラスがあれば、決済前に「先にそちらも選ぶ」を案内（v2.12a）
+  const openOthers = state.mode753 ? [] : (state.events || []).filter(e => e && e.id && e.id !== state.selectedEventId && !/^753/.test(String(e.id)) && !others.some(o => o.eventId === e.id));
+  const nudgeHtml = openOthers.length ? `<div class="multi-nudge" style="background:#FFF7E6;border:1.5px solid #F6C64B;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.7">📣 <strong>${openOthers.map(e => escHtml(e.name)).join('・')}</strong> の写真も買う予定はありますか？<br>先にそちらも選んでからお支払いに進むと、<strong>枚数が合算されて1回のお支払い</strong>になり、お得です（例: 3枚＋3枚＝6枚で ¥640）。<button type="button" class="btn-add-class" style="margin-top:8px" onclick="switchClassKeepCart()">＋ 先にほかのイベントの写真も選ぶ</button><div style="font-size:11px;color:var(--bark);margin-top:4px">選んだ写真は保存されたまま戻れます</div></div>` : '';
   const othersHtml = others.map(c => `<div class="multi-part-row"><span>${escHtml(c.name)} <small>IMG-${c.nums.join(', ')}</small></span><span>${c.count}枚</span></div>`).join('');
-  const html = `
+  const html = nudgeHtml + `
     <!-- 選択写真 -->
     <div class="confirm-section">
       <h4>${others.length ? escHtml(evName) + ' の写真' : '選択した写真'}</h4>
       ${(count > 0 || isAll) ? photoListHtml : '<div class="confirm-delivery">（このクラスの写真はなし）</div>'}
     </div>
-    ${others.length ? `<div class="confirm-section"><h4>他のクラスの写真</h4>${othersHtml}<div style="font-size:11px;color:var(--bark);margin-top:6px">内容を変えるときは「戻る」→ カートの中身から外せます</div></div>` : ''}
+    ${others.length ? `<div class="confirm-section"><h4>ほかのイベント・クラスの写真</h4>${othersHtml}<div style="font-size:11px;color:var(--bark);margin-top:6px">内容を変えるときは「戻る」→ カートの中身から外せます</div></div>` : ''}
     <!-- 金額内訳 -->
     <div class="price-breakdown" style="margin-bottom:12px">
       ${priceRows}
