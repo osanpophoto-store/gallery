@@ -1517,7 +1517,9 @@ body.favorites-off .face-fab { top: 50%; }
 .face-found summary small { font-weight: 400; color: var(--bark); margin-left: 6px; }
 .face-note { font-size: 11px; color: var(--bark); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--sand); }
 .face-note a { color: var(--forest); font-weight: 700; }
-.photo-item.face-hidden { display: none !important; }
+.photo-item.face-mine { box-shadow: 0 0 0 3px var(--forest); }
+.face-divider { grid-column: 1 / -1; order: 1; margin: 18px 0 4px; padding: 12px 14px; background: #FFF7E6; border: 1.5px dashed #F6C64B; border-radius: 12px; font-size: 13.5px; color: var(--deep); line-height: 1.6; }
+.face-divider small { display: block; font-size: 12px; color: var(--bark); }
 /* ライトボックスの顔の枠 */
 .lb-faces { position: absolute; z-index: 15; pointer-events: none; }
 .lb-face { position: absolute; border: 2.5px solid rgba(255,255,255,0.9); border-radius: 50%; background: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,0.35); pointer-events: auto; cursor: pointer; padding: 0; animation: lbFacePulse 1.6s ease-out 1; }
@@ -3560,7 +3562,7 @@ async function faceLoad() {
       const byPhoto = {};
       n.forEach((num, i) => { (byPhoto[num] = byPhoto[num] || []).push(i); });
       if (ev !== state.selectedEventId) throw new Error('イベントが切り替わりました');
-      FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.62, cand: 0.42 }, pa: j.pa || {}, byPhoto };
+      FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.55, cand: 0.45, anchor: 0.5 }, pa: j.pa || {}, qq: (j.qs || 127) * (j.qs || 127), q: j.q || null, h: j.h || null, byPhoto };
       return FACE.data;
     });
   }
@@ -3570,28 +3572,48 @@ function faceSim(i, j) {
   const d = FACE.data, D = d.D, e = d.emb, a = i * D, b = j * D;
   let s = 0;
   for (let k = 0; k < D; k++) s += e[a + k] * e[b + k];
-  return s / 16129;
+  return s / d.qq;
+}
+// 顔の写りの良さ（小さすぎ・ぼやけ・横向きは false）と、帽子の色（クラス）が近いか
+function faceGood(i) { const q = FACE.data.q; return !q || !!q[i]; }
+function faceHatOf(list) {
+  const h = FACE.data.h; if (!h) return null;
+  let c = 0, s = 0, k = 0;
+  for (const i of list) { if (h[i] >= 0) { c += Math.cos(h[i] * Math.PI / 180); s += Math.sin(h[i] * Math.PI / 180); k++; } }
+  if (!k || Math.hypot(c, s) / k < 0.6) return null; // 帽子の色がはっきりしないときは使わない
+  return (Math.atan2(s, c) * 180 / Math.PI + 360) % 360;
+}
+function faceHatOk(i, hat) {
+  const h = FACE.data.h; if (!h || hat === null || h[i] < 0) return true;
+  const dd = Math.abs(h[i] - hat) % 360; return Math.min(dd, 360 - dd) <= 40;
 }
 function faceRecompute() {
   const d = FACE.data; if (!d) return;
   const refs = FACE.refs.slice(), rej = new Set(FACE.rej), auto = new Set();
   const isMine = i => refs.includes(i) || auto.has(i);
-  // 1) まちがいなく同じ子（しきい値 auto 以上）を自動で足す。2回まで広げる
+  // 1) まちがいなく同じ子（しきい値 auto 以上・写りが良い・帽子の色が同じ）を自動で足す。2回まで広げる
+  //    別の子へ「伝言ゲーム」でずれていかないよう、選んだ顔そのものとも anchor 以上似ていることを条件にする
+  const anchor = d.t.anchor || 0.5;
   let seeds = refs.slice();
   for (let round = 0; round < 2 && seeds.length; round++) {
-    const next = [];
+    const next = [], hat0 = faceHatOf(refs.concat([...auto]));
     for (let i = 0; i < d.N; i++) {
-      if (isMine(i) || rej.has(i)) continue;
-      for (const r of seeds) { if (faceSim(i, r) >= d.t.auto) { auto.add(i); next.push(i); break; } }
+      if (isMine(i) || rej.has(i) || !faceHatOk(i, hat0)) continue;
+      const need = faceGood(i) ? d.t.auto : d.t.auto + 0.1;
+      if (!seeds.some(r => faceSim(i, r) >= need)) continue;
+      if (round > 0 && !refs.some(r => faceSim(i, r) >= anchor)) continue;
+      next.push(i);
     }
+    next.forEach(i => auto.add(i));
     seeds = next;
   }
   const all = refs.concat([...auto]);
   const matched = new Set(all.map(i => d.n[i]));
-  // 2) 「この子かも？」: まだ見つかっていない写真の顔を、似ている順に（近い3つの平均）
+  const hat = faceHatOf(all);
+  // 2) 「この子かも？」: まだ見つかっていない写真の、はっきり写った顔だけを、似ている順に（近い3つの平均）
   const k = Math.min(3, all.length), cands = [];
   for (let i = 0; i < d.N; i++) {
-    if (isMine(i) || rej.has(i) || matched.has(d.n[i])) continue;
+    if (isMine(i) || rej.has(i) || matched.has(d.n[i]) || !faceGood(i) || !faceHatOk(i, hat)) continue;
     const ss = all.map(r => faceSim(i, r)).sort((a, b) => b - a);
     const sc = ss.slice(0, k).reduce((a, b) => a + b, 0) / k;
     if (sc >= d.t.cand) cands.push([i, sc]);
@@ -3603,10 +3625,24 @@ function faceRecompute() {
 }
 function faceSave() { try { storeSet(faceStoreKey(), JSON.stringify({ refs: FACE.refs, rej: FACE.rej, ts: Date.now() })); } catch (e) {} }
 function faceMatchedNums() { return state.photos.map(p => p.number).filter(n => FACE.matched.has(n)); }
+// わが子の写真を先頭に並べる（ほかの写真は消さずに、区切りの下にそのまま並べる）
+function faceOrderedNums() { const all = state.photos.map(p => p.number); return FACE.active ? faceMatchedNums().concat(all.filter(n => !FACE.matched.has(n))) : all; }
 function faceApply() {
   FACE.active = FACE.refs.length > 0;
   document.body.classList.toggle('face-filter', FACE.active);
-  state.photos.forEach(p => { document.getElementById('item-' + p.number)?.classList.toggle('face-hidden', FACE.active && !FACE.matched.has(p.number)); });
+  const grid = document.getElementById('photo-grid');
+  let div = document.getElementById('face-divider');
+  if (FACE.active && grid) {
+    if (!div) { div = document.createElement('div'); div.id = 'face-divider'; div.className = 'face-divider'; grid.appendChild(div); }
+    const rest = state.photos.length - FACE.matched.size;
+    div.innerHTML = `<strong>ここから下は、ほかの写真（${rest}枚）</strong><small>横向き・帽子のかげ・遠くに写っている写真は、AIでは見つけられないことがあります。お子さまが写っていないか、ぜひ見てみてください。</small>`;
+  } else if (div) div.remove();
+  state.photos.forEach(p => {
+    const el = document.getElementById('item-' + p.number); if (!el) return;
+    const mine = FACE.active && FACE.matched.has(p.number);
+    el.style.order = FACE.active ? (mine ? '0' : '2') : '';
+    el.classList.toggle('face-mine', mine);
+  });
   renderFacePanel();
 }
 function scrollToFacePanel() { const p = document.getElementById('face-panel'); if (p) requestAnimationFrame(() => p.scrollIntoView({ behavior: 'smooth', block: 'start' })); }
@@ -3635,6 +3671,7 @@ function facePickList() {
   const pick = [];
   for (const i of order) {
     if (sz(i) < 40) break;
+    if (!faceGood(i)) continue;
     if (pick.some(j => faceSim(i, j) >= 0.5)) continue;
     pick.push(i);
     if (pick.length >= 120) break;
@@ -3671,11 +3708,11 @@ function renderFacePanel() {
   p.classList.add('visible');
   let h = '';
   if (FACE.active) {
-    h += `<div class="face-head"><span><strong>👦 この子の写真 ${FACE.matched.size}枚</strong> を表示中</span><button type="button" class="face-btn-reset" onclick="faceClear()">すべての写真に戻す</button></div>`;
+    h += `<div class="face-head"><span><strong>👦 この子の写真 ${FACE.matched.size}枚</strong> を先頭に並べました</span><button type="button" class="face-btn-reset" onclick="faceClear()">もとの並びに戻す</button></div>`;
     if (FACE.cands.length) {
-      h += `<div class="face-sub">この子かも？<small>お子さまならタップで追加（写真が増えます）。ちがう子は ✕</small></div><div class="face-strip">${FACE.cands.map(i => faceCropHtml(i, 'cand')).join('')}</div>`;
+      h += `<div class="face-sub">この子かも？<small>お子さまならタップで追加。ちがう子は ✕（次の候補が出ます）</small></div><div class="face-strip">${FACE.cands.slice(0, 6).map(i => faceCropHtml(i, 'cand')).join('')}</div>`;
     } else {
-      h += `<div class="face-sub"><small>似ている顔はもう見つかりませんでした。ほかの写真を 🔍 で大きく表示して、顔の ○ をタップすると追加できます。</small></div>`;
+      h += `<div class="face-sub"><small>似ている顔はもう見つかりませんでした。下の「ほかの写真」を 🔍 で大きく表示して、顔の ○ をタップすると追加できます。</small></div>`;
     }
     const mine = FACE.refs.concat([...FACE.auto]);
     h += `<details class="face-found"><summary>この子として見つけた顔（${mine.length}）<small>ちがう顔はタップで外せます</small></summary><div class="face-strip wrap">${mine.map(i => faceCropHtml(i, 'found')).join('')}</div></details>`;
@@ -3770,7 +3807,7 @@ window.addEventListener('resize', () => { if (document.getElementById('lightbox'
 // ========================================
 function openLightbox(num, navNums) {
   // navNumsを渡すとその並び（例: お気に入りだけ）の中でスワイプできる。省略時は全写真。
-  const nums = navNums || (FACE.active ? faceMatchedNums() : state.photos.map(p => p.number));
+  const nums = navNums || faceOrderedNums();
   const idx = nums.indexOf(num);
   if (idx === -1) return;
   const photo = state.photos.find(p => p.number === num);
