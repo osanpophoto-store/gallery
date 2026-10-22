@@ -3630,22 +3630,24 @@ function faceRecompute() {
   const all = refs.concat([...auto]);
   const matched = new Set(all.map(i => d.n[i]));
   const hat = faceHatOf(all);
-  // 2) 「この子かも？」: まだ見つかっていない写真の顔を、似ている順に（近い3つの平均）
-  //    その日の服の色も手がかりにする。服がとても似ていれば、小さい顔・横向きの顔も候補に出す（最後は保護者が確認）
-  const k = Math.min(3, all.length), cands = [];
+  // 2) 「この子かも？」: まだ見つかっていない写真の、はっきり写った顔を、似ている順に（近い3つの平均）
+  //    そのあとに「服の色がかなり似ている」顔を最大3人だけ足す（小さい顔・横向きでも。最後は保護者が確認）
+  const k = Math.min(3, all.length), faceC = [], clothC = [];
   const top = arr => arr.sort((a, b) => b - a).slice(0, k).reduce((a, b) => a + b, 0) / k;
   for (let i = 0; i < d.N; i++) {
     if (isMine(i) || rej.has(i) || matched.has(d.n[i]) || !faceHatOk(i, hat)) continue;
     const fs = top(all.map(r => faceSim(i, r)));
-    if (fs < 0.33) continue;
-    const cl = d.cl ? top(all.map(r => faceCloth(i, r))) : 0.6;
-    if (!faceGood(i) && !(cl >= 0.85 && fs >= 0.38)) continue;
-    const sc = fs + 0.3 * (cl - 0.6);
-    if (sc >= d.t.cand) cands.push([i, sc]);
+    if (fs < 0.38) continue;
+    if (faceGood(i) && fs >= d.t.cand) { faceC.push([i, fs]); continue; }
+    if (!d.cl) continue;
+    const cl = top(all.map(r => faceCloth(i, r)));
+    if (cl >= 0.88) clothC.push([i, fs + 0.3 * (cl - 0.6)]);
   }
-  cands.sort((a, b) => b[1] - a[1]);
+  faceC.sort((a, b) => b[1] - a[1]); clothC.sort((a, b) => b[1] - a[1]);
   const seen = new Set(); FACE.cands = [];
-  for (const [i] of cands) { if (seen.has(d.n[i])) continue; seen.add(d.n[i]); FACE.cands.push(i); if (FACE.cands.length >= 30) break; }
+  for (const [i] of faceC) { if (seen.has(d.n[i])) continue; seen.add(d.n[i]); FACE.cands.push(i); if (FACE.cands.length >= 30) break; }
+  let extra = 0;
+  for (const [i] of clothC) { if (extra >= 3) break; if (seen.has(d.n[i])) continue; seen.add(d.n[i]); FACE.cands.push(i); extra++; }
   FACE.auto = auto; FACE.matched = matched;
 }
 function faceSave() { try { storeSet(faceStoreKey(), JSON.stringify({ refs: FACE.refs, rej: FACE.rej, ts: Date.now() })); } catch (e) {} }
