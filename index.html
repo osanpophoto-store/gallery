@@ -3567,11 +3567,14 @@ async function faceLoad() {
       const bin = atob(j.e), N = j.n.length, D = j.dim;
       const emb = new Int8Array(N * D);
       for (let i = 0; i < bin.length; i++) { const c = bin.charCodeAt(i); emb[i] = c > 127 ? c - 256 : c; }
+      // 服の色（顔の下あたりの色の分布）。無いデータでは使わない
+      let cl = null;
+      if (j.c && j.cd) { const cb = atob(j.c); cl = new Uint8Array(cb.length); for (let i = 0; i < cb.length; i++) cl[i] = cb.charCodeAt(i); }
       const n = j.n.map(v => String(v).padStart(3, '0'));
       const byPhoto = {};
       n.forEach((num, i) => { (byPhoto[num] = byPhoto[num] || []).push(i); });
       if (ev !== state.selectedEventId) throw new Error('イベントが切り替わりました');
-      FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.55, cand: 0.45, anchor: 0.5 }, pa: j.pa || {}, pk: j.pk || null, qq: (j.qs || 127) * (j.qs || 127), q: j.q || null, h: j.h || null, byPhoto };
+      FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.55, cand: 0.45, anchor: 0.5 }, pa: j.pa || {}, pk: j.pk || null, cl, cd: j.cd || 0, qq: (j.qs || 127) * (j.qs || 127), q: j.q || null, h: j.h || null, byPhoto };
       return FACE.data;
     });
   }
@@ -3582,6 +3585,14 @@ function faceSim(i, j) {
   let s = 0;
   for (let k = 0; k < D; k++) s += e[a + k] * e[b + k];
   return s / d.qq;
+}
+// 服の色の近さ（0〜1）。服のデータが無い顔は「ふつう」(0.6) として扱う
+function faceCloth(i, j) {
+  const d = FACE.data; if (!d.cl) return 0.6;
+  const D = d.cd, c = d.cl, a = i * D, b = j * D;
+  let s = 0, na = 0, nb = 0;
+  for (let k = 0; k < D; k++) { s += c[a + k] * c[b + k]; na += c[a + k]; nb += c[b + k]; }
+  return (na && nb) ? s / 65025 : 0.6;
 }
 // 顔の写りの良さ（小さすぎ・ぼやけ・横向きは false）と、帽子の色（クラス）が近いか
 function faceGood(i) { const q = FACE.data.q; return !q || !!q[i]; }
@@ -3619,12 +3630,17 @@ function faceRecompute() {
   const all = refs.concat([...auto]);
   const matched = new Set(all.map(i => d.n[i]));
   const hat = faceHatOf(all);
-  // 2) 「この子かも？」: まだ見つかっていない写真の、はっきり写った顔だけを、似ている順に（近い3つの平均）
+  // 2) 「この子かも？」: まだ見つかっていない写真の顔を、似ている順に（近い3つの平均）
+  //    その日の服の色も手がかりにする。服がとても似ていれば、小さい顔・横向きの顔も候補に出す（最後は保護者が確認）
   const k = Math.min(3, all.length), cands = [];
+  const top = arr => arr.sort((a, b) => b - a).slice(0, k).reduce((a, b) => a + b, 0) / k;
   for (let i = 0; i < d.N; i++) {
-    if (isMine(i) || rej.has(i) || matched.has(d.n[i]) || !faceGood(i) || !faceHatOk(i, hat)) continue;
-    const ss = all.map(r => faceSim(i, r)).sort((a, b) => b - a);
-    const sc = ss.slice(0, k).reduce((a, b) => a + b, 0) / k;
+    if (isMine(i) || rej.has(i) || matched.has(d.n[i]) || !faceHatOk(i, hat)) continue;
+    const fs = top(all.map(r => faceSim(i, r)));
+    if (fs < 0.33) continue;
+    const cl = d.cl ? top(all.map(r => faceCloth(i, r))) : 0.6;
+    if (!faceGood(i) && !(cl >= 0.85 && fs >= 0.38)) continue;
+    const sc = fs + 0.3 * (cl - 0.6);
     if (sc >= d.t.cand) cands.push([i, sc]);
   }
   cands.sort((a, b) => b[1] - a[1]);
