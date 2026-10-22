@@ -1481,6 +1481,7 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
 /* ===== わが子をさがす（顔で絞り込み）v2.13 ===== */
 .face-bar { display: none; max-width: 1200px; margin: 0 auto 12px; padding: 0 40px; gap: 8px; align-items: stretch; flex-wrap: wrap; }
 .face-bar.visible { display: flex; }
+.face-bar { scroll-margin-top: 90px; }
 body.face-open .face-bar { display: none; }
 .face-bar-btn { flex: 1 1 280px; display: flex; align-items: center; gap: 12px; text-align: left; background: linear-gradient(135deg, #FFF7E6, #FDEBD3); border: 1.5px solid #F6C64B; border-radius: 14px; padding: 12px 16px; font-family: var(--sans); color: var(--deep); cursor: pointer; box-shadow: 0 3px 10px rgba(246,198,75,0.25); }
 .face-bar-btn strong { display: block; font-size: 15px; }
@@ -1620,12 +1621,6 @@ body.favorites-off .face-fab { top: 50%; }
       🎁 別のイベントやきょうだいのクラスの写真もまとめて買えます。カートの「＋ 別のイベント・クラスの写真も入れる」から選ぶと、枚数が合算されて1回のお支払いになり、お得です。
     </div>
   </div>
-  <!-- わが子をさがす（顔で絞り込み）v2.13 -->
-  <div class="face-bar" id="face-bar">
-    <button type="button" class="face-bar-btn" onclick="faceStart(false)"><span class="face-bar-icon">👦</span><span><strong>わが子をさがす</strong><small>お子さまの顔をタップすると、写っている写真だけを表示します</small></span><span class="face-bar-new">NEW</span></button>
-    <button type="button" class="face-bar-resume" id="face-bar-resume" style="display:none" onclick="faceStart(true)">前回の続きから</button>
-  </div>
-  <div class="face-panel" id="face-panel"></div>
   <button type="button" class="face-fab" id="face-fab" onclick="faceStart(true)">👦 わが子をさがす</button>
   <!-- 七五三の案内（1行の帯。カードは一番下の「もっと楽しむ」にもある） -->
   <a class="promo-ribbon" id="promo-753-ribbon" href="shichigosan.html" style="display:none"><span class="promo-ribbon-text">🍁 <strong>七五三 出張撮影 受付中</strong> 11/3〜11/23<span class="promo-ribbon-more"> ・ ご希望の神社へ ¥12,000</span></span><span class="promo-ribbon-cta">詳しく →</span></a>
@@ -1651,6 +1646,12 @@ body.favorites-off .face-fab { top: 50%; }
       <button type="button" class="alt" onclick="startLiteThumbs()">📡 別の方法で読み込む</button>
     </span>
   </div>
+  <!-- わが子をさがす（顔で絞り込み）v2.13 -->
+  <div class="face-bar" id="face-bar">
+    <button type="button" class="face-bar-btn" onclick="faceStart(false)"><span class="face-bar-icon">👦</span><span><strong>わが子をさがす</strong><small>お子さまの顔をタップすると、写っている写真を先頭に並べます</small></span><span class="face-bar-new">NEW</span></button>
+    <button type="button" class="face-bar-resume" id="face-bar-resume" style="display:none" onclick="faceStart(true)">前回の続きから</button>
+  </div>
+  <div class="face-panel" id="face-panel"></div>
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
       <div class="spinner"></div>
@@ -3542,7 +3543,11 @@ async function faceInit() {
     const d = await api('getFaces', { eventId: ev, token: state.session.token, check: 'true' });
     if (ev !== state.selectedEventId || !d.available) return;
     FACE.available = true;
-    document.getElementById('face-bar').classList.add('visible');
+    const bar = document.getElementById('face-bar');
+    bar.classList.add('visible');
+    // ログイン直後に写真一覧の位置まで自動スクロールしている場合は、その真上の「わが子をさがす」も見えるように少し戻す
+    const gt = document.getElementById('photo-grid').getBoundingClientRect().top;
+    if (gt > -60 && gt < 200) requestAnimationFrame(() => bar.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     document.getElementById('face-fab')?.classList.add('visible');
     let saved = null; try { saved = JSON.parse(storeGet(faceStoreKey()) || 'null'); } catch (e) {}
     document.getElementById('face-bar-resume').style.display = (saved && saved.refs && saved.refs.length) ? '' : 'none';
