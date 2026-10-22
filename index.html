@@ -1507,7 +1507,11 @@ body.favorites-off .face-fab { top: 50%; }
 .face-sub small { display: block; font-size: 11.5px; color: var(--bark); }
 .face-strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; -webkit-overflow-scrolling: touch; }
 .face-strip.wrap { flex-wrap: wrap; overflow-x: visible; }
-.face-strip.tall { max-height: 360px; overflow-y: auto; }
+.face-strip.tall { max-height: 52vh; overflow-y: auto; }
+.face-chips { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; -webkit-overflow-scrolling: touch; }
+.face-chip { flex: 0 0 auto; display: flex; align-items: center; gap: 5px; font-family: var(--sans); font-size: 12.5px; background: #fff; border: 1.5px solid var(--sand); border-radius: 16px; padding: 5px 11px; cursor: pointer; color: var(--deep); }
+.face-chip i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.face-chip.on { border-color: var(--forest); background: #EEF5F0; font-weight: 700; }
 .face-crop { position: relative; flex: 0 0 auto; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1.5px var(--sand); background-color: #E8E2D6; background-repeat: no-repeat; cursor: pointer; padding: 0; }
 .face-crop.cand { box-shadow: 0 0 0 2px #F6C64B; }
 .face-crop.found { box-shadow: 0 0 0 2px var(--forest); }
@@ -3526,10 +3530,10 @@ function goBackFromPaid() {
 // ・照合はこのスマホの中だけで行う（保護者の写真は使わない。選んだ顔もどこにも送らない）
 // ・端末に保存するのは「何番目の顔を選んだか」だけ（顔の数値そのものは保存しない）
 // ========================================
-const FACE = { data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] };
+const FACE = { pickGroup: -1, data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] };
 function faceStoreKey() { return 'osanpo_face_' + state.selectedEventId; }
 function faceReset() {
-  Object.assign(FACE, { data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] });
+  Object.assign(FACE, { pickGroup: -1, data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] });
   document.getElementById('face-bar')?.classList.remove('visible', 'loading');
   document.getElementById('face-fab')?.classList.remove('visible');
   const p = document.getElementById('face-panel'); if (p) { p.classList.remove('visible'); p.innerHTML = ''; }
@@ -3567,7 +3571,7 @@ async function faceLoad() {
       const byPhoto = {};
       n.forEach((num, i) => { (byPhoto[num] = byPhoto[num] || []).push(i); });
       if (ev !== state.selectedEventId) throw new Error('イベントが切り替わりました');
-      FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.55, cand: 0.45, anchor: 0.5 }, pa: j.pa || {}, qq: (j.qs || 127) * (j.qs || 127), q: j.q || null, h: j.h || null, byPhoto };
+      FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.55, cand: 0.45, anchor: 0.5 }, pa: j.pa || {}, pk: j.pk || null, qq: (j.qs || 127) * (j.qs || 127), q: j.q || null, h: j.h || null, byPhoto };
       return FACE.data;
     });
   }
@@ -3669,8 +3673,12 @@ async function faceStart(resume) {
   scrollToFacePanel();
 }
 // 顔の一覧（大きく写っている顔から、似ている顔はまとめて1つにして並べる）
+const FACE_GROUPS = [['赤', '#E53935'], ['ピンク', '#C2185B'], ['黄', '#F6B400'], ['緑', '#43A047'], ['水色', '#29A8E0'], ['その他', '#9E9E9E']];
 function facePickList() {
-  const d = FACE.data; if (d._pick) return d._pick;
+  const d = FACE.data;
+  // 顔データに「ひとりにつき1つ」の一覧（pk）があればそれを使う（写っている子が全員並ぶ）
+  if (d.pk) { const g = FACE.pickGroup; return d.pk.filter(p => g < 0 || p[1] === g).map(p => p[0]); }
+  if (d._pick) return d._pick;
   const sz = i => Math.min(d.b[i * 4 + 2] * (d.pa[+d.n[i]] || 1.5), d.b[i * 4 + 3]);
   const order = [...Array(d.N).keys()].sort((a, b) => sz(b) - sz(a));
   const pick = [];
@@ -3723,13 +3731,15 @@ function renderFacePanel() {
     h += `<details class="face-found"><summary>この子として見つけた顔（${mine.length}）<small>ちがう顔はタップで外せます</small></summary><div class="face-strip wrap">${mine.map(i => faceCropHtml(i, 'found')).join('')}</div></details>`;
   } else {
     h += `<div class="face-head"><strong>👦 わが子をさがす</strong><button type="button" class="face-btn-reset" onclick="faceCancel()">やめる</button></div>
-      <div class="face-sub">お子さまの顔をタップしてください。<small>一覧にないときは、写真の 🔍 で大きく表示すると顔に ○ が出るので、そこからも選べます。</small></div>
-      <div class="face-strip wrap tall">${facePickList().map(i => faceCropHtml(i, 'pick')).join('')}</div>`;
+      <div class="face-sub">お子さまの顔をタップしてください。<small>${FACE.data.pk ? '帽子の色でしぼると探しやすくなります。' : ''}一覧にないときは、写真の 🔍 で大きく表示すると顔に ○ が出るので、そこからも選べます。</small></div>
+      ${FACE.data.pk ? `<div class="face-chips">${[[-1, 'すべて', '']].concat(FACE_GROUPS.map((g, k) => [k, g[0], g[1]])).filter(([k]) => k < 0 || FACE.data.pk.some(p => p[1] === k)).map(([k, name, col]) => `<button type="button" class="face-chip${FACE.pickGroup === k ? ' on' : ''}" onclick="facePickGroup(${k})">${col ? `<i style="background:${col}"></i>` : ''}${name}</button>`).join('')}</div>` : ''}
+      <div class="face-strip wrap tall" id="face-pick-strip">${facePickList().map(i => faceCropHtml(i, 'pick')).join('')}</div>`;
   }
   h += `<div class="face-note">🔒 顔の照合はこのスマホの中だけで行います。お子さまの写真や顔の情報を外に送ることはありません。似ているお友だちが混ざることもあるので、最後はご自身でご確認ください。<a href="#" onclick="event.preventDefault();openFaceInfo()">くわしく</a></div>`;
   p.innerHTML = h;
   faceObserveCrops(p);
 }
+function facePickGroup(k) { FACE.pickGroup = k; renderFacePanel(); const st = document.getElementById('face-pick-strip'); if (st) st.scrollTop = 0; }
 function facePick(i) {
   FACE.picking = false; FACE.refs = [i]; FACE.rej = [];
   faceRecompute(); faceSave(); faceApply(); scrollToFacePanel();
