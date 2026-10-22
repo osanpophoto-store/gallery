@@ -1478,6 +1478,57 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   color: #2d5a3d; background: #EDF3ED; border-left: 3px solid var(--forest); border-radius: 0 8px 8px 0;
 }
 @media (max-width: 640px) { .plan-753-note { padding: 10px 20px; } }
+/* ===== わが子をさがす（顔で絞り込み）v2.13 ===== */
+.face-bar { display: none; max-width: 1200px; margin: 0 auto 12px; padding: 0 40px; gap: 8px; align-items: stretch; flex-wrap: wrap; }
+.face-bar.visible { display: flex; }
+body.face-open .face-bar { display: none; }
+.face-bar-btn { flex: 1 1 280px; display: flex; align-items: center; gap: 12px; text-align: left; background: linear-gradient(135deg, #FFF7E6, #FDEBD3); border: 1.5px solid #F6C64B; border-radius: 14px; padding: 12px 16px; font-family: var(--sans); color: var(--deep); cursor: pointer; box-shadow: 0 3px 10px rgba(246,198,75,0.25); }
+.face-bar-btn strong { display: block; font-size: 15px; }
+.face-bar-btn small { display: block; font-size: 11.5px; color: var(--bark); line-height: 1.5; margin-top: 2px; }
+.face-bar-icon { font-size: 28px; line-height: 1; }
+.face-bar-new { margin-left: auto; font-size: 10px; font-weight: 700; color: #fff; background: #E0533A; border-radius: 10px; padding: 3px 8px; }
+.face-bar.loading .face-bar-btn { opacity: 0.6; pointer-events: none; }
+.face-bar.loading .face-bar-new::after { content: ' 読み込み中…'; }
+.face-fab { display: none; position: fixed; right: 18px; top: calc(50% + 34px); z-index: 250; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: #3a2a00; background: linear-gradient(135deg, #FFE08A, #F6C64B); border: none; border-radius: 30px; padding: 11px 16px; cursor: pointer; white-space: nowrap; font-family: var(--sans); box-shadow: 0 6px 18px rgba(246,198,75,0.5); }
+.face-fab.visible { display: flex; }
+body.face-open .face-fab { display: none; }
+body.favorites-off .face-fab { top: 50%; }
+@media (max-width: 480px) { .face-fab { padding: 9px 13px; font-size: 12px; right: 12px; top: calc(50% + 30px); } }
+.face-bar-resume { flex: 0 0 auto; font-family: var(--sans); font-size: 12px; background: #fff; border: 1.5px solid var(--sand); border-radius: 14px; padding: 8px 14px; color: var(--forest); font-weight: 700; cursor: pointer; }
+.face-panel { display: none; max-width: 1200px; margin: 0 auto 14px; padding: 14px 16px 12px; background: #fff; border: 1.5px solid #F6C64B; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); scroll-margin-top: 70px; }
+.face-panel.visible { display: block; }
+@media (min-width: 700px) { .face-panel { margin-left: 40px; margin-right: 40px; } }
+@media (min-width: 1280px) { .face-panel { margin-left: auto; margin-right: auto; } }
+.face-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 14px; }
+.face-head strong { font-size: 15px; color: var(--forest); }
+.face-btn-reset { margin-left: auto; font-family: var(--sans); font-size: 12px; background: var(--cream, #FAF7F0); border: 1px solid var(--sand); border-radius: 16px; padding: 6px 12px; cursor: pointer; color: var(--deep); }
+.face-sub { font-size: 13px; margin: 10px 0 6px; line-height: 1.6; }
+.face-sub small { display: block; font-size: 11.5px; color: var(--bark); }
+.face-strip { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; -webkit-overflow-scrolling: touch; }
+.face-strip.wrap { flex-wrap: wrap; overflow-x: visible; }
+.face-strip.tall { max-height: 360px; overflow-y: auto; }
+.face-crop { position: relative; flex: 0 0 auto; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1.5px var(--sand); background-color: #E8E2D6; background-repeat: no-repeat; cursor: pointer; padding: 0; }
+.face-crop.cand { box-shadow: 0 0 0 2px #F6C64B; }
+.face-crop.found { box-shadow: 0 0 0 2px var(--forest); }
+.face-crop:active { transform: scale(0.94); }
+.face-x { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; border-radius: 50%; background: rgba(60,60,60,0.85); color: #fff; font-size: 12px; line-height: 22px; text-align: center; }
+.face-found { margin-top: 6px; font-size: 12.5px; }
+.face-found summary { cursor: pointer; color: var(--forest); font-weight: 700; padding: 4px 0; }
+.face-found summary small { font-weight: 400; color: var(--bark); margin-left: 6px; }
+.face-note { font-size: 11px; color: var(--bark); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--sand); }
+.face-note a { color: var(--forest); font-weight: 700; }
+.photo-item.face-hidden { display: none !important; }
+/* ライトボックスの顔の枠 */
+.lb-faces { position: absolute; z-index: 15; pointer-events: none; }
+.lb-face { position: absolute; border: 2.5px solid rgba(255,255,255,0.9); border-radius: 50%; background: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,0.35); pointer-events: auto; cursor: pointer; padding: 0; animation: lbFacePulse 1.6s ease-out 1; }
+.lb-face.mine { border-color: #6FD08C; box-shadow: 0 0 0 2px rgba(111,208,140,0.5); }
+.lb-face:active { background: rgba(255,255,255,0.25); }
+@keyframes lbFacePulse { 0% { transform: scale(1.25); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.lightbox-face-btn { position: absolute; bottom: 104px; left: 50%; transform: translateX(-50%); z-index: 21; background: rgba(246,198,75,0.92); color: #3a2a00; border: none; border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.35); white-space: nowrap; }
+.lightbox-face-btn.on { background: rgba(255,255,255,0.92); }
+.face-info-box h4 { font-size: 14px; color: var(--forest); margin: 14px 0 4px; }
+.face-info-box p { font-size: 13px; line-height: 1.8; }
+@media (max-width: 640px) { .face-bar { padding: 0 16px; } }
 </style>
 </head>
 <body>
@@ -1567,6 +1618,13 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
       🎁 別のイベントやきょうだいのクラスの写真もまとめて買えます。カートの「＋ 別のイベント・クラスの写真も入れる」から選ぶと、枚数が合算されて1回のお支払いになり、お得です。
     </div>
   </div>
+  <!-- わが子をさがす（顔で絞り込み）v2.13 -->
+  <div class="face-bar" id="face-bar">
+    <button type="button" class="face-bar-btn" onclick="faceStart(false)"><span class="face-bar-icon">👦</span><span><strong>わが子をさがす</strong><small>お子さまの顔をタップすると、写っている写真だけを表示します</small></span><span class="face-bar-new">NEW</span></button>
+    <button type="button" class="face-bar-resume" id="face-bar-resume" style="display:none" onclick="faceStart(true)">前回の続きから</button>
+  </div>
+  <div class="face-panel" id="face-panel"></div>
+  <button type="button" class="face-fab" id="face-fab" onclick="faceStart(true)">👦 わが子をさがす</button>
   <!-- 七五三の案内（1行の帯。カードは一番下の「もっと楽しむ」にもある） -->
   <a class="promo-ribbon" id="promo-753-ribbon" href="shichigosan.html" style="display:none"><span class="promo-ribbon-text">🍁 <strong>七五三 出張撮影 受付中</strong> 11/3〜11/23<span class="promo-ribbon-more"> ・ ご希望の神社へ ¥12,000</span></span><span class="promo-ribbon-cta">詳しく →</span></a>
   <div class="plan-753-note" id="plan-753-note" style="display:none"></div>
@@ -1751,6 +1809,25 @@ body.mode-753 .lightbox-select-btn.small-btn { display: block; transform: transl
   <button class="lightbox-select-btn" id="lb-select-btn" onclick="event.stopPropagation();lbToggleSelect()"></button>
   <button class="lightbox-select-btn small-btn" id="lb-select-small-btn" onclick="event.stopPropagation();lbToggleSelectSmall()"></button>
   <div class="lightbox-num" id="lightbox-num"></div>
+  <div class="lb-faces" id="lb-faces"></div>
+  <button class="lightbox-face-btn" id="lb-face-btn" style="display:none" onclick="event.stopPropagation();lbFaceToggle()">👤 この写真の顔でさがす</button>
+</div>
+<!-- ========== わが子をさがす: 顔データの説明 ========== -->
+<div class="modal-overlay" id="face-info-overlay" onclick="if(event.target===this)closeFaceInfo()">
+  <div class="modal-box face-info-box">
+    <h3>「わが子をさがす」と顔データについて</h3>
+    <h4>何をしているの？</h4>
+    <p>ギャラリーの写真に写っている顔の位置と、顔の特徴を数値にしたもの（顔データ）を、おさんぽフォトがあらかじめ作っています。お子さまの顔をタップすると、似ている顔が写っている写真を探して表示します。</p>
+    <h4>照合はスマホの中だけ</h4>
+    <p>似ている顔を探す計算は、このスマホ（ブラウザ）の中だけで行います。タップした顔や探した結果をおさんぽフォトに送ることはありません。保護者の方の写真を使うこともありません。</p>
+    <h4>顔データの管理</h4>
+    <p>顔データは、パスワードでギャラリーに入った方だけが読み込めます。写真を探す目的以外には使わず、閲覧・販売期間が終わったら削除します。</p>
+    <h4>うまく見つからないときは</h4>
+    <p>似ているお友だちが混ざったり、横顔・帽子・ぶれで見つからない写真もあります。最後はご自身でご確認ください。この機能を使わなくても、これまでどおりすべての写真から選べます。</p>
+    <h4>使ってほしくない場合</h4>
+    <p>お子さまの顔データを作ってほしくない場合は、<a href="https://lin.ee/Y2WBhzF" target="_blank" rel="noopener" style="color:var(--forest);font-weight:700">公式LINE</a>でお知らせください。そのお子さまの顔データを削除します。</p>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeFaceInfo()">閉じる</button></div>
+  </div>
 </div>
 <!-- ========== お気に入りモーダル ========== -->
 <div class="modal-overlay" id="fav-view-overlay">
@@ -2278,6 +2355,7 @@ async function loadPhotos() {
     if (!state.mode753) savePhotosToStorage(state.selectedEventId, state.photos); // 他クラスのカート表示（サムネイル）用
     renderGrid();
     updateCart(); // 保存されていたカートがあればカートバーを復元表示
+    faceInit(); // わが子をさがす（顔データがあるイベントだけボタンを出す）
     // パスワード入力画面から切り替わった直後は、上の通知類に隠れて写真が見えないことがあるため
     // 写真グリッドの位置まで自動でスクロールする
     // ブログ記事の写真から来た場合（#photo-012）は、その写真を開く
@@ -3440,11 +3518,259 @@ function goBackFromPaid() {
   document.getElementById('btn-logout').classList.remove('visible');
 }
 // ========================================
+// わが子をさがす（顔で絞り込み）v2.13
+// ・顔データ（写真ごとの顔の位置と、顔の特徴を数値にしたもの）は、ログイン中の人だけがGASから受け取れる
+// ・照合はこのスマホの中だけで行う（保護者の写真は使わない。選んだ顔もどこにも送らない）
+// ・端末に保存するのは「何番目の顔を選んだか」だけ（顔の数値そのものは保存しない）
+// ========================================
+const FACE = { data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] };
+function faceStoreKey() { return 'osanpo_face_' + state.selectedEventId; }
+function faceReset() {
+  Object.assign(FACE, { data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] });
+  document.getElementById('face-bar')?.classList.remove('visible', 'loading');
+  document.getElementById('face-fab')?.classList.remove('visible');
+  const p = document.getElementById('face-panel'); if (p) { p.classList.remove('visible'); p.innerHTML = ''; }
+  document.body.classList.remove('face-open', 'face-filter');
+}
+async function faceInit() {
+  faceReset();
+  if (state.mode753 || !state.session || !state.session.token) return;
+  const ev = state.selectedEventId;
+  try {
+    const d = await api('getFaces', { eventId: ev, token: state.session.token, check: 'true' });
+    if (ev !== state.selectedEventId || !d.available) return;
+    FACE.available = true;
+    document.getElementById('face-bar').classList.add('visible');
+    document.getElementById('face-fab')?.classList.add('visible');
+    let saved = null; try { saved = JSON.parse(storeGet(faceStoreKey()) || 'null'); } catch (e) {}
+    document.getElementById('face-bar-resume').style.display = (saved && saved.refs && saved.refs.length) ? '' : 'none';
+  } catch (e) { /* 顔データが無いイベントでは何も出さない */ }
+}
+async function faceLoad() {
+  if (FACE.data) return FACE.data;
+  if (!FACE.loading) {
+    const ev = state.selectedEventId;
+    FACE.loading = api('getFaces', { eventId: ev, token: state.session.token }).then(d => {
+      if (!d.available || !d.faces) throw new Error('顔データが見つかりませんでした');
+      const j = JSON.parse(d.faces);
+      const bin = atob(j.e), N = j.n.length, D = j.dim;
+      const emb = new Int8Array(N * D);
+      for (let i = 0; i < bin.length; i++) { const c = bin.charCodeAt(i); emb[i] = c > 127 ? c - 256 : c; }
+      const n = j.n.map(v => String(v).padStart(3, '0'));
+      const byPhoto = {};
+      n.forEach((num, i) => { (byPhoto[num] = byPhoto[num] || []).push(i); });
+      if (ev !== state.selectedEventId) throw new Error('イベントが切り替わりました');
+      FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.62, cand: 0.42 }, pa: j.pa || {}, byPhoto };
+      return FACE.data;
+    });
+  }
+  try { return await FACE.loading; } catch (e) { FACE.loading = null; throw e; }
+}
+function faceSim(i, j) {
+  const d = FACE.data, D = d.D, e = d.emb, a = i * D, b = j * D;
+  let s = 0;
+  for (let k = 0; k < D; k++) s += e[a + k] * e[b + k];
+  return s / 16129;
+}
+function faceRecompute() {
+  const d = FACE.data; if (!d) return;
+  const refs = FACE.refs.slice(), rej = new Set(FACE.rej), auto = new Set();
+  const isMine = i => refs.includes(i) || auto.has(i);
+  // 1) まちがいなく同じ子（しきい値 auto 以上）を自動で足す。2回まで広げる
+  let seeds = refs.slice();
+  for (let round = 0; round < 2 && seeds.length; round++) {
+    const next = [];
+    for (let i = 0; i < d.N; i++) {
+      if (isMine(i) || rej.has(i)) continue;
+      for (const r of seeds) { if (faceSim(i, r) >= d.t.auto) { auto.add(i); next.push(i); break; } }
+    }
+    seeds = next;
+  }
+  const all = refs.concat([...auto]);
+  const matched = new Set(all.map(i => d.n[i]));
+  // 2) 「この子かも？」: まだ見つかっていない写真の顔を、似ている順に（近い3つの平均）
+  const k = Math.min(3, all.length), cands = [];
+  for (let i = 0; i < d.N; i++) {
+    if (isMine(i) || rej.has(i) || matched.has(d.n[i])) continue;
+    const ss = all.map(r => faceSim(i, r)).sort((a, b) => b - a);
+    const sc = ss.slice(0, k).reduce((a, b) => a + b, 0) / k;
+    if (sc >= d.t.cand) cands.push([i, sc]);
+  }
+  cands.sort((a, b) => b[1] - a[1]);
+  const seen = new Set(); FACE.cands = [];
+  for (const [i] of cands) { if (seen.has(d.n[i])) continue; seen.add(d.n[i]); FACE.cands.push(i); if (FACE.cands.length >= 30) break; }
+  FACE.auto = auto; FACE.matched = matched;
+}
+function faceSave() { try { storeSet(faceStoreKey(), JSON.stringify({ refs: FACE.refs, rej: FACE.rej, ts: Date.now() })); } catch (e) {} }
+function faceMatchedNums() { return state.photos.map(p => p.number).filter(n => FACE.matched.has(n)); }
+function faceApply() {
+  FACE.active = FACE.refs.length > 0;
+  document.body.classList.toggle('face-filter', FACE.active);
+  state.photos.forEach(p => { document.getElementById('item-' + p.number)?.classList.toggle('face-hidden', FACE.active && !FACE.matched.has(p.number)); });
+  renderFacePanel();
+}
+function scrollToFacePanel() { const p = document.getElementById('face-panel'); if (p) requestAnimationFrame(() => p.scrollIntoView({ behavior: 'smooth', block: 'start' })); }
+async function faceStart(resume) {
+  const bar = document.getElementById('face-bar');
+  bar.classList.add('loading');
+  try { await faceLoad(); } catch (e) { bar.classList.remove('loading'); showToast((e && e.message) || '顔データを読み込めませんでした', 'error'); return; }
+  bar.classList.remove('loading');
+  FACE.showBoxes = true;
+  if (resume) {
+    try {
+      const s = JSON.parse(storeGet(faceStoreKey()) || 'null');
+      if (s) { FACE.refs = (s.refs || []).filter(i => i < FACE.data.N); FACE.rej = (s.rej || []).filter(i => i < FACE.data.N); }
+    } catch (e) {}
+    if (FACE.refs.length) { faceRecompute(); faceApply(); scrollToFacePanel(); return; }
+  }
+  FACE.picking = true;
+  renderFacePanel();
+  scrollToFacePanel();
+}
+// 顔の一覧（大きく写っている顔から、似ている顔はまとめて1つにして並べる）
+function facePickList() {
+  const d = FACE.data; if (d._pick) return d._pick;
+  const sz = i => Math.min(d.b[i * 4 + 2] * (d.pa[+d.n[i]] || 1.5), d.b[i * 4 + 3]);
+  const order = [...Array(d.N).keys()].sort((a, b) => sz(b) - sz(a));
+  const pick = [];
+  for (const i of order) {
+    if (sz(i) < 40) break;
+    if (pick.some(j => faceSim(i, j) >= 0.5)) continue;
+    pick.push(i);
+    if (pick.length >= 120) break;
+  }
+  pick.sort((a, b) => a - b); // 写真の番号順に
+  d._pick = pick;
+  return pick;
+}
+function faceCropStyle(i, S) {
+  const d = FACE.data, a = d.pa[+d.n[i]] || 1.5;
+  const x = d.b[i * 4] / 1000, y = d.b[i * 4 + 1] / 1000, w = d.b[i * 4 + 2] / 1000, h = d.b[i * 4 + 3] / 1000;
+  const cx = (x + w / 2) * a, cy = y + h / 2, side = Math.max(w * a, h) * 1.7, sc = S / side;
+  return `background-size:${(a * sc).toFixed(1)}px ${sc.toFixed(1)}px;background-position:${(-(cx - side / 2) * sc).toFixed(1)}px ${(-(cy - side / 2) * sc).toFixed(1)}px`;
+}
+function faceCropHtml(i, kind) {
+  const d = FACE.data, ph = state.photos.find(p => p.number === d.n[i]);
+  if (!ph || !ph.fileId) return '';
+  const S = kind === 'pick' ? 80 : 68;
+  const x = kind === 'cand' ? `<span class="face-x" onclick="event.stopPropagation();faceReject(${i})" aria-label="ちがう">✕</span>` : '';
+  const on = kind === 'pick' ? `facePick(${i})` : kind === 'cand' ? `faceAdd(${i})` : `faceRemove(${i})`;
+  return `<button type="button" class="face-crop ${kind}" style="width:${S}px;height:${S}px;${faceCropStyle(i, S)}" data-bg="${thumbUrl(ph.fileId, 1200, 0)}" onclick="${on}" aria-label="IMG-${d.n[i]} の顔">${x}</button>`;
+}
+function faceObserveCrops(root) {
+  const els = root.querySelectorAll('.face-crop[data-bg]');
+  const show = e => { e.style.backgroundImage = 'url("' + e.dataset.bg + '")'; e.removeAttribute('data-bg'); };
+  if (!('IntersectionObserver' in window)) { els.forEach(show); return; }
+  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { show(en.target); io.unobserve(en.target); } }), { rootMargin: '150px' });
+  els.forEach(e => io.observe(e));
+}
+function renderFacePanel() {
+  const p = document.getElementById('face-panel'); if (!p) return;
+  document.body.classList.toggle('face-open', !!(FACE.data && (FACE.picking || FACE.active)));
+  if (!FACE.data || (!FACE.picking && !FACE.active)) { p.classList.remove('visible'); p.innerHTML = ''; return; }
+  p.classList.add('visible');
+  let h = '';
+  if (FACE.active) {
+    h += `<div class="face-head"><span><strong>👦 この子の写真 ${FACE.matched.size}枚</strong> を表示中</span><button type="button" class="face-btn-reset" onclick="faceClear()">すべての写真に戻す</button></div>`;
+    if (FACE.cands.length) {
+      h += `<div class="face-sub">この子かも？<small>お子さまならタップで追加（写真が増えます）。ちがう子は ✕</small></div><div class="face-strip">${FACE.cands.map(i => faceCropHtml(i, 'cand')).join('')}</div>`;
+    } else {
+      h += `<div class="face-sub"><small>似ている顔はもう見つかりませんでした。ほかの写真を 🔍 で大きく表示して、顔の ○ をタップすると追加できます。</small></div>`;
+    }
+    const mine = FACE.refs.concat([...FACE.auto]);
+    h += `<details class="face-found"><summary>この子として見つけた顔（${mine.length}）<small>ちがう顔はタップで外せます</small></summary><div class="face-strip wrap">${mine.map(i => faceCropHtml(i, 'found')).join('')}</div></details>`;
+  } else {
+    h += `<div class="face-head"><strong>👦 わが子をさがす</strong><button type="button" class="face-btn-reset" onclick="faceCancel()">やめる</button></div>
+      <div class="face-sub">お子さまの顔をタップしてください。<small>一覧にないときは、写真の 🔍 で大きく表示すると顔に ○ が出るので、そこからも選べます。</small></div>
+      <div class="face-strip wrap tall">${facePickList().map(i => faceCropHtml(i, 'pick')).join('')}</div>`;
+  }
+  h += `<div class="face-note">🔒 顔の照合はこのスマホの中だけで行います。お子さまの写真や顔の情報を外に送ることはありません。似ているお友だちが混ざることもあるので、最後はご自身でご確認ください。<a href="#" onclick="event.preventDefault();openFaceInfo()">くわしく</a></div>`;
+  p.innerHTML = h;
+  faceObserveCrops(p);
+}
+function facePick(i) {
+  FACE.picking = false; FACE.refs = [i]; FACE.rej = [];
+  faceRecompute(); faceSave(); faceApply(); scrollToFacePanel();
+  showToast(FACE.cands.length && FACE.matched.size < 5 ? `${FACE.matched.size}枚 見つかりました。「この子かも？」からお子さまをタップすると、もっと見つかります` : `この子の写真が ${FACE.matched.size}枚 見つかりました`, 'success');
+}
+function faceAdd(i) {
+  const before = FACE.matched.size;
+  if (!FACE.refs.includes(i)) FACE.refs.push(i);
+  faceRecompute(); faceSave(); faceApply();
+  const add = FACE.matched.size - before;
+  if (add > 0) showToast(`写真が ${add}枚 増えました`, 'success');
+}
+function faceReject(i) { if (!FACE.rej.includes(i)) FACE.rej.push(i); faceRecompute(); faceSave(); renderFacePanel(); }
+function faceRemove(i) {
+  FACE.refs = FACE.refs.filter(r => r !== i);
+  if (!FACE.rej.includes(i)) FACE.rej.push(i);
+  if (!FACE.refs.length) { faceClear(); return; }
+  faceRecompute(); faceSave(); faceApply();
+}
+function faceClear() {
+  Object.assign(FACE, { refs: [], rej: [], picking: false, matched: new Set(), auto: new Set(), cands: [] });
+  try { storeRemove(faceStoreKey()); } catch (e) {}
+  faceApply();
+  document.getElementById('face-bar-resume') && (document.getElementById('face-bar-resume').style.display = 'none');
+}
+function faceCancel() { FACE.picking = false; renderFacePanel(); }
+// ライトボックス: 顔の ○ を重ねて、タップでその子をさがす
+function faceOverlayRender() {
+  const ov = document.getElementById('lb-faces'), btn = document.getElementById('lb-face-btn');
+  if (!ov) return;
+  ov.innerHTML = ''; ov.style.transform = ''; ov.style.visibility = '';
+  const photo = typeof lbCurrentPhoto === 'function' ? lbCurrentPhoto() : null;
+  if (btn) {
+    btn.style.display = (FACE.available && photo && !state.mode753) ? '' : 'none';
+    btn.classList.toggle('on', !!(FACE.data && FACE.showBoxes));
+    btn.textContent = (FACE.data && FACE.showBoxes) ? '👤 顔の ○ をかくす' : '👤 この写真の顔でさがす';
+  }
+  if (!FACE.data || !photo || !FACE.showBoxes) return;
+  const img = document.getElementById('lightbox-img'), r = img.getBoundingClientRect();
+  if (!r.width || !r.height) return;
+  const lb = document.getElementById('lightbox').getBoundingClientRect();
+  ov.style.left = (r.left - lb.left) + 'px'; ov.style.top = (r.top - lb.top) + 'px';
+  ov.style.width = r.width + 'px'; ov.style.height = r.height + 'px';
+  const d = FACE.data, mine = new Set(FACE.refs.concat([...FACE.auto]));
+  ov.innerHTML = (d.byPhoto[photo.number] || []).map(i => {
+    const x = d.b[i * 4] / 10, y = d.b[i * 4 + 1] / 10, w = d.b[i * 4 + 2] / 10, h = d.b[i * 4 + 3] / 10, pad = 0.18;
+    return `<button type="button" class="lb-face${mine.has(i) ? ' mine' : ''}" style="left:${(x - w * pad).toFixed(2)}%;top:${(y - h * pad).toFixed(2)}%;width:${(w * (1 + 2 * pad)).toFixed(2)}%;height:${(h * (1 + 2 * pad)).toFixed(2)}%" onclick="event.stopPropagation();faceFromLightbox(${i})" aria-label="この顔でさがす"></button>`;
+  }).join('');
+}
+async function lbFaceToggle() {
+  if (!FACE.data) {
+    showToast('顔を読み込んでいます…');
+    try { await faceLoad(); } catch (e) { showToast('顔データを読み込めませんでした', 'error'); return; }
+    FACE.showBoxes = true;
+  } else {
+    FACE.showBoxes = !FACE.showBoxes;
+  }
+  faceOverlayRender();
+  if (FACE.showBoxes) {
+    const ph = lbCurrentPhoto(), n = ph ? (FACE.data.byPhoto[ph.number] || []).length : 0;
+    showToast(n ? 'お子さまの顔の ○ をタップしてください' : 'この写真では顔が見つかりませんでした');
+  }
+}
+function faceFromLightbox(i) {
+  closeLightbox();
+  if (FACE.active) {
+    if (FACE.refs.includes(i) || FACE.auto.has(i)) { showToast('この顔はもう選ばれています'); return; }
+    faceAdd(i);
+  } else {
+    facePick(i);
+  }
+  scrollToFacePanel();
+}
+function openFaceInfo() { document.getElementById('face-info-overlay')?.classList.add('visible'); }
+function closeFaceInfo() { document.getElementById('face-info-overlay')?.classList.remove('visible'); }
+document.getElementById('lightbox-img')?.addEventListener('load', () => faceOverlayRender());
+window.addEventListener('resize', () => { if (document.getElementById('lightbox')?.classList.contains('visible')) faceOverlayRender(); });
+// ========================================
 // ライトボックス
 // ========================================
 function openLightbox(num, navNums) {
   // navNumsを渡すとその並び（例: お気に入りだけ）の中でスワイプできる。省略時は全写真。
-  const nums = navNums || state.photos.map(p => p.number);
+  const nums = navNums || (FACE.active ? faceMatchedNums() : state.photos.map(p => p.number));
   const idx = nums.indexOf(num);
   if (idx === -1) return;
   const photo = state.photos.find(p => p.number === num);
@@ -3539,6 +3865,7 @@ function lbRender() {
   const isFav = state.favorites.has(photo.number);
   favBtn.textContent = isFav ? '♥' : '♡';
   favBtn.classList.toggle('active', isFav);
+  faceOverlayRender(); // わが子をさがす: 顔の ○
 }
 // 前へ/次へ
 function lbNav(dir) {
@@ -3596,11 +3923,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
     if (!horizontal) return;
     dragDx = dx;
     img.style.transform = `translateX(${dx}px)`;
+    const fo = document.getElementById('lb-faces'); if (fo) fo.style.visibility = 'hidden';
   }, { passive: true });
 
   lb.addEventListener('touchend', () => {
     if (!dragging) return;
     dragging = false;
+    setTimeout(() => faceOverlayRender(), 480); // スワイプ後に顔の ○ を描き直す
     const idx = state.lightboxIndex;
     const dir = dragDx < 0 ? 1 : -1;
     const total = state.lightboxNums ? state.lightboxNums.length : 0;
