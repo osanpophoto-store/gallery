@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>人への感謝、収穫への感謝 | おさんぽフォト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #FBF8F2;
+  --white: #FFFFFF;
+  --sand: #E8E2D6;
+  --bark: #7A7A7A;
+  --deep: #2C2C2C;
+  --forest: #4A7A5A;
+  --moss: #7AAD8A;
+  --accent: #D4723A;
+  --radius: 14px;
+  --shadow: 0 6px 28px rgba(44,44,44,0.10);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-weight: 500;
+  background: var(--paper);
+  color: var(--deep);
+  line-height: 1.95;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; width: 100%; height: auto; }
+a { color: inherit; }
+
+/* ヘッダー */
+.site-header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(251,248,242,0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--sand);
+}
+.brand { font-size: 13px; letter-spacing: 0.08em; color: var(--forest); font-weight: 700; text-decoration: none; }
+.header-cta {
+  font-size: 12px; font-weight: 700; text-decoration: none;
+  color: #fff; background: var(--forest);
+  padding: 7px 14px; border-radius: 999px;
+}
+
+/* ヒーロー */
+.hero { max-width: 760px; margin: 0 auto; padding: 28px 16px 8px; }
+.hero-photo { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); background: var(--sand); }
+.hero-photo.ar-54 img { aspect-ratio: 5 / 4; object-fit: cover; }
+.hero-photo.ar-43 img { aspect-ratio: 4 / 3; object-fit: cover; }
+.eyebrow { margin-top: 22px; font-size: 12px; letter-spacing: 0.18em; color: var(--accent); font-weight: 700; }
+h1 {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: clamp(26px, 6.4vw, 36px);
+  line-height: 1.5; font-weight: 700; margin-top: 6px; letter-spacing: 0.04em;
+}
+.meta { margin-top: 8px; font-size: 13px; color: var(--bark); }
+
+/* 本文 */
+article { max-width: 680px; margin: 0 auto; padding: 8px 16px 40px; }
+.lead { font-size: 16px; margin-top: 18px; }
+.chapter { margin-top: 48px; }
+.chapter h2 {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: 21px; font-weight: 700; line-height: 1.55; letter-spacing: 0.03em;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.chapter h2 .no { font-family: 'Zen Maru Gothic', sans-serif; font-size: 12px; color: var(--accent); letter-spacing: 0.12em; }
+.chapter p { margin-top: 14px; font-size: 15.5px; }
+
+/* 写真 */
+.photos { margin-top: 18px; display: grid; gap: 10px; }
+.photos.cols-2 { grid-template-columns: 1fr 1fr; }
+.photos.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+figure { position: relative; }
+.photo-link { display: block; border-radius: 10px; overflow: hidden; background: var(--sand); position: relative; }
+.photo-link img { aspect-ratio: 4 / 3; object-fit: cover; transition: transform .4s ease; }
+.photo-link:hover img { transform: scale(1.02); }
+.photo-no {
+  position: absolute; right: 8px; bottom: 8px;
+  font-size: 11px; font-weight: 700; color: #fff;
+  background: rgba(44,44,44,0.55); padding: 3px 8px; border-radius: 999px;
+}
+figcaption { font-size: 12.5px; color: var(--bark); margin-top: 6px; line-height: 1.7; }
+.placeholder {
+  aspect-ratio: 4 / 3; display: flex; align-items: center; justify-content: center;
+  color: var(--bark); font-size: 12px;
+  background: repeating-linear-gradient(45deg, #EFE9DD, #EFE9DD 10px, #F5F0E6 10px, #F5F0E6 20px);
+}
+
+/* 引用（子どもの言葉など） */
+.voice {
+  margin-top: 18px; padding: 14px 18px;
+  background: var(--white); border-radius: var(--radius);
+  border-left: 4px solid var(--moss);
+  font-family: 'Zen Maru Gothic', sans-serif; font-size: 16px; font-weight: 500;
+}
+
+/* カメラマンから */
+.note {
+  margin-top: 56px; padding: 22px 20px;
+  background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.note-title { font-size: 12px; letter-spacing: 0.16em; color: var(--forest); font-weight: 700; }
+.note p { margin-top: 10px; font-size: 15px; }
+.note .sign { margin-top: 12px; text-align: right; font-size: 13px; color: var(--bark); }
+.sign-only { margin-top: 48px; text-align: right; font-size: 13px; color: var(--bark); }
+
+/* 写真を選ぶ導線 */
+.cta {
+  margin-top: 36px; text-align: center; padding: 26px 18px;
+  background: #EDF3ED; border-radius: var(--radius);
+}
+.cta p { font-size: 14px; }
+.cta-btn {
+  display: inline-block; margin-top: 14px;
+  background: var(--forest); color: #fff; text-decoration: none; font-weight: 700;
+  padding: 13px 28px; border-radius: 999px; font-size: 15px;
+  box-shadow: 0 6px 18px rgba(74,122,90,0.3);
+}
+.cta small { display: block; margin-top: 10px; font-size: 12px; color: var(--bark); }
+
+footer { text-align: center; padding: 24px 16px 40px; font-size: 12px; color: var(--bark); }
+
+/* ログイン前のゲート */
+.gate { max-width: 460px; margin: 48px auto; padding: 28px 22px; text-align: center; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); }
+.gate .eyebrow { margin-top: 0; }
+.gate h1 { font-size: 22px; margin-top: 8px; }
+.gate p { margin-top: 14px; font-size: 14px; color: var(--bark); }
+.gate .cta-btn { margin-top: 18px; }
+
+figure.wide { grid-column: 1 / -1; }
+.photo-no { max-width: calc(100% - 16px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 480px) {
+  .photos.cols-3 { grid-template-columns: 1fr 1fr; }
+}
+
+/* レイアウトブロック（章ごとに組み方を変える） */
+.blocks { margin-top: 20px; display: grid; gap: 16px; }
+.blk { display: grid; gap: 10px; }
+.blk-pair { grid-template-columns: 1fr 1fr; align-items: stretch; }
+/* fill: 隣の写真の高さに合わせて埋める（余白を作らない） */
+figure.fill { position: relative; min-height: 100%; }
+figure.fill .photo-link { position: absolute; inset: 0; }
+figure.fill .photo-link img { height: 100%; aspect-ratio: auto; }
+.blk-pair.s75 { grid-template-columns: 7fr 5fr; }
+.blk-pair.s57 { grid-template-columns: 5fr 7fr; }
+.blk-mosaic { grid-template-columns: 2fr 1fr; align-items: stretch; }
+.blk-mosaic.left { grid-template-columns: 1fr 2fr; }
+.blk-mosaic.left .big { order: 2; }
+.blk-mosaic .small { display: grid; gap: 10px; grid-template-rows: 1fr 1fr; }
+.blk-mosaic .small .photo-link, .blk-mosaic .small figure { height: 100%; }
+.blk-mosaic .small .photo-link img { height: 100%; aspect-ratio: auto; }
+.blk-offset { grid-template-columns: 58fr 42fr; align-items: start; }
+.blk-offset figure:last-child { margin-top: 22%; }
+.blk-strip { grid-template-columns: repeat(3, 1fr); }
+.blk-bleed { width: min(100vw - 24px, 820px); margin-left: calc(50% - min(100vw - 24px, 820px) / 2); }
+.cap { font-size: 12.5px; color: var(--bark); letter-spacing: 0.04em; line-height: 1.7; margin-top: -4px; }
+.cap::before { content: '— '; color: var(--accent); }
+figure.ar-32 .photo-link img { aspect-ratio: 3 / 2; }
+figure.ar-43 .photo-link img { aspect-ratio: 4 / 3; }
+figure.ar-11 .photo-link img { aspect-ratio: 1 / 1; }
+figure.ar-34 .photo-link img { aspect-ratio: 3 / 4; }
+figure.ar-45 .photo-link img { aspect-ratio: 4 / 5; }
+@media (max-width: 560px) {
+  .blk-pair, .blk-pair.s75, .blk-pair.s57 { grid-template-columns: 1fr 1fr; }
+  .blk-pair figure .photo-link img { aspect-ratio: 1 / 1; }
+  .blk-pair figure.fill .photo-link img { aspect-ratio: auto; }
+  .blk-offset { grid-template-columns: 1fr; }
+  .blk-offset figure:last-child { margin-top: 0; width: 72%; justify-self: end; }
+  .blk-mosaic, .blk-mosaic.left { grid-template-columns: 1fr; }
+  .blk-mosaic.left .big { order: 0; }
+  .blk-mosaic .small { grid-template-rows: none; grid-template-columns: 1fr 1fr; }
+  .blk-mosaic .small .photo-link img { height: auto; aspect-ratio: 1 / 1; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="./">おさんぽフォト</a>
+  <a class="header-cta" href="./">写真を選ぶ →</a>
+</header>
+
+<div id="app"></div>
+
+<script>
+// ============================================================
+// 記事データ（ここだけ書き換えれば記事が変わる）
+//  - id:  Google Drive「透かし入り」フォルダの写真ファイルID
+//  - ev:  'i' = 芋掘り・栗拾い（imohorikurihiroi）
+//  - no:  そのクラスのギャラリーでの写真番号
+//  ログイン中のクラスの写真だけ、タップでギャラリーのその写真が開く
+// ============================================================
+const EVENTS = {
+  i: { id: 'imohorikurihiroi', label: '芋掘り・栗拾い' }
+};
+const BLOG = {
+  eyebrow: 'PHOTO STORY ｜ 美園幼稚園',
+  title: '人への感謝、収穫への感謝',
+  meta: '2026年10月14日撮影 ／ 写真・文：黒野大樹（たいき先生／おさんぽフォト）',
+  hero: { ev: 'i', no: '230', id: '1Vx4drFQR5hhMShrt1HxN-yXhBoG4rnz3', ar: '54', pos: '100% 50%' },
+  lead: [
+    '10月14日、芋掘りと栗拾いに同行させていただきました。よく晴れた秋の日。到着したときから、収穫の時間が待ち遠しくワクワク、ソワソワしているあおさん。',
+    '撮影をしながら感じたことは、タイトル通り「人への感謝、収穫への感謝」です。お芋の畑を手入れしてくださった方への挨拶と感謝を、とても大切にしていること。そしてその気持ちを、先生たちが表面的な言葉だけでなく、心からありがたいと感じながら子どもたちに伝えている姿です。',
+    '写真からは見えにくい、僕が見て感じた先生たちの思いを添えて、この日の様子を綴ります。'
+  ],
+  chapters: [
+    {
+      heading: 'はじめに、畑の方へ挨拶',
+      text: [
+        'この日のお芋は、ここまで畑を手入れしてくださった佐藤さんたちがいるからこそ実ったもの。到着すると、まずは佐藤さんへの挨拶から始まりました。',
+        '先生たちは、支えてくださる方と子どもたちとの橋渡し役です。「みんなのために、こういう事やああいう事をしてくださっているんだよ」と、子どもたちにわかるように説明し、理解を深める援助をすることも大切な役割です。もちろん台本などはありませんから、こういうところに先生たちのカラーが出ます。',
+        '何を言うかも大切ですが、温かなトーンで子どもたちの心にちゃんと届いているようでした。'
+      ],
+      blocks: [
+        { t: 'wide', p: { ev: 'i', no: '005', id: '1jIa6MtwQ5cr8llcdQmT6aBCoTvaFpXwm' } },
+        { t: 'pair', split: '57',
+          a: { ev: 'i', no: '010', id: '1cHQDYagwuHXO0JpoYxOx2_JfHfnA-dEc', ar: '32' },
+          b: { ev: 'i', no: '004', id: '1xBrCfn-YwYfPjxoPQUh_tAAP6iXxuuny', fill: true, pos: '35% 50%' } }
+      ]
+    },
+    {
+      heading: '今か今かと、その時を待つ',
+      text: [
+        'とはいえ、子どもたちの心はもう畑の中。軍手をはめては手のひらを見せ合い、カメラに向かって両手を広げてくれる子も。並んでお話を聞きながらも、収穫の時間を今か今かと待っている気持ちが伝わってきました。'
+      ],
+      blocks: [
+        { t: 'wide', p: { ev: 'i', no: '014', id: '1pUZ5m5rueT9iB1RApBv5tMb-cgijkO6H' } },
+        { t: 'pair', split: '75',
+          a: { ev: 'i', no: '039', id: '141Ly2STjf6WOJQKvTGv0ePWsOCehnOSS', ar: '32' },
+          b: { ev: 'i', no: '033', id: '1m2QohlBH5dQYZ8j4hVfhveeXsLBnx4aC', fill: true, pos: '55% 50%' } }
+      ]
+    },
+    {
+      heading: '栗の木の下で',
+      text: [
+        '大きく枝を広げた栗の木の下で、足元のイガに気をつけながら、落ち葉の中から栗を探します。見つけた栗を手のひらにのせて、大事そうに見せてくれました。'
+      ],
+      blocks: [
+        { t: 'wide', p: { ev: 'i', no: '071', id: '1L-epsHUV86S3mJSRS1-U25KljGB5K773' } },
+        { t: 'pair', split: '57',
+          a: { ev: 'i', no: '113', id: '1Lc3D9y7Dj6LSETMV5tesmXOgGxdKt6tc', ar: '11', pos: '50% 45%' },
+          b: { ev: 'i', no: '099', id: '1LkuXzhbWLOZ1vRqK37t2nftzkRJ3Z9ab', fill: true, pos: '60% 50%' } },
+        { t: 'mosaic',
+          big: { ev: 'i', no: '090', id: '1UBWjXfTVyzHr_7EkoLKgXPM3YkqpZUdO', ar: '43' },
+          small: [
+            { ev: 'i', no: '110', id: '1CFijNk4X5j_QiAoG52VNd9iJtJpHqvZs', pos: '45% 40%' },
+            { ev: 'i', no: '132', id: '14eRG3uz0PzO8S7Ai7g-qP7xPDt8UU07v' }
+          ] }
+      ]
+    },
+    {
+      heading: 'あとは、掘るだけ',
+      text: [
+        '長く伸びていたお芋の蔓が、きれいに刈り取られていました。佐藤さんたちのご厚意で、子どもたちが掘りやすいようにと整えてくださっていたのです。あとは掘るだけ、という状態でした。',
+        'それを見た先生が、子どもたちに語りかけます。「お芋の蔓、みんなが芋掘りしやすいように全部綺麗にしてくれているよ。ありがたいね。」',
+        'この「ありがたいね」という言葉が、今回のタイトルにある「人への感謝」をいちばんよく表していると感じました。いつもよりトーンを一つ上げて、子どもの心に届くように、はっきりと、まっすぐな言葉で伝えていました。',
+        'こういう子どもたちが気付きにくい所にも気づいて、「やってくれてるよ」だけじゃなく誰かがやってくれた事に対して感謝の気持ちを持つこと、そして伝えることの大切さを先生の「ありがたいね」という言葉から感じ取りました。',
+        'そしていよいよ芋掘りです。蔓の跡をたどって、スコップや手で土を少しずつよけていきます。土の中にお芋の赤い色が見えた瞬間、手の動きがぐっと速くなります。',
+        'なかなか抜けないお芋には、大人たちも一緒に手を添えて。最後の「もうひと掘り」を、子どもたちと同じ目線で支えてくれていました。'
+      ],
+      blocks: [
+        { t: 'wide', p: { ev: 'i', no: '143', id: '1BtxGoCru9iNiPsF1aEUAnkdvcEB1AqJC', pos: '45% 55%' } },
+        { t: 'wide', p: { ev: 'i', no: '206', id: '1oOM_aO2_XtCMvZjTvC7a2l3bPzzC0w6C' } },
+        { t: 'pair', split: '75',
+          a: { ev: 'i', no: '171', id: '1z9JqRecCNrgwHcVd0vO1rxVTtJBonB4M', ar: '32' },
+          b: { ev: 'i', no: '186', id: '1tc4gZnzVFflY7i7tO8GQz6WFrUfXWO1J', fill: true, pos: '40% 45%' } },
+        { t: 'mosaic', side: 'left',
+          big: { ev: 'i', no: '315', id: '1coZm8inQ8q-NbseoU0TXMhDweYKqClyp', ar: '43' },
+          small: [
+            { ev: 'i', no: '215', id: '1N43AZBcINI0cRXJtZy50HNHJPJlD3I5l', pos: '50% 45%' },
+            { ev: 'i', no: '204', id: '1HfdGbLkAeghcqg54icNpH1sbGtCLlhNX', pos: '50% 60%' }
+          ] }
+      ]
+    },
+    {
+      heading: '土の中から、この笑顔',
+      text: [
+        '出てきたお芋は、思っていたよりずっと大きくて、両手で抱えるほど。高く持ち上げて見せてくれる顔は、どの子も誇らしげでした。'
+      ],
+      blocks: [
+        { t: 'bleed', p: { ev: 'i', no: '247', id: '1iZmuxc6CB4XlD84wcHt_UVsrx4XqQatW' } },
+        { t: 'pair', split: '57',
+          a: { ev: 'i', no: '261', id: '1S_orVWIK0p-pSA1W8tMBw8_e_WacPF0T', fill: true, pos: '40% 50%' },
+          b: { ev: 'i', no: '228', id: '1PMppG5U7n3dqtR9m9QyEbgK-vaMZcC17', ar: '32' } },
+        { t: 'mosaic',
+          big: { ev: 'i', no: '272', id: '1X7VB3MBFdbYbW4KzIh2Q38yV0fU2Uxpr', ar: '43' },
+          small: [
+            { ev: 'i', no: '254', id: '1gRkPW4z4oyOWujePso0IH2TMPaTGVXp8', pos: '60% 60%' },
+            { ev: 'i', no: '290', id: '1synQso8_SjStGRIu5K5I6WX4TuFJpBuk', pos: '50% 45%' }
+          ] },
+        { t: 'strip', items: [ { ev: 'i', no: '245', id: '1CtsPyrAd1azhfrdIMSqHcPE4Hf56wVkR', pos: '40% 45%' }, { ev: 'i', no: '264', id: '1rz2ZGBafakjDjr0wwBIHSCRlfQUlvtZ7', pos: '50% 40%' }, { ev: 'i', no: '314', id: '1GhN4faEoEUaMJy0_Gxy-mn3eGTw-pTOt', pos: '45% 45%' } ] }
+      ]
+    },
+    {
+      heading: '最後に、もう一度「ありがとう」',
+      text: [
+        '収穫のあとは原っぱで思いきり走り回り、帰る前にはもう一度、佐藤さんのもとへお礼をして、たくさんの笑顔で幼稚園に帰っていきました。',
+        '収穫の喜びと、それを支えてくれた人への感謝。先生たちがこの行事を「お芋を掘る日」としてだけでなく、目に見えない大切な事も一緒に感じてもらいたい。という気持ちが僕にも伝わり幸せな気持ちになりました。'
+      ],
+      blocks: [
+        { t: 'wide', p: { ev: 'i', no: '341', id: '1Z_xHXOni4w4WDP0hjUtsf6Tuh-Xs6rNJ' } },
+        { t: 'pair', split: '75',
+          a: { ev: 'i', no: '342', id: '1s3x3QC95h6FycjmJY2z4dmDu8xi8DOr6', ar: '32' },
+          b: { ev: 'i', no: '364', id: '1vzFeVCiK7c1Ia4cFZ2NvNlOw_wCP9qh6', fill: true, pos: '40% 50%' } },
+        { t: 'strip', items: [ { ev: 'i', no: '337', id: '1CSCulgsIj-uyL7Wrgsm38YsF43Wp5jGS', pos: '50% 40%' }, { ev: 'i', no: '368', id: '1-mK5BeH0SYJnPoPXTuCvyNhye0uZiuOm', pos: '50% 45%' }, { ev: 'i', no: '372', id: '1uwTEtm6rg_VU_RxBu8l874yTIJdTS5Cj', pos: '55% 55%' } ] }
+      ]
+    }
+  ],
+  note: '',
+  sign: 'おさんぽフォト 黒野大樹（たいき先生）'
+};
+
+// ============================================================
+// 表示処理
+// ============================================================
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function imgUrl(id, w) {
+  return 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w' + (w || 1200);
+}
+// ログイン中のイベント（ギャラリーと同じ sessionStorage を参照）
+function currentEventId() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem('osanpo_session') || 'null');
+    if (s && s.event && s.expires > Date.now()) return String(s.event.id);
+  } catch (e) {}
+  return '';
+}
+const CURRENT = currentEventId();
+function photoHtml(p, w) {
+  if (!p.id) return '<div class="photo-link"><div class="placeholder">写真（準備中）</div></div>';
+  const ev = EVENTS[p.ev] || {};
+  const label = (ev.label ? ev.label + ' ' : '') + 'No.' + Number(p.no);
+  const style = p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '';
+  const inner = '<img src="' + imgUrl(p.id, w) + '" alt="芋掘り・栗拾いの写真（' + esc(label) + '）" loading="lazy" referrerpolicy="no-referrer"' + style + '>'
+    + '<span class="photo-no">' + esc(label) + '</span>';
+  // ログイン中のクラスの写真なら、タップでギャラリーのその写真を開く
+  if (ev.id && ev.id === CURRENT) {
+    return '<a class="photo-link" href="./#photo-' + esc(p.no) + '" aria-label="この写真をギャラリーで見る">' + inner + '</a>';
+  }
+  return '<div class="photo-link">' + inner + '</div>';
+}
+// 写真ブロック: wide / bleed / pair(split 75|57) / mosaic(side) / offset / strip / cap
+function fig(p, w, extra) {
+  return '<figure class="' + (extra || '') + (p.ar ? ' ar-' + p.ar : '') + (p.fill ? ' fill' : '') + '">' + photoHtml(p, w) + '</figure>';
+}
+function renderBlocks(blocks) {
+  let h = '<div class="blocks">';
+  blocks.forEach(b => {
+    switch (b.t) {
+      case 'wide':   h += '<div class="blk blk-wide">' + fig(Object.assign({ ar: '32' }, b.p), 1400) + '</div>'; break;
+      case 'bleed':  h += '<div class="blk blk-bleed">' + fig(Object.assign({ ar: '32' }, b.p), 1600) + '</div>'; break;
+      case 'pair':   h += '<div class="blk blk-pair' + (b.split ? ' s' + b.split : '') + '">' + fig(b.a, 900) + fig(b.b, 900) + '</div>'; break;
+      case 'offset': h += '<div class="blk blk-offset">' + fig(b.a, 1000) + fig(b.b, 800) + '</div>'; break;
+      case 'mosaic': h += '<div class="blk blk-mosaic' + (b.side === 'left' ? ' left' : '') + '">' + fig(b.big, 1100, 'big') + '<div class="small">' + b.small.map(p => fig(Object.assign({ ar: '11' }, p), 700)).join('') + '</div></div>'; break;
+      case 'strip':  h += '<div class="blk blk-strip">' + b.items.map(p => fig(Object.assign({ ar: '11' }, p), 700)).join('') + '</div>'; break;
+      case 'cap':    h += '<div class="cap">' + esc(b.text) + '</div>'; break;
+    }
+  });
+  return h + '</div>';
+}
+function paras(t, cls) {
+  return (Array.isArray(t) ? t : [t]).filter(Boolean).map(x => '<p' + (cls ? ' class="' + cls + '"' : '') + '>' + esc(x) + '</p>').join('');
+}
+function render() {
+  let h = '<section class="hero">';
+  h += '<div class="hero-photo' + (BLOG.hero.ar ? ' ar-' + BLOG.hero.ar : '') + '">' + photoHtml(BLOG.hero, 1600) + '</div>';
+  h += '<div class="eyebrow">' + esc(BLOG.eyebrow) + '</div>';
+  h += '<h1>' + esc(BLOG.title) + '</h1>';
+  h += '<div class="meta">' + esc(BLOG.meta) + '</div>';
+  h += '</section><article>';
+  h += paras(BLOG.lead, 'lead');
+  BLOG.chapters.forEach((c, i) => {
+    h += '<section class="chapter">';
+    h += '<h2><span class="no">' + String(i + 1).padStart(2, '0') + '</span>' + esc(c.heading) + '</h2>';
+    h += paras(c.text);
+    if (c.blocks && c.blocks.length) h += renderBlocks(c.blocks);
+    if (c.photos && c.photos.length) {
+      h += '<div class="photos cols-' + (c.cols || 1) + '">';
+      c.photos.forEach(p => {
+        h += '<figure' + (p.wide ? ' class="wide"' : '') + '>' + photoHtml(p, (c.cols > 1 && !p.wide) ? 800 : 1400) + '</figure>';
+      });
+      h += '</div>';
+    }
+    if (c.voice) h += '<div class="voice">' + esc(c.voice) + '</div>';
+    h += '</section>';
+  });
+  if (BLOG.note) {
+    h += '<div class="note"><div class="note-title">カメラマンより</div><p>' + esc(BLOG.note) + '</p><div class="sign">' + esc(BLOG.sign) + '</div></div>';
+  } else if (BLOG.sign) {
+    h += '<div class="sign-only">' + esc(BLOG.sign) + '</div>';
+  }
+  h += '<div class="cta"><p>この日の写真は、ギャラリーから<br>1枚ずつ選んでお求めいただけます。</p>'
+     + '<a class="cta-btn" href="./">写真を選ぶ →</a>'
+     + '<small>' + (CURRENT ? 'お子さまのクラスの写真は、タップするとギャラリーでその写真が開きます' : 'ギャラリーにログインしてから開くと、写真をタップしてそのまま選べます') + '</small></div>';
+  h += '</article>';
+  document.getElementById('app').innerHTML = h;
+}
+function renderGate() {
+  const h = '<section class="gate">'
+    + '<div class="eyebrow">' + esc(BLOG.eyebrow) + '</div>'
+    + '<h1>' + esc(BLOG.title) + '</h1>'
+    + '<p>この記事は、園の保護者の方に向けた PHOTO STORY です。<br>ギャラリーにログインすると表示されます。</p>'
+    + '<a class="cta-btn" href="./?next=' + encodeURIComponent(location.pathname.split('/').pop() || 'blog-imohori-2026.html') + '">ギャラリーにログインする →</a>'
+    + '<p style="font-size:12px;margin-top:14px">パスワードは園からのお知らせをご確認ください</p>'
+    + '</section>';
+  document.getElementById('app').innerHTML = h;
+}
+// ログイン中（かつ、この記事のクラス）のときだけ記事を表示する
+const ALLOWED = Object.keys(EVENTS).some(k => EVENTS[k].id === CURRENT);
+if (ALLOWED) render(); else renderGate();
+</script>
+
+<footer>© おさんぽフォト ／ 写真の転載・二次利用はご遠慮ください</footer>
+</body>
+</html>
