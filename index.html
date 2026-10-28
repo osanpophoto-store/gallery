@@ -3769,7 +3769,7 @@ function faceApply() {
   if (FACE.active && grid) {
     if (!div) { div = document.createElement('div'); div.id = 'face-divider'; div.className = 'face-divider'; grid.appendChild(div); }
     const rest = state.photos.length - FACE.matched.size;
-    div.innerHTML = `<strong>ここから下は、ほかの写真（${rest}枚）</strong><small>横向き・帽子のかげ・遠くに写っている写真は、AIでは見つけられないことがあります。お子さまが写っていないか、ぜひ見てみてください。</small>`;
+    div.innerHTML = `<strong>ここから下は、ほかの写真（${rest}枚）</strong><small>横向き・帽子のかげ・遠くに写っている写真は、自動では見つけられないことがあります。お子さまが写っていないか、ぜひ見てみてください。</small>`;
   } else if (div) div.remove();
   state.photos.forEach(p => {
     const el = document.getElementById('item-' + p.number); if (!el) return;
@@ -3847,7 +3847,7 @@ function renderFacePanel() {
   let h = '';
   if (FACE.active) {
     h += `<div class="face-head"><span><strong>👦 この子の写真 ${FACE.matched.size}枚</strong> を先頭に並べました</span><button type="button" class="face-btn-reset" onclick="faceClear()">もとの並びに戻す</button></div>`;
-    h += `<div class="face-ref">⚠️ AIが探した結果なので<strong>参考</strong>としてご覧ください。見つからなかった写真にもお子さまが写っていることがあります。下の「ほかの写真」もあわせてご確認ください。</div>`;
+    h += `<div class="face-ref">⚠️ 自動で探した結果なので<strong>参考</strong>としてご覧ください。見つからなかった写真にもお子さまが写っていることがあります。下の「ほかの写真」もあわせてご確認ください。</div>`;
     if (FACE.cands.length) {
       h += `<div class="face-sub">この子かも？<small>お子さまならタップで追加。ちがう子は ✕（次の候補が出ます）</small></div><div class="face-strip">${FACE.cands.slice(0, 6).map(i => faceCropHtml(i, 'cand')).join('')}</div>`;
     } else {
@@ -3857,7 +3857,7 @@ function renderFacePanel() {
     h += `<details class="face-found"><summary>この子として見つけた顔（${mine.length}）<small>ちがう顔はタップで外せます</small></summary><div class="face-strip wrap">${mine.map(i => faceCropHtml(i, 'found')).join('')}</div></details>`;
   } else {
     h += `<div class="face-head"><strong>👦 わが子をさがす</strong><button type="button" class="face-btn-reset" onclick="faceCancel()">やめる</button></div>
-      <div class="face-ref">⚠️ この顔の一覧は、AIが写真から自動で作った<strong>参考</strong>の一覧です。同じお子さまが2つ以上並んでいたり、一覧に出てこないお子さまもいます。</div>
+      <div class="face-ref">⚠️ この顔の一覧は、写真から自動で作った<strong>参考</strong>の一覧です。同じお子さまが2つ以上並んでいたり、一覧に出てこないお子さまもいます。</div>
       <div class="face-sub">お子さまの顔をタップしてください。<small>${FACE.data.pk ? '帽子の色でしぼると探しやすくなります。' : ''}一覧にないときは、写真の 🔍 で大きく表示すると顔に ○ が出るので、そこからも選べます。</small></div>
       ${FACE.data.pk ? `<div class="face-chips">${[[-1, 'すべて', '']].concat(FACE_GROUPS.map((g, k) => [k, g[0], g[1]])).filter(([k]) => k < 0 || FACE.data.pk.some(p => p[1] === k)).map(([k, name, col]) => `<button type="button" class="face-chip${FACE.pickGroup === k ? ' on' : ''}" onclick="facePickGroup(${k})">${col ? `<i style="background:${col}"></i>` : ''}${name}</button>`).join('')}</div>` : ''}
       <div class="face-strip wrap tall" id="face-pick-strip">${facePickList().map(i => faceCropHtml(i, 'pick')).join('')}</div>`;
