@@ -1538,6 +1538,12 @@ body.favorites-off .face-fab { top: 50%; }
 .sec-head a { margin-left: auto; font-size: 12px; color: var(--forest); text-decoration: none; font-weight: 700; }
 body.face-filter .sec-head, body.face-filter .sec-chips, body.mode-753 .sec-head, body.mode-753 .sec-chips { display: none !important; }
 @media (max-width: 640px) { .sec-chips { padding: 0 20px; } }
+/* イベントごとのお知らせ（例: 運動会のフジ販売）v2.15 */
+.event-notice { max-width: 1200px; margin: 0 auto 14px; padding: 0 40px; }
+.event-notice-in { background: #F3F7FC; border: 1.5px solid #CFE0F5; border-radius: 12px; padding: 12px 16px; font-size: 13.5px; line-height: 1.75; color: var(--deep); }
+.event-notice-in strong { display: block; font-size: 14.5px; margin-bottom: 2px; }
+body.mode-753 .event-notice { display: none !important; }
+@media (max-width: 640px) { .event-notice { padding: 0 20px; } }
 /* ライトボックスの顔の枠 */
 .lb-faces { position: absolute; z-index: 15; pointer-events: none; }
 .lb-face { position: absolute; border: 2.5px solid rgba(255,255,255,0.9); border-radius: 50%; background: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,0.35); pointer-events: auto; cursor: pointer; padding: 0; animation: lbFacePulse 1.6s ease-out 1; }
@@ -1669,6 +1675,7 @@ body.face-filter .sec-head, body.face-filter .sec-chips, body.mode-753 .sec-head
     <button type="button" class="face-bar-resume" id="face-bar-resume" style="display:none" onclick="faceStart(true)">前回の続きから</button>
   </div>
   <div class="face-panel" id="face-panel"></div>
+  <div class="event-notice" id="event-notice" style="display:none"></div>
   <div class="sec-chips" id="sec-chips" style="display:none"></div>
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
@@ -3516,7 +3523,23 @@ const EVENT_SECTIONS = {
     [1500, '閉会・おわりのようす']
   ]
 };
+// イベントごとのお知らせ（写真一覧の上に1つだけ出す）
+const EVENT_NOTICES = {
+  'sportsday2026': {
+    title: '📷 プリント・集合写真をご希望の方へ',
+    text: 'こちらでは、スマホにすぐ届く写真データを販売しています（11/30まで）。L判などのプリントや集合写真は、11月末に園でお配りするチラシから、フジフイルムの写真販売でもご注文いただけます。'
+  }
+};
+function renderEventNotice() {
+  const el = document.getElementById('event-notice');
+  if (!el) return;
+  const n = EVENT_NOTICES[state.selectedEventId];
+  if (!n || state.mode753) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="event-notice-in"><strong>' + escHtml(n.title) + '</strong>' + escHtml(n.text) + '</div>';
+  el.style.display = '';
+}
 function renderSections() {
+  renderEventNotice();
   const box = document.getElementById('sec-chips');
   const grid = document.getElementById('photo-grid');
   if (!box || !grid) return;
