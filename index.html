@@ -1782,7 +1782,7 @@ input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-w
 .lightbox-num { font-family: var(--mono); letter-spacing: 0.1em; }
 .lightbox-hint { border-radius: 0; }
 /* トースト・完了画面 */
-.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0e */
+.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0f */
 .toast.success { border-left: 3px solid var(--ink); }
 .toast.error { border-left: 3px solid var(--vermilion); }
 .paid-wrap h2 { font-weight: 400; letter-spacing: 0.06em; }
@@ -2481,7 +2481,7 @@ function renderEventList() {
       <div class="event-info">
         <h3>${escHtml(plainName(ev.name))}</h3>
       </div>
-      <span class="event-badge">${Number(ev.count || 0).toLocaleString()} ・ ${untilText(ev)}</span>
+      <span class="event-badge">${untilText(ev)}</span>
     </div>
   `).join('') + '<p class="event-legend"><i class="g-dot on" aria-hidden="true"></i>このスマホで開いたことがある行事（パスワードなしで開けます）</p>';
 }
@@ -2627,8 +2627,16 @@ const EVENT_UNTIL = { 'sportsday2026': '2026-11-30', 'imohorikurihiroi': '2026-1
 function plainName(n) { try { return String(n || '').replace(/^[\s\p{Extended_Pictographic}\uFE0F\u200D]+/u, '').replace(/[\s\p{Extended_Pictographic}\uFE0F\u200D]+$/u, ''); } catch (e) { return String(n || ''); } }
 function md(d) { const t = new Date(d); return isNaN(t) ? '' : (t.getMonth() + 1) + '.' + String(t.getDate()).padStart(2, '0'); }
 // v3.0c: 撮影日ではなく「締切 ・ 残り日数」を控えめに（例「11.30 まで ・ あと 33 日」）
+// v3.0f: 販売開始前の行事は「11.04 から」と予告する（開始日はここで管理）
+const EVENT_FROM = { 'imohorikurihiroi': '2026-11-04', 'zoo2026': '2026-11-04' };
 // v3.0d: 行事一覧用 「11.30 まで」/ 残り7日以内は「あと N 日」（朱）/ 当日は「本日まで」
 function untilText(ev) {
+  const from = ev.openDate || ev.startDate || EVENT_FROM[ev.id];
+  if (from) {
+    const f = new Date(from); f.setHours(0, 0, 0, 0);
+    const t0 = new Date(); t0.setHours(0, 0, 0, 0);
+    if (!isNaN(f) && f > t0) return md(from) + ' から';
+  }
   const raw = ev.closeDate || ev.viewEndDate || ev.endDate || ev.purchaseDeadline || ev.deadline || EVENT_UNTIL[ev.id];
   const b = raw ? md(raw) : '';
   if (!b) return '';
