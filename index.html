@@ -1852,7 +1852,7 @@ body.no-all .btn-download-all, body.no-all .recommend-banner-btn { display: none
     <h4>何をしているの？</h4>
     <p>ギャラリーの写真に写っている顔の位置と、顔の特徴を数値にしたもの（顔データ）を、おさんぽフォトがあらかじめ作っています。お子さまの顔をタップすると、似ている顔が写っている写真を探して表示します。</p>
     <h4>照合はスマホの中だけ</h4>
-    <p>似ている顔を探す計算は、このスマホ（ブラウザ）の中だけで行います。タップした顔や探した結果をおさんぽフォトに送ることはありません。保護者の方の写真を使うこともありません。</p>
+    <p>似ている顔を探す計算は、このスマホ（ブラウザ）の中だけで行います。タップした顔や探した結果をおさんぽフォトに送ることはありません。保護者の方の写真を使うこともありません。この機能を使った回数と、使ったうえでご注文いただいたかどうかだけを、サービス改善のために記録します。</p>
     <h4>顔データの管理</h4>
     <p>顔データは、パスワードでギャラリーに入った方だけが読み込めます。写真を探す目的以外には使わず、閲覧・販売期間が終わったら削除します。</p>
     <h4>うまく見つからないときは</h4>
@@ -3228,7 +3228,7 @@ async function doCreatePayment(isAll, planType) {
         items.push({ eventId: c.eventId, token: token, photoNumbers: c.nums.join(','), qty: String(c.count), isAll: 'false' });
       }
       btnStripe.textContent = '決済ページを準備中...';
-      data = await api('createPaymentMulti', { items: JSON.stringify(items), email: email });
+      data = await api('createPaymentMulti', { items: JSON.stringify(items), email: email, face: faceUsedFlag() });
       // 決済完了後に全クラスのカートを空にできるよう、対象クラスを控えておく
       try { sessionStorage.setItem('osanpo_last_order_events', JSON.stringify(items.map(i => i.eventId))); } catch(e) {}
     } else {
@@ -3238,7 +3238,8 @@ async function doCreatePayment(isAll, planType) {
         photoNumbers: photoNumbers.join(','),
         qty: String(qty),
         email: email,
-        planType: plan
+        planType: plan,
+        face: faceUsedFlag()
       });
       try { sessionStorage.setItem('osanpo_last_order_events', JSON.stringify([state.selectedEventId])); } catch(e) {}
     }
@@ -3639,6 +3640,9 @@ function goBackFromPaid() {
 // ========================================
 const FACE = { pickGroup: -1, data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] };
 function faceStoreKey() { return 'osanpo_face_' + state.selectedEventId; }
+// v2.18 「わが子をさがす」を使ったかどうか（使った／使っていない の1ビットだけ。顔や結果は送らない）
+function faceUsedFlag() { try { return storeGet('osanpo_face_used') === '1' ? '1' : '0'; } catch (e) { return '0'; } }
+function faceMarkUsed() { try { storeSet('osanpo_face_used', '1'); } catch (e) {} }
 function faceReset() {
   Object.assign(FACE, { pickGroup: -1, data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] });
   document.getElementById('face-bar')?.classList.remove('visible', 'loading');
@@ -3785,6 +3789,7 @@ async function faceStart(resume) {
   bar.classList.add('loading');
   try { await faceLoad(); } catch (e) { bar.classList.remove('loading'); showToast((e && e.message) || '顔データを読み込めませんでした', 'error'); return; }
   bar.classList.remove('loading');
+  faceMarkUsed();
   FACE.showBoxes = true;
   if (resume) {
     try {
