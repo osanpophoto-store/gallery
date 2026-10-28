@@ -2375,6 +2375,7 @@ function renderDeadlineBanner(ev) {
   banner.style.display = 'block';
 }
 async function loadPhotos() {
+  document.body.classList.toggle('no-all', !!noAllCfg() && !state.mode753); // 読み込み中も丸ごとボタンを出さない（v2.19a）
   const grid = document.getElementById('photo-grid');
   grid.innerHTML = '<div class="loading-wrap" style="grid-column:1/-1"><div class="spinner"></div><p>写真を読み込み中...</p></div>';
   try {
