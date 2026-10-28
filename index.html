@@ -1525,6 +1525,19 @@ body.favorites-off .face-fab { top: 50%; }
 .photo-item.face-mine { box-shadow: 0 0 0 3px var(--forest); }
 .face-divider { grid-column: 1 / -1; order: 1; margin: 18px 0 4px; padding: 12px 14px; background: #FFF7E6; border: 1.5px dashed #F6C64B; border-radius: 12px; font-size: 13.5px; color: var(--deep); line-height: 1.6; }
 .face-divider small { display: block; font-size: 12px; color: var(--bark); }
+/* 種目アンカー（イベントごとの区切り）v2.14 */
+.sec-chips { max-width: 1200px; margin: 0 auto 14px; padding: 0 40px; scroll-margin-top: 90px; }
+.sec-chips-title { font-size: 12px; font-weight: 700; color: var(--bark); margin-bottom: 6px; }
+.sec-chips-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.sec-chip { flex: 0 0 auto; text-decoration: none; color: var(--deep); background: #fff; border: 1.5px solid var(--sand); border-radius: 18px; padding: 7px 13px; font-size: 13px; white-space: nowrap; }
+.sec-chip:hover { border-color: var(--forest); background: #EEF5F0; }
+.sec-head { grid-column: 1 / -1; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 10px; margin-top: 10px; padding: 10px 14px; background: #fff; border-left: 5px solid var(--forest); border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); scroll-margin-top: 90px; }
+.sec-head:first-child { margin-top: 0; }
+.sec-head strong { font-size: 16px; color: var(--deep); }
+.sec-head small { font-size: 12.5px; color: var(--bark); }
+.sec-head a { margin-left: auto; font-size: 12px; color: var(--forest); text-decoration: none; font-weight: 700; }
+body.face-filter .sec-head, body.face-filter .sec-chips, body.mode-753 .sec-head, body.mode-753 .sec-chips { display: none !important; }
+@media (max-width: 640px) { .sec-chips { padding: 0 20px; } }
 /* ライトボックスの顔の枠 */
 .lb-faces { position: absolute; z-index: 15; pointer-events: none; }
 .lb-face { position: absolute; border: 2.5px solid rgba(255,255,255,0.9); border-radius: 50%; background: transparent; box-shadow: 0 0 0 1px rgba(0,0,0,0.35); pointer-events: auto; cursor: pointer; padding: 0; animation: lbFacePulse 1.6s ease-out 1; }
@@ -1656,6 +1669,7 @@ body.favorites-off .face-fab { top: 50%; }
     <button type="button" class="face-bar-resume" id="face-bar-resume" style="display:none" onclick="faceStart(true)">前回の続きから</button>
   </div>
   <div class="face-panel" id="face-panel"></div>
+  <div class="sec-chips" id="sec-chips" style="display:none"></div>
   <div class="photo-grid" id="photo-grid">
     <div class="loading-wrap" style="grid-column:1/-1">
       <div class="spinner"></div>
@@ -2408,6 +2422,7 @@ function renderGrid() {
     </div>
   `).join('');
   initLazyLoad();
+  renderSections(); // 種目アンカー（設定のあるイベントだけ）
   // 保存されていたカートの選択状態をグリッドの見た目に反映
   state.selected.forEach(num => {
     document.getElementById('item-' + num)?.classList.add('selected');
@@ -3483,6 +3498,48 @@ const EVENT_BLOGS = [
     thumb: '1Vx4drFQR5hhMShrt1HxN-yXhBoG4rnz3'
   }
 ];
+// ============================================================
+// 種目アンカー（v2.14）: 写真一覧を種目ごとに区切って、上のボタンからその種目へ飛べるようにする
+// 写真の番号・ファイルはそのまま。表示だけ区切る。[開始番号, 種目名] を写真の順に並べる
+// ============================================================
+const EVENT_SECTIONS = {
+  'sportsday2026': [
+    [1, '開会式・応援席のようす'],
+    [156, 'がってんそーだ（準備体操）'],
+    [210, '青さん「野をこえ山こえ谷こえて」'],
+    [529, '赤さんダンス「ポポポポポーズ」'],
+    [670, '黄さんダンス「パプリカ」'],
+    [813, '青さんダンス「がむしゃら行進曲」'],
+    [943, '赤さんかけっこ'],
+    [1129, '黄さんかけっこ'],
+    [1304, '青さんリレー'],
+    [1500, '閉会・おわりのようす']
+  ]
+};
+function renderSections() {
+  const box = document.getElementById('sec-chips');
+  const grid = document.getElementById('photo-grid');
+  if (!box || !grid) return;
+  grid.querySelectorAll('.sec-head').forEach(el => el.remove());
+  const secs = EVENT_SECTIONS[state.selectedEventId];
+  if (!secs || state.mode753 || !state.photos.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  const total = state.photos.length;
+  const pad = n => String(n).padStart(3, '0');
+  let chips = '';
+  secs.forEach(([start, name], k) => {
+    const end = k + 1 < secs.length ? secs[k + 1][0] - 1 : total;
+    const item = document.getElementById('item-' + pad(start));
+    if (!item || end < start) return;
+    const h = document.createElement('div');
+    h.className = 'sec-head'; h.id = 'sec-' + k;
+    h.innerHTML = '<strong>' + escHtml(name) + '</strong><small>' + pad(start) + '〜' + pad(end) + '（' + (end - start + 1) + '枚）</small><a href="#sec-chips">種目の一覧へ ↑</a>';
+    grid.insertBefore(h, item);
+    chips += '<a class="sec-chip" href="#sec-' + k + '">' + escHtml(name) + '</a>';
+  });
+  if (!chips) { box.style.display = 'none'; return; }
+  box.innerHTML = '<div class="sec-chips-title">種目からさがす</div><div class="sec-chips-row">' + chips + '</div>';
+  box.style.display = '';
+}
 // 七五三 特設ページの案内バナー。期間内かつ直リンク（?event=）以外のときだけ出す
 function renderPromo753() {
   const c = CONFIG.PROMO_753 || {};
