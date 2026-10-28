@@ -2590,7 +2590,7 @@ async function enterGallery() {
 //   含まれていない場合は何も表示されない（バックエンド側の対応が別途必要）
 // 撮影日 — 締切 を「10.25 — 11.30」の形で（締切はGASが返す closeDate、無ければ EVENT_UNTIL から）
 const EVENT_UNTIL = { 'sportsday2026': '2026-11-30', 'imohorikurihiroi': '2026-11-30', 'zoo2026': '2026-11-30', 'undokai-2026': '2026-11-30', 'omise-tanpopohimawari': '2026-11-01', 'omise-yurisumireajisai': '2026-11-01' };
-function plainName(n) { return String(n || '').replace(/^\s*[^\w\u3040-\u30ff\u4e00-\u9fff]+\s*/, '').replace(/\s*[^\w\u3040-\u30ff\u4e00-\u9fff]+\s*$/, ''); }
+function plainName(n) { try { return String(n || '').replace(/^[\s\p{Extended_Pictographic}\uFE0F\u200D]+/u, '').replace(/[\s\p{Extended_Pictographic}\uFE0F\u200D]+$/u, ''); } catch (e) { return String(n || ''); } }
 function md(d) { const t = new Date(d); return isNaN(t) ? '' : (t.getMonth() + 1) + '.' + String(t.getDate()).padStart(2, '0'); }
 function periodText(ev) {
   const a = md(ev.date);
