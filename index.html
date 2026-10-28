@@ -1544,6 +1544,10 @@ body.face-filter .sec-head, body.face-filter .sec-chips, body.mode-753 .sec-head
 .event-notice-in { background: #F3F7FC; border: 1.5px solid #CFE0F5; border-radius: 12px; padding: 12px 16px; font-size: 13.5px; line-height: 1.75; color: var(--deep); }
 .event-notice-in strong { display: block; font-size: 14.5px; margin-bottom: 2px; }
 body.mode-753 .event-notice { display: none !important; }
+.event-notice-in + .event-notice-in { margin-top: 8px; }
+.event-notice-in.warm { background: #FFF8E1; border-color: #F6C64B; }
+/* 丸ごとなしのイベント（v2.17） */
+body.no-all .btn-download-all, body.no-all .recommend-banner-btn { display: none !important; }
 @media (max-width: 640px) { .event-notice { padding: 0 20px; } }
 /* ライトボックスの顔の枠 */
 .lb-faces { position: absolute; z-index: 15; pointer-events: none; }
@@ -2739,7 +2743,7 @@ function addAllFavoritesToCart() {
   let added = 0, blocked = false;
   nums.forEach(num => {
     if (state.selected.has(num)) return;
-    if (!state.mode753 && state.selected.size >= 19) { blocked = true; return; }
+    if (!state.mode753 && state.selected.size >= selLimit()) { blocked = true; return; }
     state.selected.add(num);
     document.getElementById('item-' + num)?.classList.add('selected');
     if (state.mode753) refreshSizeBadge(num);
@@ -2749,7 +2753,7 @@ function addAllFavoritesToCart() {
   saveCartToStorage();
   if (blocked) {
     showLimitBanner();
-    showToast(`${added}枚をカートに追加しました（19枚上限のため一部は追加できませんでした）`, 'error');
+    showToast(`${added}枚をカートに追加しました（${selLimit()}枚上限のため一部は追加できませんでした）`, 'error');
   } else if (added > 0) {
     showToast(`お気に入り${added}枚をカートに追加しました`);
   } else {
@@ -2771,7 +2775,7 @@ function toggleSelect(num) {
     state.selected.delete(num);
     document.getElementById('item-' + num)?.classList.remove('selected');
   } else {
-    if (!state.mode753 && state.selected.size >= 19) {
+    if (!state.mode753 && state.selected.size >= selLimit()) {
       showLimitBanner();
       return;
     }
@@ -2847,7 +2851,9 @@ function updateCart() {
   if (count >= 15) {
     // 制限バナー表示中（19枚ちょうど）でなければテキストを更新
     if (!banner.classList.contains('limit-mode')) {
-      bannerText.textContent = `${count}枚選ばれています。ここまで選ぶなら、当日の空気感ごと残せる「丸ごとダウンロード ¥2,000」もおすすめです。`;
+      bannerText.textContent = noAllCfg()
+        ? (count < 20 ? `あと${20 - count}枚選ぶと、何枚でも ¥2,000 になります（${selLimit()}枚まで）。` : `20枚以上なので、何枚選んでも ¥2,000 です（${selLimit()}枚まで）。`)
+        : `${count}枚選ばれています。ここまで選ぶなら、当日の空気感ごと残せる「丸ごとダウンロード ¥2,000」もおすすめです。`;
     }
     banner.classList.add('visible');
   } else {
@@ -2858,7 +2864,9 @@ function updateCart() {
 function showLimitBanner() {
   const banner = document.getElementById('recommend-banner');
   const bannerText = document.getElementById('recommend-banner-text');
-  bannerText.textContent = '20枚以上選ぶ場合は、全写真をまとめて残せる「丸ごとダウンロード ¥2,000」がおすすめです。';
+  bannerText.textContent = noAllCfg()
+    ? `1回のご注文でお選びいただけるのは${selLimit()}枚までです（何枚でも ¥2,000）。`
+    : '20枚以上選ぶ場合は、全写真をまとめて残せる「丸ごとダウンロード ¥2,000」がおすすめです。';
   banner.classList.add('visible', 'limit-mode');
 }
 // クライアント側料金計算（GAS側と同じロジック）
@@ -2995,13 +3003,14 @@ function formatPriceDetail(price) {
   if (price.pack10) parts.push(`10枚セット×${price.pack10}`);
   if (price.pack5)  parts.push(`5枚セット×${price.pack5}`);
   if (price.single) parts.push(`単品×${price.single}枚`);
-  if (!parts.length && price.total===2000) parts.push('丸ごとダウンロード');
+  if (!parts.length && price.total===2000) parts.push(noAllCfg() ? '20枚以上（上限 ¥2,000）' : '丸ごとダウンロード');
   return parts.join('　');
 }
 // ========================================
 // モーダル（購入確認 + 同意チェック + Stripe）
 // ========================================
 function openPaymentModal(isAll) {
+  if (isAll && noAllCfg()) isAll = false; // 丸ごとなしのイベント
   state.downloadAll = isAll;
   const count = isAll ? state.session?.event?.count : state.selected.size;
   const price = isAll ? { total: 2000, pack10: 0, pack5: 0, single: 0 } : calcPrice(count);
@@ -3054,6 +3063,7 @@ function openPaymentModal(isAll) {
   if (price.pack5)  priceRows += `<div class="price-row"><span>5枚セット × ${price.pack5}</span><span>¥${(price.pack5*500).toLocaleString()}</span></div>`;
   if (price.single) priceRows += `<div class="price-row"><span>単品 × ${price.single}枚</span><span>¥${(price.single*140).toLocaleString()}</span></div>`;
   if (isAll)        priceRows += `<div class="price-row"><span>全データ一括</span><span>¥2,000</span></div>`;
+  if (!isAll && count >= 20) priceRows += `<div class="price-row"><span>20枚以上（何枚でも上限）</span><span>¥2,000</span></div>`;
   if (others.length) {
     // クラスごとの小計を並べて、最後に合算
     priceRows = (count > 0 || isAll) ? `<div class="price-row"><span>${escHtml(evName)}${isAll ? '（全写真）' : ' ' + count + '枚'}</span><span>¥${price.total.toLocaleString()}</span></div>` : '';
@@ -3525,18 +3535,27 @@ const EVENT_SECTIONS = {
   ]
 };
 // イベントごとのお知らせ（写真一覧の上に1つだけ出す）
+// 丸ごとなしのイベント（v2.17）: 全園児が写る大きな行事。丸ごとダウンロードは出さず、
+// 20枚以上は何枚でも ¥2,000（上限）で、選んだ写真だけをリンクでお渡しする。GAS側 NO_ALL_EVENTS と同じ
+const NO_ALL_EVENTS = { 'sportsday2026': { max: 60 } };
+function noAllCfg() { return NO_ALL_EVENTS[state.selectedEventId] || null; }
+function selLimit() { const c = noAllCfg(); return (c && !state.mode753) ? c.max : 19; }
 const EVENT_NOTICES = {
-  'sportsday2026': {
-    title: '📷 プリント・集合写真をご希望の方へ',
-    text: 'こちらでは、スマホにすぐ届く写真データを販売しています（11/30まで）。L判などのプリントや集合写真は、11月末に園でお配りするチラシから、フジフイルムの写真販売でもご注文いただけます。'
-  }
+  'sportsday2026': [
+    {
+      title: '📷 プリント・集合写真をご希望の方へ',
+      text: 'こちらでは、スマホにすぐ届く写真データを販売しています（11/30まで）。L判などのプリントや集合写真は、11月末に園でお配りするチラシから、フジフイルムの写真販売でもご注文いただけます。'
+    },
+    { warm: true, title: '📦 運動会は「丸ごとダウンロード」のかわりに', text: '運動会は全クラスのお子さまが写る行事で、写真も1,500枚以上と多いため、ほかのご家庭のお子さまの写真まで一括でお渡しすることになる「丸ごとダウンロード」はお休みしています。そのかわり、20枚以上は何枚選んでも ¥2,000（1回のご注文で60枚まで）。わが子のお気に入りだけを選んで、お得にお求めいただけます。' }
+  ]
 };
 function renderEventNotice() {
+  document.body.classList.toggle('no-all', !!noAllCfg() && !state.mode753);
   const el = document.getElementById('event-notice');
   if (!el) return;
   const n = EVENT_NOTICES[state.selectedEventId];
   if (!n || state.mode753) { el.style.display = 'none'; el.innerHTML = ''; return; }
-  el.innerHTML = '<div class="event-notice-in"><strong>' + escHtml(n.title) + '</strong>' + escHtml(n.text) + '</div>';
+  el.innerHTML = [].concat(n).map(x => '<div class="event-notice-in' + (x.warm ? ' warm' : '') + '"><strong>' + escHtml(x.title) + '</strong>' + escHtml(x.text) + '</div>').join('');
   el.style.display = '';
 }
 function renderSections() {
