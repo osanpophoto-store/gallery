@@ -9,46 +9,43 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 /* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
+  /* テーマ D「余白と線」v3.0（2026-10-28）: 白・墨・朱、細い罫線、角丸なし */
   --cream: #FFFFFF;
-  --warm-white: #F8FAF8;
-  --sand: #E8E8E8;
-  --bark: #7A7A7A;
-  --deep: #2C2C2C;
-  --forest: #4A7A5A;
-  --moss: #7AAD8A;
-  --dusk: #7A6A8A;
-  --accent: #D4723A;
-  --cart-bg: #5C7A67;
-  --danger: #C0392B;
-  --serif: 'Zen Maru Gothic', sans-serif;
-  --sans: 'Zen Maru Gothic', sans-serif;
-  --radius: 12px;
-  --shadow: 0 4px 24px rgba(44,44,44,0.08);
-  --shadow-lg: 0 12px 48px rgba(44,44,44,0.14);
+  --warm-white: #FFFFFF;
+  --sand: #E6E6E6;
+  --bark: #595959;
+  --deep: #1A1A1A;
+  --forest: #1A1A1A;
+  --moss: #595959;
+  --dusk: #595959;
+  --accent: #C8452B;
+  --cart-bg: #1C1C1C;
+  --danger: #C8452B;
+  --ink: #1A1A1A;
+  --line: #E6E6E6;
+  --vermilion: #C8452B;
+  --serif: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  --sans: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  --mono: 'Inter', 'Zen Kaku Gothic New', sans-serif;
+  --radius: 0px;
+  --shadow: none;
+  --shadow-lg: none;
 }
 html { scroll-behavior: smooth; }
 body {
-  font-family: 'Zen Maru Gothic', sans-serif;
+  font-family: var(--sans);
+  font-weight: 400;
   background: #FFFFFF;
   color: var(--deep);
   min-height: 100vh;
   overflow-x: hidden;
 }
-/* ===== GRAIN OVERLAY ===== */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 1000;
-  opacity: 0.6;
-}
+/* ===== GRAIN OVERLAY: テーマDでは使わない ===== */
 /* ===== HEADER ===== */
 .site-header {
   position: fixed;
@@ -990,8 +987,8 @@ body:not(.favorites-off) .lightbox-cart-chip { left: 64px; }
   left: 0;
   right: 0;
   z-index: 150;
-  background: rgba(74,122,90,0.95);
-  backdrop-filter: blur(8px);
+  background: var(--ink);
+  backdrop-filter: none;
   color: rgba(255,255,255,0.8);
   font-size: 11px;
   padding: 8px 0;
@@ -1560,14 +1557,242 @@ body.no-all .btn-download-all, body.no-all .recommend-banner-btn { display: none
 .face-info-box h4 { font-size: 14px; color: var(--forest); margin: 14px 0 4px; }
 .face-info-box p { font-size: 13px; line-height: 1.8; }
 @media (max-width: 640px) { .face-bar { padding: 0 16px; } }
+/* ============================================================
+   THEME D「余白と線」v3.0 — 上書き層（既存ルールより後ろに置く）
+   白・墨(#1A1A1A)・朱(#C8452B)。角丸なし、影なし、1pxの罫線。
+   本文の読みやすさ: 太さ400以上・15px以上・行間1.6以上
+   ============================================================ */
+body { font-size: 15px; line-height: 1.7; -webkit-font-smoothing: auto; }
+button, input, select, textarea { font-family: var(--sans); }
+/* ヘッダー */
+.site-header { padding: 14px 24px; background: #fff; backdrop-filter: none; border-bottom: 1px solid var(--line); }
+.logo { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; font-weight: 400; gap: 14px; color: var(--ink); }
+.logo-ja { font-family: var(--sans); font-size: 12px; letter-spacing: 0.08em; color: var(--bark); }
+.logo-ja:empty { display: none; }
+.btn-logout { font-size: 12px; color: var(--bark); border: 1px solid var(--line); border-radius: 0; padding: 7px 14px; letter-spacing: 0.08em; }
+.btn-logout:hover { background: #fff; border-color: var(--ink); color: var(--ink); }
+.screen { padding-top: 64px; }
+/* ログイン（行事を選ぶ） */
+.login-wrap { max-width: 520px; padding: 24px 24px 40px; }
+.login-hero { text-align: left; margin: 24px 0 28px; }
+.login-en { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bark); border: 0; background: none; padding: 0; margin-bottom: 18px; }
+.login-hero h1 { font-size: 28px; font-weight: 400; letter-spacing: 0.06em; line-height: 1.35; margin-bottom: 14px; }
+.login-hero p { font-size: 14px; color: var(--bark); line-height: 1.8; }
+.login-hero p br { display: none; }
+.login-hero p span { display: block; margin-top: 6px; }
+.event-cards { gap: 0; border-top: 1px solid var(--ink); margin-bottom: 28px; }
+.event-card { background: #fff; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 0; min-height: 60px; gap: 12px; transition: none; }
+.event-card:hover { transform: none; box-shadow: none; border-color: var(--line); background: #FAFAFA; }
+.event-card.selected { background: #fff; box-shadow: inset 4px 0 0 var(--ink); padding-left: 12px; }
+.event-info h3 { font-size: 15px; font-weight: 500; margin: 0; letter-spacing: 0.02em; }
+.event-info p { font-size: 11px; color: var(--bark); }
+.event-info p:empty { display: none; }
+.event-info { flex: 1; min-width: 0; text-align: left; }
+.event-badge { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--bark); background: none; padding: 0; border-radius: 0; font-weight: 300; }
+.g-dot { display: inline-block; width: 8px; height: 8px; border-radius: 4px; border: 1px solid var(--ink); box-sizing: border-box; flex: none; }
+.g-dot.on { background: var(--vermilion); border-color: var(--vermilion); }
+.event-legend { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--bark); margin-top: 12px; }
+.pw-section { background: #fff; border: 0; border-radius: 0; padding: 0; margin-bottom: 24px; animation: none; }
+.pw-section label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bark); margin-bottom: 4px; }
+.pw-input { border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; padding: 12px 48px 12px 0; font-size: 18px; letter-spacing: 0.2em; background: transparent; }
+.pw-input:focus { border-bottom-width: 2px; }
+.pw-input.error { border-bottom-color: var(--danger); }
+.pw-toggle { right: 0; font-size: 12px; color: var(--bark); }
+.btn-primary { border-radius: 0; background: var(--ink); font-weight: 400; font-size: 14px; letter-spacing: 0.1em; padding: 15px; border: 1px solid var(--ink); }
+.btn-primary:hover:not(:disabled) { background: #000; transform: none; box-shadow: none; }
+.btn-primary:disabled { background: #fff; color: #9A9A9A; border-color: var(--line); opacity: 1; }
+.btn-primary.loading::after { display: none; }
+/* ギャラリー上部 */
+#screen-gallery { padding: 64px 0 60px; }
+.gallery-header { align-items: flex-start; margin: 32px auto 0; padding: 0 24px; }
+.gallery-title h2 { font-size: 30px; font-weight: 400; letter-spacing: 0.06em; line-height: 1.15; margin-bottom: 10px; }
+.g-stats { display: flex; align-items: baseline; gap: 12px; font-family: var(--mono); font-weight: 300; color: var(--ink); }
+.g-count { font-size: 40px; line-height: 1; letter-spacing: -0.02em; }
+.g-count-l { font-size: 11px; letter-spacing: 0.12em; }
+.g-period { margin-left: auto; font-size: 11px; letter-spacing: 0.12em; color: var(--bark); }
+.gallery-title { flex: 1 1 100%; }
+.g-sub { font-size: 13px; color: var(--bark); margin-top: 8px; }
+.gallery-actions { margin-top: 14px; }
+.selection-info { color: var(--ink); font-weight: 500; }
+.btn-download-all { border-radius: 0; background: #fff; color: var(--ink); border: 1px solid var(--ink); font-weight: 400; font-size: 12px; letter-spacing: 0.06em; padding: 9px 14px; }
+.btn-download-all:hover { background: var(--ink); color: #fff; box-shadow: none; }
+.btn-guide { border-radius: 0; font-size: 12px; }
+.g-find { max-width: 1200px; margin: 22px auto 0; padding: 0 24px; display: grid; grid-template-columns: 1fr 1fr; }
+.g-find.one { grid-template-columns: 1fr; }
+.g-find-btn { display: flex; justify-content: space-between; align-items: center; gap: 10px; height: 52px; padding: 0 12px 0 0; border: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); background: #fff; color: var(--ink); font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; }
+.g-find-btn + .g-find-btn { padding-left: 12px; border-left: 1px solid var(--line); }
+.g-find-btn b { font-family: var(--mono); font-weight: 400; font-size: 13px; transition: transform .2s; }
+.g-find-btn.open b { transform: rotate(180deg); }
+.g-find-btn:hover { background: #FAFAFA; }
+.g-notice { max-width: 1200px; margin: 14px auto 0; padding: 0 24px; }
+.g-notice summary { list-style: none; display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--bark); line-height: 1.6; cursor: pointer; }
+.g-notice summary::-webkit-details-marker { display: none; }
+.g-notice summary > span { flex: 1; min-width: 0; }
+.g-notice summary em { flex: none; font-style: normal; color: var(--ink); border-bottom: 1px solid var(--ink); }
+.g-notice[open] summary em { border-bottom-color: transparent; }
+.g-notice-sep { display: inline-block; width: 1px; height: 10px; background: #CFCFCF; margin: 0 8px; vertical-align: middle; }
+.g-notice-body { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 14px; }
+.g-notice-item strong { display: block; font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+.g-notice-item p { font-size: 14px; line-height: 1.8; color: #333; }
+.gallery-howto, .promo-ribbon, .face-bar, .storage-warn-box:empty { display: none !important; }
+.deadline-banner { display: none !important; }
+.sec-chips { padding: 0 24px; margin: 0 auto; }
+.sec-chips-row { display: flex; flex-direction: column; gap: 0; overflow: visible; padding: 0; border-bottom: 1px solid var(--line); }
+.sec-chip { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 12px 0; font-size: 14px; background: #fff; white-space: normal; }
+.sec-chip:hover { background: #FAFAFA; border-color: var(--line); }
+.sec-chips-title { display: none; }
+.sec-head { background: #fff; border-left: 0; border-radius: 0; box-shadow: none; padding: 18px 0 8px; margin-top: 18px; border-bottom: 1px solid var(--line); }
+.sec-head strong { font-size: 15px; font-weight: 500; }
+.sec-head small { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; }
+.sec-head a { font-size: 12px; font-weight: 400; color: var(--bark); }
+.story-top { max-width: 1200px; margin: 20px auto 0; padding: 0 24px; }
+.story-card { border: 1px solid var(--ink); border-radius: 0; box-shadow: none; background: #fff; }
+.story-card-img { border-radius: 0; }
+.story-card-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em; }
+.story-card-body strong { font-size: 15px; font-weight: 500; }
+.story-card-body span { font-size: 12px; color: var(--bark); }
+.story-card-body em { font-style: normal; font-size: 12px; color: var(--ink); }
+/* 写真一覧 */
+.photo-grid { padding: 0 24px; gap: 6px; margin-top: 18px; }
+.photo-item { border-radius: 0; box-shadow: none; transition: none; }
+.photo-item:hover { transform: none; box-shadow: none; }
+.photo-item.selected { outline: 2px solid var(--ink); outline-offset: -2px; }
+.photo-item.selected::before { background: rgba(26,26,26,0.12); }
+.photo-check { background: var(--ink); border-radius: 0; box-shadow: none; width: 24px; height: 24px; }
+.photo-num { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-shadow: 0 1px 2px rgba(0,0,0,0.6); }
+.photo-zoom-btn, .photo-fav-btn, .photo-zoom { border-radius: 0; background: rgba(26,26,26,0.55); }
+.btn-fav-view { background: var(--ink); border-radius: 0; box-shadow: none; font-weight: 500; font-size: 12px; letter-spacing: 0.06em; }
+.btn-fav-view:hover { transform: translateY(-50%); box-shadow: none; }
+.face-fab { background: var(--vermilion); color: #fff; border-radius: 0; box-shadow: none; font-weight: 500; letter-spacing: 0.06em; }
+/* もっと楽しむ・カード類 */
+.gallery-more { max-width: 1200px; padding: 0 24px; }
+.gallery-more-head span, .login-news-head span { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bark); }
+.gallery-more-head h3, .login-news-head h3 { font-size: 18px; font-weight: 400; letter-spacing: 0.04em; }
+.more-card { border: 0; border-top: 1px solid var(--line); border-radius: 0; box-shadow: none; background: #fff; padding: 14px 0; }
+.more-card:last-child { border-bottom: 1px solid var(--line); }
+.more-card img { border-radius: 0; }
+.more-card-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; color: var(--vermilion); font-weight: 500; }
+.more-card-title { font-weight: 500; }
+.more-card-cta { color: var(--ink); font-weight: 400; }
+.login-news { margin-top: 56px; }
+/* 細かい共通 */
+.event-notice-in, .notice, .storage-warn-box { border-radius: 0; }
+@media (max-width: 640px) {
+  .gallery-header, .g-find, .g-notice, .sec-chips, .story-top, .gallery-more, .photo-grid { padding-left: 20px; padding-right: 20px; }
+  .gallery-title h2 { font-size: 26px; }
+  .g-count { font-size: 36px; }
+  .photo-grid { grid-template-columns: repeat(2, 1fr); gap: 4px; }
+}
+
+/* ---- THEME D: モーダル・カート・拡大表示・完了画面 ---- */
+.modal-overlay { background: rgba(26,26,26,0.5); backdrop-filter: none; }
+.modal-box { background: #fff; border-radius: 0; padding: 28px 24px 24px; box-shadow: none; animation: none; max-width: 520px; }
+.modal-box h3 { font-size: 24px; font-weight: 400; letter-spacing: 0.06em; margin-bottom: 6px; }
+.modal-box p { font-size: 13px; color: var(--bark); margin-bottom: 22px; }
+.m-step { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bark); margin-bottom: 14px; }
+.m-note { font-size: 12px; color: var(--bark); margin: 10px 0 18px; }
+.cart-options-modal-body { gap: 0; margin-bottom: 0; }
+.btn-mode.size-main { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; text-align: left; width: 100%; padding: 18px 18px 16px; border: 1px solid var(--ink); border-radius: 0; background: #fff; color: var(--ink); cursor: pointer; position: relative; font-family: var(--sans); }
+.btn-mode.size-main::after { content: ''; position: absolute; top: 18px; right: 18px; width: 8px; height: 8px; border-radius: 4px; background: var(--vermilion); }
+.size-main-k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bark); }
+.size-main-t { font-size: 18px; font-weight: 500; }
+.size-main-d { font-size: 13px; color: var(--bark); line-height: 1.7; font-weight: 400; }
+.size-main-p { font-family: var(--mono); font-weight: 300; font-size: 20px; margin-top: 2px; }
+.size-main-p small { font-family: var(--sans); font-size: 11px; color: var(--bark); letter-spacing: 0.04em; }
+.btn-mode.size-main.active, .btn-mode.size-main:hover { background: #fff; border-color: var(--ink); color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.size-sub-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bark); margin: 22px 0 6px; }
+.size-rows { border-top: 1px solid var(--ink); display: flex; flex-direction: column; }
+.btn-mode.size-row { display: flex; align-items: center; gap: 12px; width: 100%; height: 52px; padding: 0; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: #fff; color: var(--ink); font-size: 14px; cursor: pointer; text-align: left; font-family: var(--sans); }
+.btn-mode.size-row span { font-weight: 500; flex: 0 0 auto; min-width: 86px; }
+.btn-mode.size-row small { flex: 1; font-size: 11px; color: var(--bark); }
+.btn-mode.size-row b { font-family: var(--mono); font-weight: 300; font-size: 14px; }
+.btn-mode.size-row.active, .btn-mode.size-row:hover { background: #FAFAFA; color: var(--ink); border-color: var(--line); }
+.cart-options-modal-body .btn-mode.active { background: #FAFAFA; }
+.modal-actions { gap: 10px; }
+.btn-cancel { border: 1px solid var(--line); border-radius: 0; background: #fff; color: var(--bark); font-size: 13px; }
+.btn-cancel:hover { background: #fff; border-color: var(--ink); color: var(--ink); }
+.btn-stripe { border-radius: 0; background: var(--ink); font-weight: 400; letter-spacing: 0.08em; }
+.btn-stripe:hover { background: #000; box-shadow: none; }
+.btn-fav-addall { border-radius: 0; background: var(--ink); font-weight: 400; }
+.price-breakdown { background: #fff; border: 0; border-top: 1px solid var(--ink); border-radius: 0; padding: 0; }
+.price-row { padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.price-row span:last-child { font-family: var(--mono); font-weight: 300; }
+.price-row.total { border-bottom: 1px solid var(--ink); font-weight: 500; }
+.price-row.total span:last-child { font-size: 24px; }
+.confirm-section { border: 0; border-top: 1px solid var(--line); border-radius: 0; background: #fff; padding: 14px 0 0; margin-bottom: 18px; }
+.confirm-section h4 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bark); font-weight: 400; margin-bottom: 10px; }
+.confirm-thumb { border-radius: 0; }
+.confirm-thumb img { border-radius: 0; }
+.confirm-thumb-num { font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; border-radius: 0; }
+.confirm-photo-tag { border-radius: 0; background: #fff; border: 1px solid var(--line); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--bark); }
+.confirm-delivery { color: var(--ink); font-weight: 500; }
+.confirm-email-display { border-radius: 0; }
+.upsell-banner, .multi-nudge { border-radius: 0 !important; background: #fff !important; border: 1px solid var(--line) !important; border-left: 3px solid var(--vermilion) !important; }
+.consent-item { border-bottom: 1px solid var(--line); }
+.consent-item input[type=checkbox] { accent-color: var(--ink); border-radius: 0; }
+.consent-item label { font-size: 13px; color: var(--ink); }
+input[type=email], input[type=text], .modal-box input:not([type=checkbox]) { border-radius: 0; border: 0; border-bottom: 1px solid var(--ink); background: transparent; padding-left: 0; padding-right: 0; font-size: 16px; }
+input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-width: 2px; }
+/* カートの帯 */
+.cart-panel { background: var(--ink); box-shadow: none; border-radius: 0; }
+.cart-count, .cart-total { font-family: var(--mono); font-weight: 300; }
+.cart-total { color: #fff; }
+.cart-total small { color: rgba(255,255,255,0.7); }
+.btn-cart-next, .btn-pay { background: #fff; color: var(--ink); border-radius: 0; font-weight: 500; letter-spacing: 0.06em; border: 1px solid #fff; }
+.btn-cart-next:hover, .btn-pay:hover { background: #F2F2F2; transform: none; box-shadow: none; }
+.btn-cart-clear-mini { border-radius: 0; border: 1px solid rgba(255,255,255,0.4); background: transparent; }
+.recommend-banner { background: #2A2A2A; border-radius: 0; color: #fff; }
+.recommend-banner-btn { border-radius: 0; background: #fff; color: var(--ink); font-weight: 500; }
+.other-cart, .btn-add-class, .other-cart-actions button { border-radius: 0; }
+.other-cart { background: #fff; border: 1px solid var(--line); }
+.btn-add-class { border: 1px solid var(--ink); color: var(--ink); font-weight: 400; }
+.other-cart-actions button { border: 1px solid var(--ink); color: var(--ink); font-weight: 400; }
+.other-cart-head span { color: var(--ink); }
+/* わが子をさがす パネル */
+.face-panel { border: 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); border-radius: 0; box-shadow: none; padding: 16px 24px 14px; }
+.face-head strong { font-size: 18px; font-weight: 400; letter-spacing: 0.04em; }
+.face-btn-reset { border-radius: 0; border: 1px solid var(--line); background: #fff; color: var(--bark); font-weight: 400; }
+.face-ref { background: #fff; border: 0; border-left: 3px solid var(--vermilion); border-radius: 0; color: var(--ink); font-size: 13px; padding: 6px 12px; }
+.face-chip { border-radius: 0; border: 1px solid var(--line); background: #fff; font-weight: 400; }
+.face-chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.face-crop { border-radius: 50% !important; }
+.face-crop.pick { box-shadow: none; }
+.face-crop.found, .face-crop.pick.on { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--vermilion) !important; }
+.face-divider { border-radius: 0; background: #fff; border-top: 1px solid var(--ink); }
+.face-note { font-size: 11px; color: var(--bark); }
+.face-sub { font-size: 14px; }
+.face-info-box { border-radius: 0; }
+/* 拡大表示 */
+.lightbox-close, .lightbox-nav, .lightbox-fav-btn, .lightbox-cart-chip, .lightbox-face-btn { border-radius: 0 !important; }
+.lightbox-face-btn { background: rgba(255,255,255,0.92) !important; color: var(--ink) !important; font-weight: 500 !important; box-shadow: none !important; }
+.lightbox-face-btn.on { background: var(--vermilion) !important; color: #fff !important; }
+.lightbox-cart-chip { background: var(--ink) !important; }
+.lightbox-select-btn { border-radius: 0 !important; background: #fff !important; color: var(--ink) !important; font-weight: 500 !important; letter-spacing: 0.06em; }
+.lightbox-select-btn.selected-state { background: var(--vermilion) !important; color: #fff !important; }
+.lightbox-num { font-family: var(--mono); letter-spacing: 0.1em; }
+.lightbox-hint { border-radius: 0; }
+/* トースト・完了画面 */
+.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); }
+.toast.success { border-left: 3px solid var(--ink); }
+.toast.error { border-left: 3px solid var(--vermilion); }
+.paid-wrap h2 { font-weight: 400; letter-spacing: 0.06em; }
+.paid-icon { background: var(--ink); border-radius: 0; }
+.paid-info-box { border-radius: 0; border: 0; border-top: 1px solid var(--ink); background: #fff; box-shadow: none; }
+.paid-info-row { border-bottom: 1px solid var(--line); }
+.paid-note { border-radius: 0; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--vermilion); }
+.btn-back-top { border-radius: 0; border: 1px solid var(--ink); color: var(--ink); }
+.plan-753-note, .event-notice-in { border-radius: 0; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--ink); }
+.thumb-retry-bar { border-radius: 0; background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--vermilion); box-shadow: none; }
+.thumb-retry-bar button { border-radius: 0; background: var(--ink); font-weight: 400; }
+.thumb-retry-bar button.alt { border: 1px solid var(--ink); color: var(--ink); }
+.spinner { border-color: var(--line); border-top-color: var(--ink); }
+
 </style>
 </head>
 <body>
 <!-- ヘッダー -->
 <header class="site-header">
-  <div class="logo">
-    おさんぽフォト 写真データ販売
-  </div>
+  <div class="logo"><span class="logo-en">OSANPO PHOTO</span><span class="logo-ja" id="logo-ja">写真データ販売</span></div>
   <nav class="header-nav">
     <button class="btn-logout" id="btn-logout" onclick="logout()">ログアウト</button>
   </nav>
@@ -1627,7 +1852,8 @@ body.no-all .btn-download-all, body.no-all .recommend-banner-btn { display: none
   <div class="gallery-header">
     <div class="gallery-title">
       <h2 id="gallery-event-name">-</h2>
-      <p id="gallery-subtitle">写真をタップして選択 → まとめて購入できます</p>
+      <div class="g-stats" id="g-stats"><span class="g-count" id="g-count">-</span><span class="g-count-l">PHOTOS</span><span class="g-period" id="g-period"></span></div>
+      <p id="gallery-subtitle" class="g-sub">写真をタップして選択 → まとめて購入できます</p>
     </div>
     <div class="gallery-actions">
       <span class="selection-info" id="selection-info"></span>
@@ -1639,6 +1865,16 @@ body.no-all .btn-download-all, body.no-all .recommend-banner-btn { display: none
       </button>
     </div>
   </div>
+  <!-- テーマD: さがす（わが子／種目）。顔データ・種目設定があるときだけ出る -->
+  <div class="g-find" id="g-find">
+    <button type="button" class="g-find-btn" id="g-find-face" style="display:none" onclick="faceStart(false)"><span>わが子をさがす</span><i class="g-dot" aria-hidden="true"></i></button>
+    <button type="button" class="g-find-btn" id="g-find-sec" style="display:none" onclick="toggleSecList()"><span>種目でさがす</span><b aria-hidden="true">↓</b></button>
+  </div>
+  <!-- テーマD: 料金とお知らせは1行。「くわしく」で開く -->
+  <details class="g-notice" id="g-notice">
+    <summary><span id="g-notice-summary"></span><em>くわしく</em></summary>
+    <div class="g-notice-body" id="g-notice-body"></div>
+  </details>
   <!-- 使い方は1行だけ。「詳しく」で開く（写真が主役になるように） -->
   <div class="gallery-howto">
     <span>タップでカートに入ります ・ 🔍 で大きく見る ・ 選んだ写真はこのスマホに自動保存</span>
@@ -1746,31 +1982,25 @@ body.no-all .btn-download-all, body.no-all .recommend-banner-btn { display: none
 <!-- ========== 受け取り方法選択モーダル ========== -->
 <div class="modal-overlay" id="cart-options-overlay">
   <div class="modal-box">
-    <h3>受け取り方法を選んでください</h3>
+    <div class="m-step">STEP 1 / 2</div>
+    <h3>受け取り方法</h3>
     <p id="cart-options-count-text"></p>
     <div class="cart-options-modal-body">
-      <div class="cart-option-group">
-        <div class="cart-option-label">📱 スマホサイズ</div>
-        <div class="cart-option-btns">
-          <button class="btn-pay-print btn-mode" id="mode-normal" onclick="chooseMode('normal')">スマホサイズ<br><small>¥140〜/枚</small></button>
-        </div>
-      </div>
-      <div class="cart-option-group">
-        <div class="cart-option-label">📁 データで受け取る</div>
-        <div class="cart-option-btns">
-          <button class="btn-pay-print btn-mode" id="mode-a4data" onclick="chooseMode('a4data')">A4データ<br><small>¥800/枚</small></button>
-          <button class="btn-pay-print btn-mode" id="mode-a3data" onclick="chooseMode('a3data')">A3データ<br><small>¥1,200/枚</small></button>
-        </div>
-      </div>
-      <div class="cart-option-group">
-        <div class="cart-option-label">✨ プリントして届く</div>
-        <div class="cart-option-btns">
-          <button class="btn-pay-print btn-mode" id="mode-a4print" onclick="chooseMode('a4print')">A4プリント<br><small>¥3,500/枚</small></button>
-          <button class="btn-pay-print btn-mode" id="mode-a4panel" onclick="chooseMode('a4panel')">A4パネル<br><small>¥12,000/枚</small></button>
-        </div>
+      <button class="btn-mode size-main" id="mode-normal" onclick="chooseMode('normal')">
+        <span class="size-main-k">DATA</span>
+        <span class="size-main-t">スマホデータ</span>
+        <span class="size-main-d">スマホで見る・SNSに載せる・L判にするのに十分な大きさ。お支払い後すぐメールで届きます。</span>
+        <span class="size-main-p">¥140<small> / 枚 ・ 5枚 ¥500 ・ 10枚 ¥900</small></span>
+      </button>
+      <div class="size-sub-label">大きく残したい方に</div>
+      <div class="size-rows">
+        <button class="btn-mode size-row" id="mode-a4data" onclick="chooseMode('a4data')"><span>A4データ</span><small>A4〜A3の印刷に</small><b>¥800</b></button>
+        <button class="btn-mode size-row" id="mode-a3data" onclick="chooseMode('a3data')"><span>A3データ</span><small>大きなパネルや引き伸ばしに</small><b>¥1,200</b></button>
+        <button class="btn-mode size-row" id="mode-a4print" onclick="chooseMode('a4print')"><span>A4プリント</span><small>高級印画紙・郵送</small><b>¥3,500</b></button>
+        <button class="btn-mode size-row" id="mode-a4panel" onclick="chooseMode('a4panel')"><span>A4パネル</span><small>そのまま飾れる・郵送</small><b>¥12,000</b></button>
       </div>
     </div>
-    <p style="font-size:11px;color:var(--bark);margin-top:-8px;margin-bottom:16px">※ 異なるサイズは別々にご決済ください</p>
+    <p class="m-note">サイズが違うものは別々のお支払いになります。</p>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeCartOptionsModal()">戻る</button>
     </div>
@@ -1779,13 +2009,14 @@ body.no-all .btn-download-all, body.no-all .recommend-banner-btn { display: none
 <!-- ========== 支払いモーダル ========== -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal-box">
+    <div class="m-step">STEP 2 / 2</div>
     <h3 id="modal-title">お支払い確認</h3>
     <p id="modal-desc"></p>
     <div class="price-breakdown" id="price-breakdown"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">戻る</button>
       <a class="btn-stripe" id="btn-stripe" href="#" target="_blank" onclick="onStripeClick()">
-        💳 カードで支払う
+        カードで支払う
       </a>
     </div>
   </div>
@@ -2211,14 +2442,14 @@ function renderEventList() {
     return;
   }
   el.innerHTML = state.events.map(ev => `
-    <div class="event-card${hasSavedPassword(ev.id) ? ' remembered' : ''}" id="card-${ev.id}" onclick="selectEvent('${ev.id}')">
+    <div class="event-card${hasSavedPassword(ev.id) ? ' remembered' : ''}" id="card-${ev.id}" onclick="selectEvent('${ev.id}')" role="button" tabindex="0">
+      <i class="g-dot${hasSavedPassword(ev.id) ? ' on' : ''}" aria-hidden="true"></i>
       <div class="event-info">
-        <h3>${escHtml(ev.name)}</h3>
-        <p>${formatDate(ev.date)}${hasSavedPassword(ev.id) ? ' <span class="event-remembered">🔓 タップで開く（パスワード入力済み）</span>' : ''}</p>
+        <h3>${escHtml(plainName(ev.name))}</h3>
       </div>
-      <span class="event-badge">${ev.count}枚</span>
+      <span class="event-badge">${md(ev.date)} ・ ${Number(ev.count || 0).toLocaleString()}</span>
     </div>
-  `).join('');
+  `).join('') + '<p class="event-legend"><i class="g-dot on" aria-hidden="true"></i>このスマホで開いたことがある行事（パスワードなしで開けます）</p>';
 }
 // このスマホで一度ログインしたクラスは、保存したパスワードでそのまま入れる（PASSWORD_REMEMBER_DAYS 日間）
 const PASSWORD_REMEMBER_DAYS = 30;
@@ -2343,10 +2574,12 @@ async function enterGallery() {
     }
   }
   if (!state.mode753) state.selectedSmall.clear();
-  document.getElementById('gallery-event-name').textContent = ev.name;
-  document.getElementById('gallery-subtitle').textContent = state.mode753
-    ? `${ev.count}枚 ｜ 写真をタップして「大」「スマホ」を選べます`
-    : `${ev.count}枚 ｜ ${formatDate(ev.date)} 撮影`;
+  document.getElementById('gallery-event-name').textContent = plainName(ev.name);
+  document.getElementById('logo-ja').textContent = '';
+  document.getElementById('g-count').textContent = Number(ev.count || 0).toLocaleString();
+  document.getElementById('g-period').textContent = periodText(ev);
+  document.getElementById('gallery-subtitle').textContent = state.mode753 ? '写真をタップして「大」「スマホ」を選べます' : '';
+  document.getElementById('gallery-subtitle').style.display = state.mode753 ? '' : 'none';
   renderDeadlineBanner(ev);
   renderEventBlogBanner(ev);
   renderPromo753();
@@ -2355,6 +2588,16 @@ async function enterGallery() {
 // 閲覧・購入期限のカウントダウン表示
 // ※ GAS側のlogin/listEventsレスポンスに closeDate（閲覧終了日）等の項目が
 //   含まれていない場合は何も表示されない（バックエンド側の対応が別途必要）
+// 撮影日 — 締切 を「10.25 — 11.30」の形で（締切はGASが返す closeDate、無ければ EVENT_UNTIL から）
+const EVENT_UNTIL = { 'sportsday2026': '2026-11-30', 'imohorikurihiroi': '2026-11-30', 'zoo2026': '2026-11-30', 'undokai-2026': '2026-11-30', 'omise-tanpopohimawari': '2026-11-01', 'omise-yurisumireajisai': '2026-11-01' };
+function plainName(n) { return String(n || '').replace(/^\s*[^\w\u3040-\u30ff\u4e00-\u9fff]+\s*/, '').replace(/\s*[^\w\u3040-\u30ff\u4e00-\u9fff]+\s*$/, ''); }
+function md(d) { const t = new Date(d); return isNaN(t) ? '' : (t.getMonth() + 1) + '.' + String(t.getDate()).padStart(2, '0'); }
+function periodText(ev) {
+  const a = md(ev.date);
+  const raw = ev.closeDate || ev.viewEndDate || ev.endDate || ev.purchaseDeadline || ev.deadline || EVENT_UNTIL[ev.id];
+  const b = raw ? md(raw) : '';
+  return a && b ? a + ' — ' + b : (a || '');
+}
 function renderDeadlineBanner(ev) {
   const banner = document.getElementById('deadline-banner');
   if (!banner) return;
@@ -3083,7 +3326,7 @@ function openPaymentModal(isAll) {
   }
   // まだカートに入っていない公開中の別イベント・クラスがあれば、決済前に「先にそちらも選ぶ」を案内（v2.12a）
   const openOthers = state.mode753 ? [] : (state.events || []).filter(e => e && e.id && e.id !== state.selectedEventId && !/^753/.test(String(e.id)) && !others.some(o => o.eventId === e.id));
-  const nudgeHtml = openOthers.length ? `<div class="multi-nudge" style="background:#FFF7E6;border:1.5px solid #F6C64B;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.7">📣 <strong>${openOthers.map(e => escHtml(e.name)).join('・')}</strong> の写真も買う予定はありますか？<br>先にそちらも選んでからお支払いに進むと、<strong>枚数が合算されて1回のお支払い</strong>になり、お得です（例: 3枚＋3枚＝6枚で ¥640）。<button type="button" class="btn-add-class" style="margin-top:8px" onclick="switchClassKeepCart()">＋ 先にほかのイベントの写真も選ぶ</button><div style="font-size:11px;color:var(--bark);margin-top:4px">選んだ写真は保存されたまま戻れます</div></div>` : '';
+  const nudgeHtml = openOthers.length ? `<div class="multi-nudge" style="background:#FFF7E6;border:1.5px solid #F6C64B;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;line-height:1.7"><strong>${openOthers.map(e => escHtml(plainName(e.name))).join('・')}</strong> の写真も買う予定はありますか？<br>先にそちらも選んでからお支払いに進むと、<strong>枚数が合算されて1回のお支払い</strong>になり、お得です（例: 3枚＋3枚＝6枚で ¥640）。<button type="button" class="btn-add-class" style="margin-top:8px" onclick="switchClassKeepCart()">＋ 先にほかのイベントの写真も選ぶ</button><div style="font-size:11px;color:var(--bark);margin-top:4px">選んだ写真は保存されたまま戻れます</div></div>` : '';
   const othersHtml = others.map(c => `<div class="multi-part-row"><span>${escHtml(c.name)} <small>IMG-${c.nums.join(', ')}</small></span><span>${c.count}枚</span></div>`).join('');
   const html = nudgeHtml + `
     <!-- 選択写真 -->
@@ -3552,10 +3795,11 @@ function selLimit() { const c = noAllCfg(); return (c && !state.mode753) ? c.max
 const EVENT_NOTICES = {
   'sportsday2026': [
     {
-      title: '📷 プリント・集合写真をご希望の方へ',
+      short: 'L判・集合写真は11月末にフジフイルムで',
+      title: 'プリント・集合写真をご希望の方へ',
       text: 'こちらでは、スマホにすぐ届く写真データを販売しています（11/30まで）。L判などのプリントや集合写真は、11月末に園でお配りするチラシから、フジフイルムの写真販売でもご注文いただけます。'
     },
-    { warm: true, title: '📦 運動会は「丸ごとダウンロード」はありません', text: '運動会は全クラスのお子さまが写る行事で、写真も1,500枚以上と多いため、ほかのご家庭のお子さまの写真まで一括でお渡しすることになる「丸ごとダウンロード」はお休みしています。写真は1枚140円・5枚500円・10枚900円で、20枚以上も10枚ごとに900円でお選びいただけます（1回のご注文で60枚まで）。L判プリントや集合写真をご希望の方は、11月末のフジフイルムの写真販売もご利用ください。' }
+    { warm: true, short: '丸ごとダウンロードはありません', title: '運動会は「丸ごとダウンロード」はありません', text: '運動会は全クラスのお子さまが写る行事で、写真も1,500枚以上と多いため、ほかのご家庭のお子さまの写真まで一括でお渡しすることになる「丸ごとダウンロード」はお休みしています。写真は1枚140円・5枚500円・10枚900円で、20枚以上も10枚ごとに900円でお選びいただけます（1回のご注文で60枚まで）。L判プリントや集合写真をご希望の方は、11月末のフジフイルムの写真販売もご利用ください。' }
   ]
 };
 function renderEventNotice() {
@@ -3563,9 +3807,34 @@ function renderEventNotice() {
   const el = document.getElementById('event-notice');
   if (!el) return;
   const n = EVENT_NOTICES[state.selectedEventId];
-  if (!n || state.mode753) { el.style.display = 'none'; el.innerHTML = ''; return; }
-  el.innerHTML = [].concat(n).map(x => '<div class="event-notice-in' + (x.warm ? ' warm' : '') + '"><strong>' + escHtml(x.title) + '</strong>' + escHtml(x.text) + '</div>').join('');
-  el.style.display = '';
+  // テーマD: 旧の枠付きお知らせは出さず、下の g-notice（1行＋くわしく）にまとめる
+  el.style.display = 'none'; el.innerHTML = '';
+  const box = document.getElementById('g-notice'); if (!box) return;
+  if (state.mode753) { box.style.display = 'none'; return; }
+  const list = [].concat(n || []);
+  const price = '1枚 140 ・ 5枚 500 ・ 10枚 900' + (noAllCfg() ? '' : ' ・ 丸ごと 2,000');
+  const short = list.map(x => x.short).filter(Boolean).join('　');
+  document.getElementById('g-notice-summary').innerHTML = escHtml(price) + (short ? '<span class="g-notice-sep"></span>' + escHtml(short) : '');
+  const howto = document.getElementById('howto-detail');
+  document.getElementById('g-notice-body').innerHTML =
+    list.map(x => '<div class="g-notice-item"><strong>' + escHtml(x.title) + '</strong><p>' + escHtml(x.text) + '</p></div>').join('')
+    + (noAllCfg() ? '<div class="g-notice-item"><strong>20枚以上の料金</strong><p>20枚以上は10枚ごとに 900円（端数は 5枚 500円・1枚 140円）。1回のご注文で ' + selLimit() + '枚までお選びいただけます。</p></div>' : '')
+    + '<div class="g-notice-item"><strong>使い方</strong><p>' + (howto ? howto.innerHTML : '') + '</p></div>';
+  box.style.display = '';
+}
+// さがすの行: 中身が1つも無ければ行ごと隠す
+function renderFindRow() {
+  const row = document.getElementById('g-find'); if (!row) return;
+  const any = Array.from(row.querySelectorAll('.g-find-btn')).some(b => b.style.display !== 'none');
+  row.style.display = any && !state.mode753 ? '' : 'none';
+  row.classList.toggle('one', row.querySelectorAll('.g-find-btn[style=""]').length === 1 || Array.from(row.querySelectorAll('.g-find-btn')).filter(b => b.style.display !== 'none').length === 1);
+}
+function toggleSecList() {
+  const box = document.getElementById('sec-chips'); const btn = document.getElementById('g-find-sec'); if (!box) return;
+  const open = box.style.display === 'none';
+  box.style.display = open ? '' : 'none';
+  if (btn) btn.classList.toggle('open', open);
+  if (open) box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 function renderSections() {
   renderEventNotice();
@@ -3574,7 +3843,7 @@ function renderSections() {
   if (!box || !grid) return;
   grid.querySelectorAll('.sec-head').forEach(el => el.remove());
   const secs = EVENT_SECTIONS[state.selectedEventId];
-  if (!secs || state.mode753 || !state.photos.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  if (!secs || state.mode753 || !state.photos.length) { box.style.display = 'none'; box.innerHTML = ''; const sb = document.getElementById('g-find-sec'); if (sb) sb.style.display = 'none'; renderFindRow(); return; }
   const total = state.photos.length;
   const pad = n => String(n).padStart(3, '0');
   let chips = '';
@@ -3588,9 +3857,12 @@ function renderSections() {
     grid.insertBefore(h, item);
     chips += '<a class="sec-chip" href="#sec-' + k + '">' + escHtml(name) + '</a>';
   });
-  if (!chips) { box.style.display = 'none'; return; }
-  box.innerHTML = '<div class="sec-chips-title">種目からさがす</div><div class="sec-chips-row">' + chips + '</div>';
-  box.style.display = '';
+  const secBtn = document.getElementById('g-find-sec');
+  if (!chips) { box.style.display = 'none'; if (secBtn) secBtn.style.display = 'none'; renderFindRow(); return; }
+  box.innerHTML = '<div class="sec-chips-row">' + chips + '</div>';
+  box.style.display = 'none'; // テーマD: 「種目でさがす」ボタンで開く
+  if (secBtn) secBtn.style.display = '';
+  renderFindRow();
 }
 // 七五三 特設ページの案内バナー。期間内かつ直リンク（?event=）以外のときだけ出す
 function renderPromo753() {
@@ -3655,6 +3927,8 @@ function faceReset() {
   Object.assign(FACE, { pickGroup: -1, data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] });
   document.getElementById('face-bar')?.classList.remove('visible', 'loading');
   document.getElementById('face-fab')?.classList.remove('visible');
+  const cell = document.getElementById('g-find-face'); if (cell) cell.style.display = 'none';
+  renderFindRow();
   const p = document.getElementById('face-panel'); if (p) { p.classList.remove('visible'); p.innerHTML = ''; }
   document.body.classList.remove('face-open', 'face-filter');
 }
@@ -3668,6 +3942,8 @@ async function faceInit() {
     FACE.available = true;
     const bar = document.getElementById('face-bar');
     bar.classList.add('visible');
+    const cell = document.getElementById('g-find-face'); if (cell) cell.style.display = '';
+    renderFindRow();
     // ログイン直後に写真一覧の位置まで自動スクロールしている場合は、その真上の「わが子をさがす」も見えるように少し戻す
     const gt = document.getElementById('photo-grid').getBoundingClientRect().top;
     if (gt > -60 && gt < 200) requestAnimationFrame(() => bar.scrollIntoView({ behavior: 'smooth', block: 'start' }));
