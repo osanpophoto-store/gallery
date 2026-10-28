@@ -1677,6 +1677,14 @@ button, input, select, textarea { font-family: var(--sans); }
 .more-card-title { font-weight: 500; }
 .more-card-cta { color: var(--ink); font-weight: 400; }
 .login-news { margin-top: 56px; }
+.login-sched { margin-top: 56px; }
+.sched-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.sched-list li { display: flex; gap: 16px; align-items: baseline; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.7; color: var(--ink); }
+.sched-list .ls-date { font-family: var(--mono); font-weight: 300; font-size: 12px; letter-spacing: 0.08em; color: var(--bark); flex: none; width: 52px; white-space: nowrap; }
+.sched-list .ls-text { flex: 1; min-width: 0; }
+.sched-list .ls-sub { display: block; font-size: 11px; color: var(--bark); }
+.sched-list li.past { color: #B5B5B5; }
+.sched-list li.past .ls-date, .sched-list li.past .ls-sub { color: #C9C9C9; }
 /* 細かい共通 */
 .event-notice-in, .notice, .storage-warn-box { border-radius: 0; }
 @media (max-width: 640px) {
@@ -1774,7 +1782,7 @@ input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-w
 .lightbox-num { font-family: var(--mono); letter-spacing: 0.1em; }
 .lightbox-hint { border-radius: 0; }
 /* トースト・完了画面 */
-.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0d */
+.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0e */
 .toast.success { border-left: 3px solid var(--ink); }
 .toast.error { border-left: 3px solid var(--vermilion); }
 .paid-wrap h2 { font-weight: 400; letter-spacing: 0.06em; }
@@ -1833,6 +1841,11 @@ input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-w
     <button class="btn-primary" id="btn-login" onclick="doLogin()" disabled>
       ギャラリーを開く
     </button>
+    <!-- 販売の予定（確定分だけ。SCHEDULE 定数から描画・過ぎた行は薄く） v3.0e -->
+    <div class="login-sched" id="login-sched" style="display:none">
+      <div class="login-news-head"><span>SCHEDULE</span><h3>販売の予定</h3></div>
+      <ul class="sched-list" id="sched-list"></ul>
+    </div>
     <!-- お知らせ（クラス選択の邪魔にならないよう、間をあけて下に） -->
     <div class="login-news" id="login-news">
       <div class="login-news-head"><span>NEWS</span><h3>おしらせ</h3></div>
@@ -2437,7 +2450,26 @@ async function loadDirectEvent(eventId) {
     el.innerHTML = '<p style="color:var(--danger);font-size:13px;text-align:center">' + escHtml(e.message || 'イベントが見つかりません') + '</p>';
   }
 }
+// 販売の予定（確定分だけ）。until = その日を過ぎたら薄く表示する日付
+const SCHEDULE = [
+  { date: '10.30', until: '2026-10-30', text: 'うんどうかい　ご案内' },
+  { date: '10月末', until: '2026-10-31', text: 'おみせやさんごっこ（本番）', sub: 'フジフイルムのスクールフォトの案内チラシを園内配布物でお配りします' },
+  { date: '11.04', until: '2026-11-04', text: 'おいもほり・くりひろい ／ どうぶつえん　ご案内' },
+  { date: '11.30', until: '2026-11-30', text: '上の3つの販売終了' }
+];
+function renderSchedule() {
+  const box = document.getElementById('login-sched'), ul = document.getElementById('sched-list');
+  if (!box || !ul || !SCHEDULE.length) return;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  ul.innerHTML = SCHEDULE.map(r => {
+    const d = new Date(r.until); d.setHours(0, 0, 0, 0);
+    const past = !isNaN(d) && d < today;
+    return '<li' + (past ? ' class="past"' : '') + '><span class="ls-date">' + escHtml(r.date) + '</span><span class="ls-text">' + escHtml(r.text) + (r.sub ? '<span class="ls-sub">' + escHtml(r.sub) + '</span>' : '') + '</span></li>';
+  }).join('');
+  box.style.display = '';
+}
 function renderEventList() {
+  renderSchedule();
   const el = document.getElementById('event-list');
   if (!state.events.length) {
     el.innerHTML = '<p style="color:var(--bark);font-size:13px;text-align:center">現在公開中のイベントはありません</p>';
