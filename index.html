@@ -1610,6 +1610,7 @@ button, input, select, textarea { font-family: var(--sans); }
 .g-count { font-size: 40px; line-height: 1; letter-spacing: -0.02em; }
 .g-count-l { font-size: 11px; letter-spacing: 0.12em; }
 .g-period { margin-left: auto; font-size: 11px; letter-spacing: 0.12em; color: var(--bark); }
+.g-period.soon { color: var(--vermilion); }
 .gallery-title { flex: 1 1 100%; }
 .g-sub { font-size: 13px; color: var(--bark); margin-top: 8px; }
 .gallery-actions { margin-top: 14px; }
@@ -1772,7 +1773,7 @@ input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-w
 .lightbox-num { font-family: var(--mono); letter-spacing: 0.1em; }
 .lightbox-hint { border-radius: 0; }
 /* トースト・完了画面 */
-.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0b */
+.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0c */
 .toast.success { border-left: 3px solid var(--ink); }
 .toast.error { border-left: 3px solid var(--vermilion); }
 .paid-wrap h2 { font-weight: 400; letter-spacing: 0.06em; }
@@ -2577,7 +2578,7 @@ async function enterGallery() {
   document.getElementById('gallery-event-name').textContent = plainName(ev.name);
   document.getElementById('logo-ja').textContent = '';
   document.getElementById('g-count').textContent = Number(ev.count || 0).toLocaleString();
-  document.getElementById('g-period').textContent = periodText(ev);
+  { const pt = periodText(ev); const pe = document.getElementById('g-period'); pe.textContent = pt; pe.classList.toggle('soon', /本日まで|あと [1-7] 日/.test(pt)); }
   document.getElementById('gallery-subtitle').textContent = state.mode753 ? '写真をタップして「大」「スマホ」を選べます' : '';
   document.getElementById('gallery-subtitle').style.display = state.mode753 ? '' : 'none';
   renderDeadlineBanner(ev);
@@ -2592,11 +2593,17 @@ async function enterGallery() {
 const EVENT_UNTIL = { 'sportsday2026': '2026-11-30', 'imohorikurihiroi': '2026-11-30', 'zoo2026': '2026-11-30', 'undokai-2026': '2026-11-30', 'omise-tanpopohimawari': '2026-11-01', 'omise-yurisumireajisai': '2026-11-01' };
 function plainName(n) { try { return String(n || '').replace(/^[\s\p{Extended_Pictographic}\uFE0F\u200D]+/u, '').replace(/[\s\p{Extended_Pictographic}\uFE0F\u200D]+$/u, ''); } catch (e) { return String(n || ''); } }
 function md(d) { const t = new Date(d); return isNaN(t) ? '' : (t.getMonth() + 1) + '.' + String(t.getDate()).padStart(2, '0'); }
+// v3.0c: 撮影日ではなく「締切 ・ 残り日数」を控えめに（例「11.30 まで ・ あと 33 日」）
 function periodText(ev) {
-  const a = md(ev.date);
   const raw = ev.closeDate || ev.viewEndDate || ev.endDate || ev.purchaseDeadline || ev.deadline || EVENT_UNTIL[ev.id];
   const b = raw ? md(raw) : '';
-  return a && b ? a + ' — ' + b : (a || '');
+  if (!b) return '';
+  const end = new Date(raw); end.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const days = Math.round((end - today) / 86400000);
+  if (isNaN(days) || days < 0) return b + ' まで';
+  const rest = days === 0 ? '本日まで' : 'あと ' + days + ' 日';
+  return b + ' まで ・ ' + rest;
 }
 function renderDeadlineBanner(ev) {
   const banner = document.getElementById('deadline-banner');
