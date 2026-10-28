@@ -1782,7 +1782,12 @@ input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-w
 .lightbox-num { font-family: var(--mono); letter-spacing: 0.1em; }
 .lightbox-hint { border-radius: 0; }
 /* トースト・完了画面 */
-.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0f */
+.toast { border-radius: 0; box-shadow: none; border: 1px solid var(--line); transform: translateX(calc(100% + 40px)); } /* v3.0g */
+/* v3.0g: フッター（固定・流れる帯 → 静的） */
+.help-bar { position: static; bottom: auto !important; background: #fff; color: var(--bark); font-size: 11px; line-height: 1.8; letter-spacing: 0.02em; padding: 0 24px 48px; margin: 56px auto 0; max-width: 520px; white-space: normal; overflow: visible; }
+.help-bar-track { display: flex; flex-direction: column; gap: 6px; animation: none; padding: 24px 0 0; border-top: 1px solid var(--line); }
+.help-bar-track a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); }
+body.cart-open .help-bar, .cart-panel.visible ~ .help-bar { bottom: auto; padding-bottom: 120px; }
 .toast.success { border-left: 3px solid var(--ink); }
 .toast.error { border-left: 3px solid var(--vermilion); }
 .paid-wrap h2 { font-weight: 400; letter-spacing: 0.06em; }
@@ -2125,20 +2130,14 @@ input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-w
 <!-- ========== トースト通知 ========== -->
 <div class="toast" id="toast"></div>
 <!-- ========== ヘルプ常設バー ========== -->
+<!-- v3.0g: 下の流れる帯をやめ、静かなフッター（ページ末尾）に -->
 <div class="help-bar" id="help-bar">
   <div class="help-bar-track">
-    <span>📥 写真は必ずダウンロード保存してください</span>
-    <span>⏳ ダウンロードリンク有効期限: 7日間</span>
-    <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
-    <span>🚫 SNS転載・第三者配布禁止</span>
-    <span class="fav-only">💾 選んだ写真・お気に入りはこのスマホに保存。あとで続きから選べます</span><span class="fav-off-only">💾 選んだ写真はこのスマホに保存。あとで続きから選べます</span>
-    <span>📞 <a href="https://lin.ee/Y2WBhzF">LINEでお問い合わせ</a></span>
-    <span>📥 写真は必ずダウンロード保存してください</span>
-    <span>⏳ ダウンロードリンク有効期限: 7日間</span>
-    <span>📧 メール未着の場合は迷惑メールフォルダを確認</span>
-    <span>🚫 SNS転載・第三者配布禁止</span>
-    <span class="fav-only">💾 選んだ写真・お気に入りはこのスマホに保存。あとで続きから選べます</span><span class="fav-off-only">💾 選んだ写真はこのスマホに保存。あとで続きから選べます</span>
-    <span>📞 <a href="https://lin.ee/Y2WBhzF">LINEでお問い合わせ</a></span>
+    <span>写真はダウンロードして保存してください。ダウンロードリンクは7日間有効です</span>
+    <span>メールが届かないときは迷惑メールフォルダをご確認ください</span>
+    <span>SNSへの転載、第三者への配布はご遠慮ください</span>
+    <span class="fav-only">選んだ写真とお気に入りはこのスマホに保存され、あとで続きから選べます</span><span class="fav-off-only">選んだ写真はこのスマホに保存され、あとで続きから選べます</span>
+    <span><a href="https://lin.ee/Y2WBhzF">LINEでお問い合わせ →</a></span>
   </div>
 </div>
 <script>
