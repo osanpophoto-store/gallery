@@ -2852,7 +2852,7 @@ function updateCart() {
     // 制限バナー表示中（19枚ちょうど）でなければテキストを更新
     if (!banner.classList.contains('limit-mode')) {
       bannerText.textContent = noAllCfg()
-        ? (count < 20 ? `あと${20 - count}枚選ぶと、何枚でも ¥2,000 になります（${selLimit()}枚まで）。` : `20枚以上なので、何枚選んでも ¥2,000 です（${selLimit()}枚まで）。`)
+        ? `${count}枚選ばれています。10枚ごとに ¥900 で、1回のご注文で${selLimit()}枚までお選びいただけます。`
         : `${count}枚選ばれています。ここまで選ぶなら、当日の空気感ごと残せる「丸ごとダウンロード ¥2,000」もおすすめです。`;
     }
     banner.classList.add('visible');
@@ -2865,7 +2865,7 @@ function showLimitBanner() {
   const banner = document.getElementById('recommend-banner');
   const bannerText = document.getElementById('recommend-banner-text');
   bannerText.textContent = noAllCfg()
-    ? `1回のご注文でお選びいただけるのは${selLimit()}枚までです（何枚でも ¥2,000）。`
+    ? `1回のご注文でお選びいただけるのは${selLimit()}枚までです。`
     : '20枚以上選ぶ場合は、全写真をまとめて残せる「丸ごとダウンロード ¥2,000」がおすすめです。';
   banner.classList.add('visible', 'limit-mode');
 }
@@ -2873,7 +2873,15 @@ function showLimitBanner() {
 function calcPrice(qty) {
   const P = { DOWNLOAD_ALL: 2000, PACK10: 900, PACK5: 500, SINGLE: 140 };
   let pack10=0, pack5=0, single=0, total=0;
-  if (qty>=20)       { total=P.DOWNLOAD_ALL; }
+  if (qty>=20 && noAllCfg()) {
+    // 丸ごとなしのイベント（v2.19）: 上限なし。10枚ごとに900円、端数は5枚500円・1枚140円（GAS側 calcPriceOpen と同じ）
+    pack10 = Math.floor(qty / 10); let r = qty - pack10 * 10;
+    if (r >= 8) { pack10++; r = 0; }
+    if (r >= 4) { pack5 = 1; r -= 5; }
+    single = Math.max(0, r);
+    total = pack10 * P.PACK10 + pack5 * P.PACK5 + single * P.SINGLE;
+  }
+  else if (qty>=20)  { total=P.DOWNLOAD_ALL; }
   else if (qty<=3)   { single=qty; total=qty*P.SINGLE; }
   else if (qty<=5)   { pack5=1; total=P.PACK5; }
   else if (qty===6)  { pack5=1; single=1; total=P.PACK5+P.SINGLE; }
@@ -3003,7 +3011,7 @@ function formatPriceDetail(price) {
   if (price.pack10) parts.push(`10枚セット×${price.pack10}`);
   if (price.pack5)  parts.push(`5枚セット×${price.pack5}`);
   if (price.single) parts.push(`単品×${price.single}枚`);
-  if (!parts.length && price.total===2000) parts.push(noAllCfg() ? '20枚以上（上限 ¥2,000）' : '丸ごとダウンロード');
+  if (!parts.length && price.total===2000) parts.push('丸ごとダウンロード');
   return parts.join('　');
 }
 // ========================================
@@ -3063,7 +3071,6 @@ function openPaymentModal(isAll) {
   if (price.pack5)  priceRows += `<div class="price-row"><span>5枚セット × ${price.pack5}</span><span>¥${(price.pack5*500).toLocaleString()}</span></div>`;
   if (price.single) priceRows += `<div class="price-row"><span>単品 × ${price.single}枚</span><span>¥${(price.single*140).toLocaleString()}</span></div>`;
   if (isAll)        priceRows += `<div class="price-row"><span>全データ一括</span><span>¥2,000</span></div>`;
-  if (!isAll && count >= 20) priceRows += `<div class="price-row"><span>20枚以上（何枚でも上限）</span><span>¥2,000</span></div>`;
   if (others.length) {
     // クラスごとの小計を並べて、最後に合算
     priceRows = (count > 0 || isAll) ? `<div class="price-row"><span>${escHtml(evName)}${isAll ? '（全写真）' : ' ' + count + '枚'}</span><span>¥${price.total.toLocaleString()}</span></div>` : '';
@@ -3547,7 +3554,7 @@ const EVENT_NOTICES = {
       title: '📷 プリント・集合写真をご希望の方へ',
       text: 'こちらでは、スマホにすぐ届く写真データを販売しています（11/30まで）。L判などのプリントや集合写真は、11月末に園でお配りするチラシから、フジフイルムの写真販売でもご注文いただけます。'
     },
-    { warm: true, title: '📦 運動会は「丸ごとダウンロード」のかわりに', text: '運動会は全クラスのお子さまが写る行事で、写真も1,500枚以上と多いため、ほかのご家庭のお子さまの写真まで一括でお渡しすることになる「丸ごとダウンロード」はお休みしています。そのかわり、20枚以上は何枚選んでも ¥2,000（1回のご注文で60枚まで）。わが子のお気に入りだけを選んで、お得にお求めいただけます。' }
+    { warm: true, title: '📦 運動会は「丸ごとダウンロード」はありません', text: '運動会は全クラスのお子さまが写る行事で、写真も1,500枚以上と多いため、ほかのご家庭のお子さまの写真まで一括でお渡しすることになる「丸ごとダウンロード」はお休みしています。写真は1枚140円・5枚500円・10枚900円で、20枚以上も10枚ごとに900円でお選びいただけます（1回のご注文で60枚まで）。L判プリントや集合写真をご希望の方は、11月末のフジフイルムの写真販売もご利用ください。' }
   ]
 };
 function renderEventNotice() {
