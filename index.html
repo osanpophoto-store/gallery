@@ -4205,8 +4205,8 @@ function renderFacePanel() {
   } else {
     h += `<div class="face-head"><strong>👦 わが子をさがす</strong><button type="button" class="face-btn-reset" onclick="faceCancel()">やめる</button></div>
       <div class="face-ref">⚠️ この顔の一覧は、写真から自動で作った<strong>参考</strong>の一覧です。同じお子さまが2つ以上並んでいたり、一覧に出てこないお子さまもいます。</div>
-      <div class="face-sub">お子さまの顔をタップしてください。<small>${FACE.data.pk ? '帽子の色でしぼると探しやすくなります。' : ''}一覧にないときは、写真の 🔍 で大きく表示すると顔に ○ が出るので、そこからも選べます。</small></div>
-      ${FACE.data.pk ? `<div class="face-chips">${[[-1, 'すべて', '']].concat(FACE_GROUPS.map((g, k) => [k, g[0], g[1]])).filter(([k]) => k < 0 || FACE.data.pk.some(p => p[1] === k)).map(([k, name, col]) => `<button type="button" class="face-chip${FACE.pickGroup === k ? ' on' : ''}" onclick="facePickGroup(${k})">${col ? `<i style="background:${col}"></i>` : ''}${name}</button>`).join('')}</div>` : ''}
+      <div class="face-sub">お子さまの顔をタップしてください。<small>${FACE.data.pk && new Set(FACE.data.pk.map(p => p[1])).size >= 2 ? '帽子の色でしぼると探しやすくなります。' : ''}一覧にないときは、写真の 🔍 で大きく表示すると顔に ○ が出るので、そこからも選べます。</small></div>
+      ${FACE.data.pk && new Set(FACE.data.pk.map(p => p[1])).size >= 2 ? `<div class="face-chips">${[[-1, 'すべて', '']].concat(FACE_GROUPS.map((g, k) => [k, g[0], g[1]])).filter(([k]) => k < 0 || FACE.data.pk.some(p => p[1] === k)).map(([k, name, col]) => `<button type="button" class="face-chip${FACE.pickGroup === k ? ' on' : ''}" onclick="facePickGroup(${k})">${col ? `<i style="background:${col}"></i>` : ''}${name}</button>`).join('')}</div>` : ''}
       <div class="face-strip wrap tall" id="face-pick-strip">${facePickList().map(i => faceCropHtml(i, 'pick')).join('')}</div>`;
   }
   h += `<div class="face-note">🔒 顔の照合はこのスマホの中だけで行います。お子さまの写真や顔の情報を外に送ることはありません。似ているお友だちが混ざることもあるので、最後はご自身でご確認ください。<a href="#" onclick="event.preventDefault();openFaceInfo()">くわしく</a></div>`;
