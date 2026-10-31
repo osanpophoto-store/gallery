@@ -2326,9 +2326,20 @@ function switchClassKeepCart() {
 async function ensureEventToken(eventId) {
   const meta = loadEventMeta(eventId) || {};
   if (meta.token && meta.expires && (meta.expires - Date.now()) > 5 * 60 * 1000) return meta.token;
-  if (!meta.pw) throw new Error('「' + (meta.name || eventId) + '」のログインが切れています。そのクラスにもう一度ログインしてください');
-  const data = await api('login', { eventId: eventId, password: meta.pw });
-  saveEventMeta(eventId, { token: data.token, expires: data.expires, name: data.event && data.event.name || meta.name });
+  const nm = plainName(meta.name || ((state.events || []).find(e => e.id === eventId) || {}).name || eventId);
+  let pw = meta.pw;
+  if (!pw) {
+    // v3.0i: パスワードを覚えていないクラスは、その場で聞いてログインし直す（カートの写真はそのまま）
+    pw = (window.prompt('「' + nm + '」のパスワードを入力してください（選んだ写真はそのままです）') || '').trim();
+    if (!pw) throw new Error('「' + nm + '」のパスワードを入れると、そのまま支払いに進めます。もう一度「カードで支払う」を押してください');
+  }
+  let data;
+  try { data = await api('login', { eventId: eventId, password: pw }); }
+  catch (e) {
+    if (/パスワード/.test(String(e.message || ''))) saveEventMeta(eventId, { pw: '', pwAt: 0 });
+    throw new Error('「' + nm + '」: ' + (e.message || 'ログインできませんでした'));
+  }
+  saveEventMeta(eventId, { token: data.token, expires: data.expires, name: data.event && data.event.name || meta.name, pw: pw, pwAt: meta.pw ? meta.pwAt : Date.now() });
   return data.token;
 }
 // お気に入り（♡）もイベントごとに端末へ保存する。兄弟姉妹でクラス（イベント）が違っても、
