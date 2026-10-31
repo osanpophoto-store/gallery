@@ -2622,7 +2622,7 @@ async function enterGallery() {
 // ※ GAS側のlogin/listEventsレスポンスに closeDate（閲覧終了日）等の項目が
 //   含まれていない場合は何も表示されない（バックエンド側の対応が別途必要）
 // 撮影日 — 締切 を「10.25 — 11.30」の形で（締切はGASが返す closeDate、無ければ EVENT_UNTIL から）
-const EVENT_UNTIL = { 'sportsday2026': '2026-11-30', 'imohorikurihiroi': '2026-11-30', 'zoo2026': '2026-11-30', 'undokai-2026': '2026-11-30', 'omise-tanpopohimawari': '2026-11-01', 'omise-yurisumireajisai': '2026-11-01' };
+const EVENT_UNTIL = { 'sportsday2026': '2026-11-30', 'imohorikurihiroi': '2026-11-30', 'zoo2026': '2026-11-30', 'undokai-2026': '2026-11-30', 'omise-tanpopohimawari': '2026-11-03', 'omise-yurisumireajisai': '2026-11-03' };
 function plainName(n) { try { return String(n || '').replace(/^[\s\p{Extended_Pictographic}\uFE0F\u200D]+/u, '').replace(/[\s\p{Extended_Pictographic}\uFE0F\u200D]+$/u, ''); } catch (e) { return String(n || ''); } }
 function md(d) { const t = new Date(d); return isNaN(t) ? '' : (t.getMonth() + 1) + '.' + String(t.getDate()).padStart(2, '0'); }
 // v3.0c: 撮影日ではなく「締切 ・ 残り日数」を控えめに（例「11.30 まで ・ あと 33 日」）
