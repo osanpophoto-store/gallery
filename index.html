@@ -1752,6 +1752,10 @@ input[type=email]:focus, input[type=text]:focus { outline: none; border-bottom-w
 .btn-cart-next:hover, .btn-pay:hover { background: #F2F2F2; transform: none; box-shadow: none; }
 .btn-cart-clear-mini { border-radius: 0; border: 1px solid rgba(255,255,255,0.4); background: transparent; }
 .recommend-banner { background: #2A2A2A; border-radius: 0; color: #fff; }
+.pack-hint { display: none; max-width: 1200px; margin: 0 auto 8px; font-size: 12.5px; letter-spacing: 0.04em; color: rgba(255,255,255,0.88); }
+.pack-hint.visible { display: block; }
+.pack-hint b { color: #fff; font-weight: 500; border-bottom: 1px solid var(--accent); }
+body.mode-753 .pack-hint { display: none !important; }
 .recommend-banner-btn { border-radius: 0; background: #fff; color: var(--ink); font-weight: 500; }
 .other-cart, .btn-add-class, .other-cart-actions button { border-radius: 0; }
 .other-cart { background: #fff; border: 1px solid var(--line); }
@@ -1975,6 +1979,8 @@ body.cart-open .help-bar, .cart-panel.visible ~ .help-bar { bottom: auto; paddin
     <span class="recommend-banner-text" id="recommend-banner-text"></span>
     <button class="recommend-banner-btn" onclick="openPaymentModal(true)">丸ごと購入へ →</button>
   </div>
+  <!-- v3.0j: 同じ値段のままあと何枚選べるか（パックの境目でだけ表示） -->
+  <div class="pack-hint" id="pack-hint"></div>
   <div class="cart-mini-row">
     <button class="btn-cart-clear-mini" onclick="clearSelection()" aria-label="選択をクリア">✕</button>
     <div class="cart-mini-info" onclick="openCartViewModal()" role="button" tabindex="0" aria-label="カートの中身を見る">
@@ -3116,6 +3122,7 @@ function updateCart() {
   const others = state.mode753 ? [] : getOtherCarts();
   const otherCount = others.reduce((s, c) => s + c.count, 0);
   const otherTotal = calcMultiTotal(multiParts(0, false, 0, others));
+  updatePackHint(state.mode753 ? 0 : count, otherCount);
   if (count === 0 && otherCount > 0) {
     panel.classList.add('visible');
     selInfo.textContent = '';
@@ -3181,6 +3188,24 @@ function showLimitBanner() {
     ? `1回のご注文でお選びいただけるのは${selLimit()}枚までです。`
     : '20枚以上選ぶ場合は、全写真をまとめて残せる「丸ごとダウンロード ¥2,000」がおすすめです。';
   banner.classList.add('visible', 'limit-mode');
+}
+// v3.0j: パックの境目で「あと◯枚選んでも同じ値段」とだけ知らせる（売り込みではなく、知らないと損な情報）
+function updatePackHint(count, otherCount) {
+  const el = document.getElementById('pack-hint');
+  if (!el) return;
+  const q = count + (otherCount || 0);
+  const max = otherCount > 0 ? 19 : (noAllCfg() ? selLimit() : 19);
+  let k = 0;
+  if (count > 0 && q <= max) {
+    const t = calcPrice(q).total;
+    for (let i = 1; i <= 3 && q + i <= max; i++) { if (calcPrice(q + i).total === t) k = i; else break; }
+    if (k) {
+      const n = q + k;
+      const label = n === 5 ? '5枚パック' : n % 10 === 0 ? (n === 10 ? '10枚パック' : `${n}枚`) : n === 15 ? '10枚＋5枚パック' : `${n}枚`;
+      el.innerHTML = `あと <b>${k}枚</b> 選んでも、同じ ¥${t.toLocaleString()} のままです（${label}）`;
+    }
+  }
+  el.classList.toggle('visible', !!k);
 }
 // クライアント側料金計算（GAS側と同じロジック）
 function calcPrice(qty) {
