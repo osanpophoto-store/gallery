@@ -1520,6 +1520,8 @@ body.favorites-off .face-fab { top: 50%; }
 .face-found summary small { font-weight: 400; color: var(--bark); margin-left: 6px; }
 .face-note { font-size: 11px; color: var(--bark); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--sand); }
 .face-note a { color: var(--forest); font-weight: 700; }
+.face-busy-note { font-size: 12.5px; color: var(--ink, #222); padding: 2px 0 8px; letter-spacing: 0.04em; }
+body.face-busy #face-panel .face-strip, body.face-busy #face-panel button { pointer-events: none; opacity: 0.55; }
 .photo-item.face-mine { box-shadow: 0 0 0 3px var(--forest); }
 .face-divider { grid-column: 1 / -1; order: 1; margin: 18px 0 4px; padding: 12px 14px; background: #FFF7E6; border: 1.5px dashed #F6C64B; border-radius: 12px; font-size: 13.5px; color: var(--deep); line-height: 1.6; }
 .face-divider small { display: block; font-size: 12px; color: var(--bark); }
@@ -2108,10 +2110,10 @@ body.cart-open .help-bar, .cart-panel.visible ~ .help-bar { bottom: auto; paddin
     <h3>「わが子をさがす」と顔データについて</h3>
     <h4>何をしているの？</h4>
     <p>ギャラリーの写真に写っている顔の位置と、顔の特徴を数値にしたもの（顔データ）を、おさんぽフォトがあらかじめ作っています。お子さまの顔をタップすると、似ている顔が写っている写真を探して表示します。</p>
-    <h4>照合はスマホの中だけ</h4>
-    <p>似ている顔を探す計算は、このスマホ（ブラウザ）の中だけで行います。タップした顔や探した結果をおさんぽフォトに送ることはありません。保護者の方の写真を使うこともありません。この機能を使った回数と、使ったうえでご注文いただいたかどうかだけを、サービス改善のために記録します。</p>
+    <h4>照合はおさんぽフォトのシステムの中で</h4>
+    <p>お子さまの顔をタップすると、「どの顔を選んだか」だけをおさんぽフォトのシステムに送り、似ている顔が写っている写真の番号を受け取って表示します。ほかのお子さまの顔データがこのスマホに送られることはありません。保護者の方の写真を使うこともありません。選んだ顔や探した結果は保存せず、この機能を使った回数と、使ったうえでご注文いただいたかどうかだけを、サービス改善のために記録します。</p>
     <h4>顔データの管理</h4>
-    <p>顔データは、パスワードでギャラリーに入った方だけが読み込めます。写真を探す目的以外には使わず、閲覧・販売期間が終わったら削除します。</p>
+    <p>顔データは外から見られない場所に保管し、パスワードでギャラリーに入った方の検索にだけ使います。写真を探す目的以外には使わず、販売（再販売を含む）が終わってからおよそ1か月で削除します。</p>
     <h4>うまく見つからないときは</h4>
     <p>顔の一覧と探した結果は、写真から自動で作ったものなので、参考としてご覧ください。同じお子さまが一覧に2つ以上出たり、一覧に出てこないこともあります。似ているお友だちが混ざったり、横顔・帽子・ぶれで見つからない写真もあります。最後はご自身でご確認ください。この機能を使わなくても、これまでどおりすべての写真から選べます。</p>
     <h4>使ってほしくない場合</h4>
@@ -4009,7 +4011,7 @@ function goBackFromPaid() {
 // ========================================
 // わが子をさがす（顔で絞り込み）v2.13
 // ・顔データ（写真ごとの顔の位置と、顔の特徴を数値にしたもの）は、ログイン中の人だけがGASから受け取れる
-// ・照合はこのスマホの中だけで行う（保護者の写真は使わない。選んだ顔もどこにも送らない）
+// ・照合はサーバー（GAS faceMatch）で行い、端末には結果（顔の番号）だけ返す。ほかの子の特徴データは端末に送らない（v3.1）
 // ・端末に保存するのは「何番目の顔を選んだか」だけ（顔の数値そのものは保存しない）
 // ========================================
 const FACE = { pickGroup: -1, data: null, loading: null, available: false, active: false, picking: false, showBoxes: false, refs: [], rej: [], matched: new Set(), auto: new Set(), cands: [] };
@@ -4050,9 +4052,23 @@ async function faceLoad() {
   if (FACE.data) return FACE.data;
   if (!FACE.loading) {
     const ev = state.selectedEventId;
-    FACE.loading = api('getFaces', { eventId: ev, token: state.session.token }).then(d => {
+    // v3.1: 顔の特徴データは受け取らない（lite）。照合はサーバー（faceMatch）で行う
+    FACE.loading = api('getFaces', { eventId: ev, token: state.session.token, lite: 'true' }).then(d => faceParse(d, ev));
+  }
+  try { return await FACE.loading; } catch (e) { FACE.loading = null; throw e; }
+}
+// 顔データを FACE.data に入れる。lite（特徴データなし）のときは emb を持たない
+function faceParse(d, ev) {
       if (!d.available || !d.faces) throw new Error('顔データが見つかりませんでした');
       const j = JSON.parse(d.faces);
+      if (j.lite || !j.e) {
+        const n = j.n.map(v => String(v).padStart(3, '0'));
+        const byPhoto = {};
+        n.forEach((num, i) => { (byPhoto[num] = byPhoto[num] || []).push(i); });
+        if (ev !== state.selectedEventId) throw new Error('イベントが切り替わりました');
+        FACE.data = { lite: true, N: n.length, D: j.dim, emb: null, n, b: j.b, t: j.t || { auto: 0.55, cand: 0.45, anchor: 0.5 }, pa: j.pa || {}, pk: j.pk || null, cl: null, cd: 0, qq: 1, q: j.q || null, h: j.h || null, byPhoto };
+        return FACE.data;
+      }
       const bin = atob(j.e), N = j.n.length, D = j.dim;
       const emb = new Int8Array(N * D);
       for (let i = 0; i < bin.length; i++) { const c = bin.charCodeAt(i); emb[i] = c > 127 ? c - 256 : c; }
@@ -4065,9 +4081,37 @@ async function faceLoad() {
       if (ev !== state.selectedEventId) throw new Error('イベントが切り替わりました');
       FACE.data = { N, D, emb, n, b: j.b, t: j.t || { auto: 0.55, cand: 0.45, anchor: 0.5 }, pa: j.pa || {}, pk: j.pk || null, cl, cd: j.cd || 0, qq: (j.qs || 127) * (j.qs || 127), q: j.q || null, h: j.h || null, byPhoto };
       return FACE.data;
-    });
-  }
-  try { return await FACE.loading; } catch (e) { FACE.loading = null; throw e; }
+}
+// v3.1: 照合。lite のときはサーバーで計算して結果（顔の番号）だけ受け取る。
+// サーバーが使えないときだけ、これまでどおり特徴データを読み込んで端末で計算する（止まらないための予備）
+let faceSeq = 0;
+function faceBusy(on) {
+  document.body.classList.toggle('face-busy', !!on);
+  const p = document.getElementById('face-panel');
+  if (p && on && !p.querySelector('.face-busy-note')) p.insertAdjacentHTML('afterbegin', '<div class="face-busy-note">さがしています…</div>');
+  if (p && !on) p.querySelectorAll('.face-busy-note').forEach(x => x.remove());
+}
+async function faceRun() {
+  const d = FACE.data; if (!d) return;
+  if (!d.lite) { faceRecompute(); return; }
+  const my = ++faceSeq;
+  faceBusy(true);
+  try {
+    const r = await api('faceMatch', { eventId: state.selectedEventId, token: state.session.token, refs: FACE.refs.join(','), rej: FACE.rej.join(',') });
+    if (my !== faceSeq) return;
+    const auto = new Set((r.auto || []).filter(i => i >= 0 && i < d.N));
+    FACE.auto = auto;
+    FACE.matched = new Set(FACE.refs.concat([...auto]).map(i => d.n[i]));
+    FACE.cands = (r.cands || []).filter(i => i >= 0 && i < d.N);
+  } catch (e) {
+    // サーバーが混み合っているときなど。もう一度だけ試して、だめなら知らせる
+    try {
+      const r = await api('faceMatch', { eventId: state.selectedEventId, token: state.session.token, refs: FACE.refs.join(','), rej: FACE.rej.join(',') });
+      if (my !== faceSeq) return;
+      const auto = new Set((r.auto || []).filter(i => i >= 0 && i < d.N));
+      FACE.auto = auto; FACE.matched = new Set(FACE.refs.concat([...auto]).map(i => d.n[i])); FACE.cands = (r.cands || []).filter(i => i >= 0 && i < d.N);
+    } catch (e2) { if (my === faceSeq) showToast('うまくさがせませんでした。少し待ってからもう一度お試しください', 'error'); }
+  } finally { if (my === faceSeq) faceBusy(false); }
 }
 function faceSim(i, j) {
   const d = FACE.data, D = d.D, e = d.emb, a = i * D, b = j * D;
@@ -4174,7 +4218,7 @@ async function faceStart(resume) {
       const s = JSON.parse(storeGet(faceStoreKey()) || 'null');
       if (s) { FACE.refs = (s.refs || []).filter(i => i < FACE.data.N); FACE.rej = (s.rej || []).filter(i => i < FACE.data.N); }
     } catch (e) {}
-    if (FACE.refs.length) { faceRecompute(); faceApply(); scrollToFacePanel(); return; }
+    if (FACE.refs.length) { await faceRun(); faceApply(); scrollToFacePanel(); return; }
   }
   FACE.picking = true;
   renderFacePanel();
@@ -4245,29 +4289,29 @@ function renderFacePanel() {
       ${FACE.data.pk && new Set(FACE.data.pk.map(p => p[1])).size >= 2 ? `<div class="face-chips">${[[-1, 'すべて', '']].concat(FACE_GROUPS.map((g, k) => [k, g[0], g[1]])).filter(([k]) => k < 0 || FACE.data.pk.some(p => p[1] === k)).map(([k, name, col]) => `<button type="button" class="face-chip${FACE.pickGroup === k ? ' on' : ''}" onclick="facePickGroup(${k})">${col ? `<i style="background:${col}"></i>` : ''}${name}</button>`).join('')}</div>` : ''}
       <div class="face-strip wrap tall" id="face-pick-strip">${facePickList().map(i => faceCropHtml(i, 'pick')).join('')}</div>`;
   }
-  h += `<div class="face-note">🔒 顔の照合はこのスマホの中だけで行います。お子さまの写真や顔の情報を外に送ることはありません。似ているお友だちが混ざることもあるので、最後はご自身でご確認ください。<a href="#" onclick="event.preventDefault();openFaceInfo()">くわしく</a></div>`;
+  h += `<div class="face-note">🔒 顔の照合はおさんぽフォトのシステムの中で行い、このスマホには結果（写真の番号）だけが届きます。保護者の方の写真を使うことはありません。似ているお友だちが混ざることもあるので、最後はご自身でご確認ください。<a href="#" onclick="event.preventDefault();openFaceInfo()">くわしく</a></div>`;
   p.innerHTML = h;
   faceObserveCrops(p);
 }
 function facePickGroup(k) { FACE.pickGroup = k; renderFacePanel(); const st = document.getElementById('face-pick-strip'); if (st) st.scrollTop = 0; }
-function facePick(i) {
+async function facePick(i) {
   FACE.picking = false; FACE.refs = [i]; FACE.rej = [];
-  faceRecompute(); faceSave(); faceApply(); scrollToFacePanel();
+  await faceRun(); faceSave(); faceApply(); scrollToFacePanel();
   showToast(FACE.cands.length && FACE.matched.size < 5 ? `${FACE.matched.size}枚 見つかりました。「この子かも？」からお子さまをタップすると、もっと見つかります` : `この子の写真が ${FACE.matched.size}枚 見つかりました`, 'success');
 }
-function faceAdd(i) {
+async function faceAdd(i) {
   const before = FACE.matched.size;
   if (!FACE.refs.includes(i)) FACE.refs.push(i);
-  faceRecompute(); faceSave(); faceApply();
+  await faceRun(); faceSave(); faceApply();
   const add = FACE.matched.size - before;
   if (add > 0) showToast(`写真が ${add}枚 増えました`, 'success');
 }
-function faceReject(i) { if (!FACE.rej.includes(i)) FACE.rej.push(i); faceRecompute(); faceSave(); renderFacePanel(); }
-function faceRemove(i) {
+async function faceReject(i) { if (!FACE.rej.includes(i)) FACE.rej.push(i); await faceRun(); faceSave(); renderFacePanel(); }
+async function faceRemove(i) {
   FACE.refs = FACE.refs.filter(r => r !== i);
   if (!FACE.rej.includes(i)) FACE.rej.push(i);
   if (!FACE.refs.length) { faceClear(); return; }
-  faceRecompute(); faceSave(); faceApply();
+  await faceRun(); faceSave(); faceApply();
 }
 function faceClear() {
   Object.assign(FACE, { refs: [], rej: [], picking: false, matched: new Set(), auto: new Set(), cands: [] });
