@@ -1487,6 +1487,8 @@ body.face-open .face-bar { display: none; }
 .face-bar-new { margin-left: auto; font-size: 10px; font-weight: 700; color: #fff; background: #E0533A; border-radius: 10px; padding: 3px 8px; }
 .face-bar.loading .face-bar-btn { opacity: 0.6; pointer-events: none; }
 .face-bar.loading .face-bar-new::after { content: ' 読み込み中…'; }
+body.face-starting #g-find-face, body.face-starting #face-fab { opacity: 0.55; pointer-events: none; }
+body.face-starting #g-find-face span::after { content: '（読み込み中…）'; font-size: 0.85em; }
 .face-fab { display: none; position: fixed; right: 18px; top: calc(50% + 34px); z-index: 250; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: #3a2a00; background: linear-gradient(135deg, #FFE08A, #F6C64B); border: none; border-radius: 30px; padding: 11px 16px; cursor: pointer; white-space: nowrap; font-family: var(--sans); box-shadow: 0 6px 18px rgba(246,198,75,0.5); }
 .face-fab.visible { display: flex; }
 body.face-open .face-fab { display: none; }
@@ -4044,6 +4046,7 @@ async function faceInit() {
     const gt = document.getElementById('photo-grid').getBoundingClientRect().top;
     if (gt > -60 && gt < 200) requestAnimationFrame(() => bar.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     document.getElementById('face-fab')?.classList.add('visible');
+    faceLoad().catch(() => {}); // v3.1a: 顔の一覧を先に読み込んでおく（タップしたらすぐ開く）
     let saved = null; try { saved = JSON.parse(storeGet(faceStoreKey()) || 'null'); } catch (e) {}
     document.getElementById('face-bar-resume').style.display = (saved && saved.refs && saved.refs.length) ? '' : 'none';
   } catch (e) { /* 顔データが無いイベントでは何も出さない */ }
@@ -4053,7 +4056,7 @@ async function faceLoad() {
   if (!FACE.loading) {
     const ev = state.selectedEventId;
     // v3.1: 顔の特徴データは受け取らない（lite）。照合はサーバー（faceMatch）で行う
-    FACE.loading = api('getFaces', { eventId: ev, token: state.session.token, lite: 'true' }).then(d => faceParse(d, ev));
+    FACE.loading = api('getFaces', { eventId: ev, token: state.session.token, lite: 'true', pre: 'true' }).then(d => faceParse(d, ev));
   }
   try { return await FACE.loading; } catch (e) { FACE.loading = null; throw e; }
 }
@@ -4091,13 +4094,13 @@ function faceBusy(on) {
   if (p && on && !p.querySelector('.face-busy-note')) p.insertAdjacentHTML('afterbegin', '<div class="face-busy-note">さがしています…</div>');
   if (p && !on) p.querySelectorAll('.face-busy-note').forEach(x => x.remove());
 }
-async function faceRun() {
+async function faceRun(first) {
   const d = FACE.data; if (!d) return;
   if (!d.lite) { faceRecompute(); return; }
   const my = ++faceSeq;
   faceBusy(true);
   try {
-    const r = await api('faceMatch', { eventId: state.selectedEventId, token: state.session.token, refs: FACE.refs.join(','), rej: FACE.rej.join(',') });
+    const r = await api('faceMatch', { eventId: state.selectedEventId, token: state.session.token, refs: FACE.refs.join(','), rej: FACE.rej.join(','), first: first ? '1' : '' });
     if (my !== faceSeq) return;
     const auto = new Set((r.auto || []).filter(i => i >= 0 && i < d.N));
     FACE.auto = auto;
@@ -4106,7 +4109,7 @@ async function faceRun() {
   } catch (e) {
     // サーバーが混み合っているときなど。もう一度だけ試して、だめなら知らせる
     try {
-      const r = await api('faceMatch', { eventId: state.selectedEventId, token: state.session.token, refs: FACE.refs.join(','), rej: FACE.rej.join(',') });
+      const r = await api('faceMatch', { eventId: state.selectedEventId, token: state.session.token, refs: FACE.refs.join(','), rej: FACE.rej.join(','), first: first ? '1' : '' });
       if (my !== faceSeq) return;
       const auto = new Set((r.auto || []).filter(i => i >= 0 && i < d.N));
       FACE.auto = auto; FACE.matched = new Set(FACE.refs.concat([...auto]).map(i => d.n[i])); FACE.cands = (r.cands || []).filter(i => i >= 0 && i < d.N);
@@ -4207,10 +4210,14 @@ function faceApply() {
 }
 function scrollToFacePanel() { const p = document.getElementById('face-panel'); if (p) requestAnimationFrame(() => p.scrollIntoView({ behavior: 'smooth', block: 'start' })); }
 async function faceStart(resume) {
+  if (document.body.classList.contains('face-starting')) return; // v3.1a: 連続タップを無視
   const bar = document.getElementById('face-bar');
   bar.classList.add('loading');
-  try { await faceLoad(); } catch (e) { bar.classList.remove('loading'); showToast((e && e.message) || '顔データを読み込めませんでした', 'error'); return; }
+  document.body.classList.add('face-starting');
+  if (!FACE.data) showToast('顔の一覧を読み込んでいます…', 'success');
+  try { await faceLoad(); } catch (e) { bar.classList.remove('loading'); document.body.classList.remove('face-starting'); showToast((e && e.message) || '顔データを読み込めませんでした', 'error'); return; }
   bar.classList.remove('loading');
+  document.body.classList.remove('face-starting');
   faceMarkUsed();
   FACE.showBoxes = true;
   if (resume) {
@@ -4218,7 +4225,7 @@ async function faceStart(resume) {
       const s = JSON.parse(storeGet(faceStoreKey()) || 'null');
       if (s) { FACE.refs = (s.refs || []).filter(i => i < FACE.data.N); FACE.rej = (s.rej || []).filter(i => i < FACE.data.N); }
     } catch (e) {}
-    if (FACE.refs.length) { await faceRun(); faceApply(); scrollToFacePanel(); return; }
+    if (FACE.refs.length) { await faceRun(true); faceApply(); scrollToFacePanel(); return; }
   }
   FACE.picking = true;
   renderFacePanel();
@@ -4296,7 +4303,7 @@ function renderFacePanel() {
 function facePickGroup(k) { FACE.pickGroup = k; renderFacePanel(); const st = document.getElementById('face-pick-strip'); if (st) st.scrollTop = 0; }
 async function facePick(i) {
   FACE.picking = false; FACE.refs = [i]; FACE.rej = [];
-  await faceRun(); faceSave(); faceApply(); scrollToFacePanel();
+  await faceRun(true); faceSave(); faceApply(); scrollToFacePanel();
   showToast(FACE.cands.length && FACE.matched.size < 5 ? `${FACE.matched.size}枚 見つかりました。「この子かも？」からお子さまをタップすると、もっと見つかります` : `この子の写真が ${FACE.matched.size}枚 見つかりました`, 'success');
 }
 async function faceAdd(i) {
