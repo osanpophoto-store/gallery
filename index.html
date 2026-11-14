@@ -3882,8 +3882,17 @@ const EVENT_SECTIONS = {
     [1129, '黄さんかけっこ'],
     [1304, '青さんリレー'],
     [1500, '閉会・おわりのようす']
+  ],
+  'engai2026': [
+    [1, '出発'],
+    [149, '遊具'],
+    [527, '自転車'],
+    [737, 'お弁当'],
+    [961, 'おかえり']
   ]
 };
+// 区切りの呼び名（v3.1b）: 運動会などは「種目」、園外保育などは「場面」
+const EVENT_SECTION_WORD = { 'engai2026': '場面' };
 // イベントごとのお知らせ（写真一覧の上に1つだけ出す）
 // 丸ごとなしのイベント（v2.17）: 全園児が写る大きな行事。丸ごとダウンロードは出さず、
 // 20枚以上は何枚でも ¥2,000（上限）で、選んだ写真だけをリンクでお渡しする。GAS側 NO_ALL_EVENTS と同じ
@@ -3944,6 +3953,7 @@ function renderSections() {
   if (!secs || state.mode753 || !state.photos.length) { box.style.display = 'none'; box.innerHTML = ''; const sb = document.getElementById('g-find-sec'); if (sb) sb.style.display = 'none'; renderFindRow(); return; }
   const total = state.photos.length;
   const pad = n => String(n).padStart(3, '0');
+  const secWord = EVENT_SECTION_WORD[state.selectedEventId] || '種目';
   let chips = '';
   secs.forEach(([start, name], k) => {
     const end = k + 1 < secs.length ? secs[k + 1][0] - 1 : total;
@@ -3951,7 +3961,7 @@ function renderSections() {
     if (!item || end < start) return;
     const h = document.createElement('div');
     h.className = 'sec-head'; h.id = 'sec-' + k;
-    h.innerHTML = '<strong>' + escHtml(name) + '</strong><small>' + pad(start) + '〜' + pad(end) + '（' + (end - start + 1) + '枚）</small><a href="#sec-chips">種目の一覧へ ↑</a>';
+    h.innerHTML = '<strong>' + escHtml(name) + '</strong><small>' + pad(start) + '〜' + pad(end) + '（' + (end - start + 1) + '枚）</small><a href="#sec-chips">' + secWord + 'の一覧へ ↑</a>';
     grid.insertBefore(h, item);
     chips += '<a class="sec-chip" href="#sec-' + k + '">' + escHtml(name) + '</a>';
   });
@@ -3959,7 +3969,7 @@ function renderSections() {
   if (!chips) { box.style.display = 'none'; if (secBtn) secBtn.style.display = 'none'; renderFindRow(); return; }
   box.innerHTML = '<div class="sec-chips-row">' + chips + '</div>';
   box.style.display = 'none'; // テーマD: 「種目でさがす」ボタンで開く
-  if (secBtn) secBtn.style.display = '';
+  if (secBtn) { secBtn.style.display = ''; const sp = secBtn.querySelector('span'); if (sp) sp.textContent = secWord + 'でさがす'; }
   renderFindRow();
 }
 // 七五三 特設ページの案内バナー。期間内かつ直リンク（?event=）以外のときだけ出す
