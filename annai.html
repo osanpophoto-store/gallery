@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>写真販売のごあんない｜おさんぽフォト</title>
+<title>写真の買い方ガイド｜おさんぽフォト</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
 <style>
 /* レイアウト: スマホ1列。行事ごとに1枚のカード、その中に「おさんぽフォト」「フジフィルム」の2つのレーンを必ず同じ順番で並べる */
@@ -39,6 +39,23 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font
 .two b{display:block;font-family:var(--display);font-size:16px;line-height:1.4}
 .two .o b{color:var(--own)} .two .f b{color:var(--fuji)}
 .two span{display:block;font-size:13.5px;line-height:1.6;margin-top:4px}
+.two em.need{display:block;font-style:normal;font-size:12.5px;font-weight:700;line-height:1.5;background:var(--paper);border-radius:8px;padding:6px 8px;margin-bottom:8px}
+.top .lead{margin:6px 0 4px;font-size:14.5px;line-height:1.7;color:var(--ink)}
+.rule p.gnote{background:var(--fuji-soft);color:var(--ink);border-radius:10px;padding:9px 12px;font-size:14px;line-height:1.65}
+.rule p.gnote b{color:var(--fuji)}
+.price{border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.price summary{cursor:pointer;font-family:var(--display);font-weight:700;font-size:14.5px;color:var(--own);padding:11px 0;list-style-position:inside}
+.price summary:focus-visible{outline:2px solid var(--soon);outline-offset:2px;border-radius:6px}
+.price h3{font-family:var(--display);font-size:14.5px;margin:10px 0 6px}
+.price p{margin:6px 0 10px;font-size:12.5px;color:var(--sub);line-height:1.6}
+.pg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pg div{background:var(--own-soft);border-radius:8px;padding:6px 8px;display:flex;justify-content:space-between;gap:4px;font-size:12.5px;font-variant-numeric:tabular-nums;min-width:0}
+.pl{display:flex;flex-direction:column;gap:6px}
+.pl div{background:var(--own-soft);border-radius:8px;padding:7px 10px;display:flex;justify-content:space-between;gap:8px;font-size:13.5px;font-variant-numeric:tabular-nums}
+.pg b,.pl b{white-space:nowrap}
+.prices{display:flex;flex-direction:column;gap:8px;scroll-margin-top:12px}
+.price.fj summary{color:var(--fuji)} .price.fj .pl div{background:var(--fuji-soft)}
+.two small{display:block;margin-top:6px;font-size:11.5px;color:var(--sub)}
 .rule p{margin:0;font-size:14.5px;color:var(--sub)}
 h2.sec{font-family:var(--display);font-size:19px;margin:6px 0 -8px}
 .ev{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
@@ -67,6 +84,19 @@ h2.sec{font-family:var(--display);font-size:19px;margin:6px 0 -8px}
 .help h2{font-family:var(--display);font-size:17px;margin:0 0 8px}
 .help dl{margin:0;display:flex;flex-direction:column;gap:10px}
 .help dt{font-weight:700;font-size:14.5px} .help dd{margin:0;font-size:14px;color:var(--sub)}
+.sum{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px 12px 8px}
+.sum h2{font-family:var(--display);font-size:17px;margin:0 4px 8px}
+.sum table{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums}
+.sum th{font-family:var(--display);font-size:12.5px;font-weight:700;text-align:left;padding:6px 4px;border-bottom:2px solid var(--line)}
+.sum th.o{color:var(--own)} .sum th.f{color:var(--fuji)} .sum th small{display:block;font-family:var(--body);font-weight:500;font-size:10.5px;color:var(--sub)}
+.sum td{padding:9px 4px;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.45;vertical-align:middle}
+.sum tr:last-child td{border-bottom:0}
+.sum td.nm{font-family:var(--display);font-weight:700;font-size:14px}
+.sum td.nm button{all:unset;cursor:pointer;display:block;width:100%}
+.sum td.nm button:focus-visible{outline:2px solid var(--soon);outline-offset:2px;border-radius:4px}
+.sum .on{color:var(--own);font-weight:700} .sum .hurry{color:var(--hurry);font-weight:700} .sum .soon{color:var(--soon);font-weight:700}
+.sum .off{color:var(--off)} .sum .wait{background:#fff1cc;color:#8a6500;font-weight:700;border-radius:99px;padding:1px 9px;font-size:12px}
+.sum p{margin:6px 4px 0;font-size:12px;color:var(--sub)}
 @media (max-width:380px){.lane{grid-template-columns:1fr;gap:4px}.two{grid-template-columns:1fr}}
 </style>
 </head>
@@ -74,32 +104,67 @@ h2.sec{font-family:var(--display);font-size:19px;margin:6px 0 -8px}
 
 
 <div class="wrap">
-  <div id="notices"></div>
-
   <div class="top">
     <div class="brand">おさんぽフォト</div>
-    <h1>写真販売のごあんない</h1>
+    <h1>写真の買い方ガイド</h1>
+    <p class="lead">このページでは、写真販売のスケジュールと、行事ごとの販売期限をお知らせします。</p>
     <div class="asof" id="asof"></div>
   </div>
 
+  <div id="notices"></div>
+
   <section class="rule">
-    <h2>写真が買える場所は2つあります</h2>
+    <h2>買い方は2つあります</h2>
     <div class="two">
-      <div class="o"><b>おさんぽフォト</b><span>スマホに保存するデータ。1枚 ¥140〜、丸ごと ¥2,000</span></div>
-      <div class="f"><b>フジフィルム（スクールフォト）</b><span>プリント（L判など）と集合写真。データも買えます</span></div>
+      <div class="o"><em class="need">データだけを、まとめて安く買いたい方</em><b>データで買う</b><span>スマホに保存できる写真データを買えます。1枚 ¥140、10枚 ¥900、丸ごと ¥2,000</span><small>おさんぽフォトのサイト</small></div>
+      <div class="f"><em class="need">写真（プリント）とデータを一緒に買いたい方</em><b>プリントで買う</b><span>現像した写真がご自宅に届きます。Lサイズ ¥150、2Lサイズ ¥320。データも買えます（1枚 ¥180）</span><small>フジフィルムのサイト</small></div>
     </div>
-    <p>同じ写真が、同じ番号でならんでいます。どちらか片方だけで買っても大丈夫です。行事ごとに、買える場所と期間を下にまとめました。</p>
+    <p class="gnote"><b>集合写真（学年・クラス）</b>は、プリント（フジフィルムのサイト）だけで販売しています。2Lサイズ ¥990、6Pサイズ ¥1,250。</p>
+    <div id="price" class="prices">
+    <details class="price">
+      <summary>データ（おさんぽフォト）の料金表を見る</summary>
+      <h3>スマホサイズ（データ）</h3>
+      <div class="pg"><div><span>1枚</span><b>¥140</b></div><div><span>2枚</span><b>¥280</b></div><div><span>3枚</span><b>¥420</b></div><div><span>4〜5枚</span><b>¥500</b></div><div><span>6枚</span><b>¥640</b></div><div><span>7枚</span><b>¥780</b></div><div><span>8〜10枚</span><b>¥900</b></div><div><span>11枚</span><b>¥1,040</b></div><div><span>12枚</span><b>¥1,180</b></div><div><span>13枚</span><b>¥1,320</b></div><div><span>14〜15枚</span><b>¥1,400</b></div><div><span>16枚</span><b>¥1,540</b></div><div><span>17枚</span><b>¥1,680</b></div><div><span>18枚</span><b>¥1,820</b></div><div><span>19枚</span><b>¥1,960</b></div></div>
+      <p>メールに写真を添付してお届けします。</p>
+      <h3>丸ごとダウンロード</h3>
+      <div class="pl"><div><span>全データ</span><b>¥2,000</b></div></div>
+      <p>フォルダのリンクをメールでお届けします（7日間有効）。<br>※ 行事によっては、丸ごとダウンロードがない場合があります。</p>
+      <h3>大きく残したい方に</h3>
+      <div class="pl"><div><span>A4データ</span><b>1枚 ¥800</b></div><div><span>A3データ</span><b>1枚 ¥1,200</b></div><div><span>A4プリント（富士フイルム）</span><b>1枚 ¥3,500</b></div><div><span>A4平滑パネル（富士フイルム）</span><b>1枚 ¥12,000</b></div></div>
+      <p>データは高解像度のものをメールでお届けします。プリントとパネルはご自宅に郵送します（送料 ¥635、¥5,000以上は無料）。</p>
+    </details>
+    <details class="price fj">
+      <summary>プリント（フジフィルム）の料金表を見る</summary>
+      <h3>スナップ写真（プリント）</h3>
+      <div class="pl"><div><span>Lサイズ</span><b>1枚 ¥150</b></div><div><span>KGサイズ（はがき大）</span><b>1枚 ¥260</b></div><div><span>2Lサイズ</span><b>1枚 ¥320</b></div><div><span>フレームLサイズ</span><b>1枚 ¥150</b></div><div><span>フレーム2Lサイズ</span><b>1枚 ¥320</b></div></div>
+      <p>現像した写真をご自宅にお届けします。</p>
+      <h3>スナップ写真（データ）</h3>
+      <div class="pl"><div><span>ダウンロード</span><b>1枚 ¥180</b></div></div>
+      <h3>集合写真（学年・クラス）</h3>
+      <div class="pl"><div><span>2Lサイズ</span><b>1枚 ¥990</b></div><div><span>6Pサイズ（六つ切り）</span><b>1枚 ¥1,250</b></div></div>
+      <h3>再販のときの値段（学期末・年度末）</h3>
+      <div class="pl"><div><span>Lサイズ／フレームLサイズ</span><b>1枚 ¥190</b></div><div><span>KGサイズ</span><b>1枚 ¥320</b></div><div><span>2Lサイズ／フレーム2Lサイズ</span><b>1枚 ¥400</b></div><div><span>ダウンロード（データ）</span><b>1枚 ¥220</b></div></div>
+      <p>販売期間が終わった行事は、学期末と年度末にもう一度販売します。再販のときは、スナップ写真の値段が上の表より高くなります。集合写真は同じ値段です。</p>
+      <p>送料など、くわしくはフジフィルムのサイトのご注文画面でご確認ください。</p>
+    </details>
+    </div>
   </section>
 
-  <h2 class="sec">行事ごとの販売状況</h2>
+  <section class="sum">
+    <h2>いま買える写真（一覧）</h2>
+    <table><colgroup><col style="width:36%"><col style="width:30%"><col style="width:34%"></colgroup><thead><tr><th>行事</th><th class="o">データ<small>おさんぽフォトのサイト</small></th><th class="f">プリント<small>フジフィルムのサイト</small></th></tr></thead><tbody id="sum"></tbody></table>
+    <p>行事の名前を押すと、くわしい案内に進みます。</p>
+  </section>
+
+  <h2 class="sec">行事ごとのくわしい案内</h2>
   <div id="list" style="display:flex;flex-direction:column;gap:14px"></div>
 
   <section class="help">
     <h2>こまったとき</h2>
     <dl>
-      <div><dt>おさんぽフォトのパスワードが分からない</dt><dd>園からのルクミー配信に書いてあります。上の表にある日付の配信をさがしてください。</dd></div>
-      <div><dt>フジフィルムの入り方が分からない</dt><dd>フジフィルムのスクールフォトのサイトを開き、マイページにログイン（はじめての方は無料の会員登録）してから、チラシの「写真閲覧コード」を入れます。チラシをなくしたときは、公式LINEのトークでお知らせください。</dd></div>
-      <div><dt>きょうだいの分もまとめて買いたい</dt><dd>おさんぽフォトは、クラスがちがっても1回のお支払いでまとめて買えます。</dd></div>
+      <div><dt>データのサイトのパスワードが分からない</dt><dd>園からのルクミー配信に書いてあります。上の表にある日付の配信をさがしてください。</dd></div>
+      <div><dt>プリントのサイト（フジフィルム）の入り方が分からない</dt><dd>フジフィルムのスクールフォトのサイトを開き、マイページにログイン（はじめての方は無料の会員登録）してから、チラシの「写真閲覧コード」を入れます。チラシをなくしたときは、公式LINEのトークでお知らせください。</dd></div>
+      <div><dt>きょうだいの分もまとめて買いたい</dt><dd>データのサイトは、クラスがちがっても1回のお支払いでまとめて買えます。</dd></div>
     </dl>
   </section>
 </div>
@@ -133,22 +198,22 @@ function state(from, until){
 }
 function leftText(s){ return (s.k === 'on' || s.k === 'hurry') ? '<span class="left">' + (s.left === 0 ? '今日まで' : 'あと' + s.left + '日') + '</span>' : ''; }
 function ownLane(o){
-  if (o.pending) return '<div class="lane own"><div class="who">おさんぽフォト<small>データ</small></div><div class="what"><span class="pill wait">準備中</span><p class="how">公開日が決まりましたら、ルクミーでお知らせします</p></div></div>';
-  if (o.ended) return '<div class="lane own none"><div class="who">おさんぽフォト<small>データ</small></div><div class="what">おさんぽフォトでの販売は終わりました</div></div>';
+  if (o.pending) return '<div class="lane own"><div class="who">データ<small>おさんぽフォトのサイト</small></div><div class="what"><span class="pill wait">準備中</span><p class="how">公開日が決まりましたら、ルクミーでお知らせします</p></div></div>';
+  if (o.ended) return '<div class="lane own none"><div class="who">データ<small>おさんぽフォトのサイト</small></div><div class="what">データの販売は終わりました</div></div>';
   var s = state(o.from, o.until), when;
   if (s.k === 'soon') when = '<b>' + fmt(o.from) + (o.time ? ' ' + o.time : '') + '</b>から';
   else when = '<b>' + fmt(o.until) + '</b>まで' + leftText(s);
   var how = s.k === 'soon' ? 'パスワードは' + o.pw + 'のルクミー配信でお知らせします。' + fmt(o.until) + 'まで' : 'パスワードは' + (o.pw ? o.pw + 'の' : '') + 'ルクミー配信に書いてあります';
-  return '<div class="lane own"><div class="who">おさんぽフォト<small>データ</small></div><div class="what"><span class="pill ' + s.k + '">' + s.label + '</span><p class="when">' + when + '</p>' + (s.k === 'off' ? '' : '<p class="how">' + how + '</p>') + '</div></div>';
+  return '<div class="lane own"><div class="who">データ<small>おさんぽフォトのサイト</small></div><div class="what"><span class="pill ' + s.k + '">' + s.label + '</span><p class="when">' + when + '</p>' + (s.k === 'off' ? '' : '<p class="how">' + how + '</p>') + '</div></div>';
 }
 function fujiLane(f){
-  if (f && f.pending) return '<div class="lane fuji"><div class="who">フジフィルム<small>プリント・集合写真</small></div><div class="what"><span class="pill wait">準備中</span><p class="how">販売が決まりましたら、園で配るチラシでお知らせします</p></div></div>';
-  if (!f) return '<div class="lane fuji none"><div class="who">フジフィルム<small>プリント</small></div><div class="what">この行事は、フジフィルムでの販売はありません</div></div>';
+  if (f && f.pending) return '<div class="lane fuji"><div class="who">プリント<small>フジフィルムのサイト</small></div><div class="what"><span class="pill wait">準備中</span><p class="how">販売が決まりましたら、園で配るチラシでお知らせします</p></div></div>';
+  if (!f) return '<div class="lane fuji none"><div class="who">プリント<small>フジフィルムのサイト</small></div><div class="what">この行事は、プリントの販売はありません</div></div>';
   var s = state(f.from, f.until), plan = f.plan ? '（予定）' : '', goro = f.plan ? 'ごろ' : '', when;
   if (s.k === 'soon') when = '<b>' + fmt(f.from) + '</b>' + goro + 'から' + plan;
   else when = '<b>' + fmt(f.until) + '</b>まで' + plan + leftText(s);
   var how = s.k === 'soon' ? f.flyer + '、園でチラシを配ります。' + fmt(f.until) + goro + 'まで' : '園で配ったチラシの「写真閲覧コード」で入れます';
-  return '<div class="lane fuji"><div class="who">フジフィルム<small>プリント・集合写真</small></div><div class="what"><span class="pill ' + s.k + '">' + s.label + '</span><p class="when">' + when + '</p>' + (s.k === 'off' ? '' : '<p class="how">' + esc(f.note) + '。' + how + '</p>') + '</div></div>';
+  return '<div class="lane fuji"><div class="who">プリント<small>フジフィルムのサイト</small></div><div class="what"><span class="pill ' + s.k + '">' + s.label + '</span><p class="when">' + when + '</p>' + (s.k === 'off' ? '' : '<p class="how">' + esc(f.note) + '。' + how + '</p>') + '</div></div>';
 }
 function lanes(e){ var a = []; if (!e.own.ended && !e.own.pending) a.push(e.own); if (e.fuji && !e.fuji.pending) a.push(e.fuji); return a; }
 function pending(e){ return !!(e.own.pending || (e.fuji && e.fuji.pending)); }
@@ -160,11 +225,34 @@ show.sort(function(a, b){ return d(a.shot || '2999-12-31') - d(b.shot || '2999-1
 document.getElementById('list').innerHTML = show.map(function(e){
   var s = (e.own.ended || e.own.pending) ? {k:'off'} : state(e.own.from, e.own.until), sh = e.shot ? d(e.shot) : null;
   var btn = s.k === 'soon' ? '<span class="btn wait">' + fmt(e.own.from) + (e.own.time ? ' ' + e.own.time : '') + 'に開きます</span>'
-          : s.k === 'off' ? '' : '<a class="btn" href="' + GALLERY + '">おさんぽフォトで写真を見る</a>';
-  if (e.fuji && !e.fuji.pending) { var fs = state(e.fuji.from, e.fuji.until); if (fs.k === 'on' || fs.k === 'hurry') btn += '<a class="btn fj" href="' + FUJI + '">フジフィルム（スクールフォト）を開く</a>'; }
-  return '<article class="ev"><header><h3>' + esc(e.name) + '</h3>' + (sh ? '<span class="shot">' + (sh.getMonth()+1) + '月' + sh.getDate() + '日の行事</span>' : '') + '</header>' + ownLane(e.own) + fujiLane(e.fuji) + btn + '</article>';
+          : s.k === 'off' ? '' : '<a class="btn" href="' + GALLERY + '">データを買う（写真を見る）</a>';
+  if (e.fuji && !e.fuji.pending) { var fs = state(e.fuji.from, e.fuji.until); if (fs.k === 'on' || fs.k === 'hurry') btn += '<a class="btn fj" href="' + FUJI + '">プリントを注文する（フジフィルムのサイト）</a>'; }
+  return '<article class="ev" id="ev' + EVENTS.indexOf(e) + '"><header><h3>' + esc(e.name) + '</h3>' + (sh ? '<span class="shot">' + (sh.getMonth()+1) + '月' + sh.getDate() + '日の行事</span>' : '') + '</header>' + ownLane(e.own) + fujiLane(e.fuji) + btn + '</article>';
 }).join('');
+// 一覧表（行事 × おさんぽフォト／フジフィルム）
+(function(){
+  function md(x){ x = d(x); return (x.getMonth() + 1) + '/' + x.getDate(); }
+  function cell(x, none){
+    if (!x) return '<span class="off">' + none + '</span>';
+    if (x.pending) return '<span class="wait">準備中</span>';
+    if (x.ended) return '<span class="off">終了</span>';
+    var s = state(x.from, x.until);
+    if (s.k === 'off') return '<span class="off">終了</span>';
+    if (s.k === 'soon') return '<span class="soon">' + md(x.from) + '〜' + md(x.until) + '</span>';
+    return '<span class="' + s.k + '">' + md(x.until) + 'まで</span>';
+  }
+  document.getElementById('sum').innerHTML = show.map(function(e){
+    return '<tr><td class="nm"><button type="button" data-go="ev' + EVENTS.indexOf(e) + '">' + esc(e.name) + '</button></td><td>' + cell(e.own, 'なし') + '</td><td>' + cell(e.fuji, 'なし') + '</td></tr>';
+  }).join('');
+  document.getElementById('sum').addEventListener('click', function(ev){
+    var b = ev.target.closest('button[data-go]'); if (!b) return;
+    var t = document.getElementById(b.getAttribute('data-go')); if (t) t.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+})();
 document.getElementById('notices').innerHTML = NOTICES.filter(function(n){ return d(n.until) >= today; }).map(function(n){ var x = d(n.date); return '<div class="notice"><b>' + esc(n.title) + '</b><p>' + esc(n.body) + '</p><small>' + (x.getMonth()+1) + '月' + x.getDate() + '日のお知らせ</small></div>'; }).join('');
+// LINEの「PRICE」から来たとき（#price）は、料金表をひらいてそこまで動かす
+function openPrice(){ if (location.hash !== '#price') return; var p = document.getElementById('price'); Array.prototype.forEach.call(p.querySelectorAll('details'), function(x){ x.open = true; }); p.scrollIntoView(); }
+window.addEventListener('hashchange', openPrice); openPrice();
 document.getElementById('asof').textContent = today.getFullYear() + '年' + (today.getMonth()+1) + '月' + today.getDate() + '日（' + WD[today.getDay()] + '）現在';
 </script>
 
