@@ -114,7 +114,7 @@ var NOTICES = [
 var EVENTS = [
   {name:'お買い物ごっこ', shot:'2026-10-06', own:{ended:true}, fuji:{flyer:'', from:'2026-10-30', until:'2026-11-30', plan:false, note:'当日のお給食の様子もあります'}},
   {name:'うんどうかい', shot:'2026-10-25', own:{from:'2026-10-30', until:'2026-11-30', pw:'10月30日'}, fuji:{flyer:'11月末ごろ', from:'2026-11-30', until:'2026-12-30', plan:false, note:'プリントと、青さんの集合写真（2Lサイズ）があります'}},
-  {name:'うんどうかいの練習', shot:'2026-10-16', own:{from:'2026-10-30', until:'2026-11-30', pw:'10月30日'}, fuji:null},
+  {name:'うんどうかいの練習', shot:'2026-10-16', own:{from:'2026-10-18', until:'2026-11-30'}, fuji:null},
   {name:'おいもほり・くりひろい', shot:'2026-10-14', own:{from:'2026-11-04', until:'2026-11-30', pw:'11月4日'}, fuji:null},
   {name:'どうぶつえん', shot:'2026-10-07', own:{from:'2026-11-04', until:'2026-11-30', pw:'11月4日'}, fuji:null},
   {name:'園外保育（交通公園）', shot:'2026-11-11', own:{from:'2026-11-18', time:'19時', until:'2026-12-13', pw:'11月18日'}, fuji:{flyer:'11月末ごろ', from:'2026-11-30', until:'2026-12-24', plan:false, note:'プリントと、クラスごとの集合写真（2Lサイズ）があります'}}
@@ -138,7 +138,7 @@ function ownLane(o){
   var s = state(o.from, o.until), when;
   if (s.k === 'soon') when = '<b>' + fmt(o.from) + (o.time ? ' ' + o.time : '') + '</b>から';
   else when = '<b>' + fmt(o.until) + '</b>まで' + leftText(s);
-  var how = s.k === 'soon' ? 'パスワードは' + o.pw + 'のルクミー配信でお知らせします。' + fmt(o.until) + 'まで' : 'パスワードは' + o.pw + 'のルクミー配信に書いてあります';
+  var how = s.k === 'soon' ? 'パスワードは' + o.pw + 'のルクミー配信でお知らせします。' + fmt(o.until) + 'まで' : 'パスワードは' + (o.pw ? o.pw + 'の' : '') + 'ルクミー配信に書いてあります';
   return '<div class="lane own"><div class="who">おさんぽフォト<small>データ</small></div><div class="what"><span class="pill ' + s.k + '">' + s.label + '</span><p class="when">' + when + '</p>' + (s.k === 'off' ? '' : '<p class="how">' + how + '</p>') + '</div></div>';
 }
 function fujiLane(f){
